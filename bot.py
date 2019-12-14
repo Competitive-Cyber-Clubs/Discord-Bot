@@ -1,6 +1,7 @@
+"Main bot file"
 import os
-import discord
 import logging
+import discord
 from dotenv import load_dotenv
 from discord.ext.commands import Bot
 import utils
@@ -22,13 +23,14 @@ client = Bot(command_prefix=BOT_PREFIX)
 
 @client.event
 async def on_ready():
+    "Startup which shows servers it has conencted to"
     for guild in client.guilds:
         if guild.name == GUILD:
             break
 
     log.info(
-        f'{client.user} is connected to the following guild:\n'
-        f'{guild.name}'
+        '{user} is connected to the following guild:\n'
+        '{guild}', user=client.user, guild=client.guilds
     )
     await client.change_presence(activity=discord.Game(name='Here to help!'))
 
@@ -37,7 +39,8 @@ async def on_ready():
                 help="Testing command that returns pong",
                 description="Pong")
 async def ping(ctx):
-    log.debug("{0} has sent ping.".format(ctx.author))
+    "Simple command that replies pong to ping"
+    log.debug("{0} has sent ping.", ctx.author)
     await ctx.send("pong")
 
 client.run(TOKEN)
