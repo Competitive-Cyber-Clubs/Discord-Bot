@@ -1,0 +1,31 @@
+stages:
+- Code_Checking
+- test
+
+
+.check:
+  coverage: '/TOTAL\s*\d*\s*\d*\s*(\d*)%/'
+  script:
+    - pip install -r requirements.txt --quiet
+    - pip install pylint flake8 --quiet
+    - pylint --ignored-classes=_socketobject bot.py ./utils/
+    - flake8 bot.py ./utils/ --statistics --show-source
+python-3.5:
+  extends: ".check"
+  stage: Code_Checking
+  image: python:3.5
+
+python-3.6:
+  extends: ".check"
+  stage: Code_Checking
+  image: python:3.6
+
+python-3.7:
+  extends: ".check"
+  stage: Code_Checking
+  image: python:3.7
+
+python-3.8:
+  extends: ".check"
+  stage: Code_Checking
+  image: python:3.8
