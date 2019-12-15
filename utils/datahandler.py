@@ -10,9 +10,9 @@ def create():
     commands = ["""
 CREATE TABLE IF NOT EXISTS Schools (
 school text NOT NULL DEFAULT '',
-color text NOT NULL,
-region text NOT NULL,
-added_by text NOT NULL,
+region text NOT NULL DEFAULT '',
+color int NOT NULL DEFAULT '',
+added_by text NOT NULL DEFAULT '',
 PRIMARY KEY (school)
 );""", """
 CREATE TABLE IF NOT EXISTS bot_admins (
@@ -26,18 +26,21 @@ PRIMARY KEY (admin)
 
 def insert(table, data, log):
     "Adds data to existing tables"
-    if table == "School":
-        for i in data:
-            format_str = """INSERT OR IGNORE INTO {choice}\
-                (school, color, region, added_by)""".format(choice=table)
-            try:
-                cursor.execute(format_str, (i[0], i[1]))
-                connection.commit()
-            except sqlite3.DatabaseError as e:
-                log.error(e)
+    if table == "Schools":
+        log.debug(data)
+        format_str = """INSERT OR IGNORE INTO {choice}
+                (school, region, color, added_by) VALUES (?, ?, ?, ?)"""\
+                .format(choice=table)
+        try:
+            cursor.execute(format_str,
+                           (data[0], data[1], data[2], data[3]))
+            connection.commit()
+        except Exception as e:  # pylint: disable=broad-except
+            log.error(e)
+            return "error"
 
 
-def fetch(table, ident):  # Gets the data from the database
+def fetch(table, ident):
     "Retrives data from tables"
     format_str = """SELECT {ident} FROM {table}""".\
                  format(table=table, ident=ident)
