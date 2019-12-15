@@ -1,8 +1,7 @@
 [LOGGING]
 
-# Format style used to check logging format string. `old` means using %
-# formatting, while `new` is for `{}` formatting.
 logging-format-style=new
 
 [MESSAGES CONTROL]
-disable=invalid-name, logging-too-many-args, duplicate-code, logging-format-interpolation
+
+disable=invalid-name, logging-too-many-args, duplicate-code, logging-format-interpolation, inconsistent-return-statements
