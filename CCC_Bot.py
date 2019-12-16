@@ -8,8 +8,8 @@ from dotenv import load_dotenv
 from discord.ext.commands import Bot
 import utils
 
-load_dotenv()
 
+load_dotenv()
 GUILD = os.getenv('DISCORD_GUILD')
 TOKEN = os.getenv('DISCORD_TOKEN')
 
@@ -51,7 +51,6 @@ async def ping(ctx):
                 help="Creates a new school")
 async def new_school(ctx, *args):
     "Creates school"
-    log.debug(len(args))
     if len(args) < 2:
         await ctx.send("Error: The argument add-school "
                        "requires at least 2 arguments")
@@ -61,7 +60,7 @@ async def new_school(ctx, *args):
         color = int("0x%06x" % random.randint(0, 0xFFFFFF), 0)  # nosec
     else:
         if len(args[2]) == 6:
-            color = f'0x{color}'
+            color = '0x{color}'.format(color=args[2])
         elif len(args[2]) == 7:
             color = color.replace('#', '0x')
         else:
@@ -77,7 +76,7 @@ async def new_school(ctx, *args):
             (ctx.author.name+ctx.author.discriminator)]
     status = utils.insert("Schools", data, log)
     log.debug(status)
-    if status:
+    if status == "error":
         await ctx.send("There was an error with creating the role.\n"
                        "Please reach out to a bot admin.")
         # raise discord.ClientException
@@ -91,5 +90,21 @@ async def new_school(ctx, *args):
         .format(args[0], args[1], color)
         )
 
+@client.command(name="list-schools",
+                help="Gets list of current schools")
+async def list_schools(ctx):
+    """Lists current schools in the database"""
+    if ctx.author.id in utils.fetch("bot_admins", "admin"):
+        fetched = utils.fetch("Schools", "school, region")
+    else:
+        fetched = utils.fetch("Schools", "school")
+    await ctx.send(fetched)
+
+@client.command(name="list-admin",
+                help="Gets a list of bot admins")
+async def ladmin(ctx):
+    """Gets the name of bot admins"""
+    fetched = utils.fetch("bot_admins", "name")
+    await ctx.send(fetched)
 
 client.run(TOKEN)
