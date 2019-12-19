@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS Schools (
 school text NOT NULL DEFAULT '',
 region text NOT NULL DEFAULT '',
 color int NOT NULL DEFAULT '',
+id int NOT NULL DEFAULT '',
 added_by text NOT NULL DEFAULT '',
 PRIMARY KEY (school)
 );""", """
@@ -28,13 +29,12 @@ PRIMARY KEY (name)
 def insert(table, data, log):
     "Adds data to existing tables"
     if table == "Schools":
-        log.debug(data)
-        format_str = """INSERT INTO {choice}
-                (school, region, color, added_by) VALUES (?, ?, ?, ?)"""\
-                .format(choice=table)
+        # log.debug(data)
+        format_str = """INSERT INTO Schools
+                (school, region, color, id, added_by) VALUES (?, ?, ?, ?, ?)"""
         try:
             cursor.execute(format_str,
-                           (data[0], data[1], data[2], data[3]))
+                           (data[0], data[1], data[2], data[3], data[4]))
             connection.commit()
             return None
         except Exception as e:  # pylint: disable=broad-except

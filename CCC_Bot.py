@@ -51,6 +51,7 @@ async def ping(ctx):
                 help="Creates a new school")
 async def new_school(ctx, *args):
     "Creates school"
+    log.debug(args)
     if len(args) < 2:
         await ctx.send("Error: The argument add-school "
                        "requires at least 2 arguments")
@@ -70,25 +71,29 @@ async def new_school(ctx, *args):
         except TypeError:
             await ctx.send("Error: Please submit your color as hex")
 
+    await ctx.guild.create_role(name=args[0], color=discord.Color(color),
+                                mentionable=True,
+                                reason="Added by {}".format(ctx.author.name))
+    added_school = discord.utils.get(ctx.guild.roles, name=args[0])
+
     data = [args[0],
             args[1],
             color,
+            added_school.id,
             (ctx.author.name+ctx.author.discriminator)]
     status = utils.insert("Schools", data, log)
     log.debug(status)
     if status == "error":
         await ctx.send("There was an error with creating the role.\n"
                        "Please reach out to a bot admin.")
-        # raise discord.ClientException
-        return
-
-    await ctx.guild.create_role(name=args[0], color=discord.Color(color),
-                                mentionable=True,
-                                reason="Added by {}".format(ctx.author.name))
-    await ctx.send(
-        "School \"{}\" has been created in {} region with color of 0x{}"
-        .format(args[0], args[1], color)
-        )
+        rrole = discord.utils.get(ctx.guild.roles, name=args[0])
+        await rrole.delete(reason="Error in creation")
+        log.debug("Role deleted")
+    else:
+        await ctx.send(
+            "School \"{}\" has been created in {} region with color of 0x{}"
+            .format(args[0], args[1], color)
+            )
 
 @client.command(name="list-schools",
                 help="Gets list of current schools")
