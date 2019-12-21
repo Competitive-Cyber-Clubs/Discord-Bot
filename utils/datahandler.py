@@ -14,9 +14,16 @@ region text NOT NULL DEFAULT '',
 color int NOT NULL DEFAULT '',
 id int NOT NULL DEFAULT '',
 added_by text NOT NULL DEFAULT '',
+added_by_id int NOT NULL DEFAULT '',
 PRIMARY KEY (school)
 );""", """
 CREATE TABLE IF NOT EXISTS bot_admins (
+name text NOT NULL DEFAULT '',
+id int NOT NULL DEFAULT '',
+PRIMARY KEY (name)
+)
+""", """
+CREATE TABLE IF NOT EXISTS admin_channels (
 name text NOT NULL DEFAULT '',
 id int NOT NULL DEFAULT '',
 PRIMARY KEY (name)
@@ -26,7 +33,7 @@ PRIMARY KEY (name)
         cursor.execute(i)
 
 
-def insert(table, data, log):
+def insert(table, data, log=None):
     "Adds data to existing tables"
     if table == "Schools":
         # log.debug(data)
@@ -35,6 +42,17 @@ def insert(table, data, log):
         try:
             cursor.execute(format_str,
                            (data[0], data[1], data[2], data[3], data[4]))
+            connection.commit()
+            return None
+        except Exception as e:  # pylint: disable=broad-except
+            log.error(e)
+            return "error"
+    elif table == "bot_admins":
+        format_str = """INSERT OR IGNORE INTO bot_admins
+                        (name, id) VALUES (?, ?)"""
+        try:
+            cursor.execute(format_str,
+                           (data[0], data[1]))
             connection.commit()
             return None
         except Exception as e:  # pylint: disable=broad-except

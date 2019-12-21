@@ -12,6 +12,8 @@ import utils
 load_dotenv()
 GUILD = os.getenv('DISCORD_GUILD')
 TOKEN = os.getenv('DISCORD_TOKEN')
+OWNER_NAME = os.getenv('OWNER_NAME')
+OWNER_ID = os.getenv('OWNER_ID')
 
 
 utils.datahandler.create()
@@ -21,7 +23,12 @@ log.debug("Using discord.py version: {} and Python version {}"
           .format(discord.__version__, sys.version[0:5]))
 
 
-client = Bot(command_prefix="$")
+def check_admin(ctx):
+    """Checks to see if message author is in bot_admins"""
+    return ctx.message.author.id in utils.fetch("bot_admins", "id")
+
+
+client = Bot(command_prefix="$", owner_id=OWNER_ID)
 
 
 @client.event
@@ -35,6 +42,7 @@ async def on_ready():
         '{} is connected to the following guild: '
         '{}'.format(client.user, client.guilds[0].name)
     )
+    utils.insert("bot_admins", [OWNER_NAME, OWNER_ID], log)
     await client.change_presence(activity=discord.Game(name='Here to help!'))
 
 
@@ -48,7 +56,12 @@ async def ping(ctx):
 
 
 @client.command(name="add-school",
-                help="Creates a new school")
+                help="Creates a new school",
+                description="Adds a new school as a role.\n"
+                "Takes up to 3 arguments space seperated. "
+                "They are school, region, color. "
+                "Only school and region are required.\n"
+                "ie: $add-school \"Champlain College\" NORTHEAST #00a9e0")
 async def new_school(ctx, *args):
     "Creates school"
     log.debug(args)
@@ -80,7 +93,8 @@ async def new_school(ctx, *args):
             args[1],
             color,
             added_school.id,
-            (ctx.author.name+ctx.author.discriminator)]
+            (ctx.author.name+ctx.author.discriminator),
+            ctx.author.id]
     status = utils.insert("Schools", data, log)
     log.debug(status)
     if status == "error":
@@ -111,5 +125,20 @@ async def ladmin(ctx):
     """Gets the name of bot admins"""
     fetched = utils.fetch("bot_admins", "name")
     await ctx.send(fetched)
+
+
+@client.command(name="add-admin",
+                help="Adds a bot admin")
+@discord.ext.commands.check(check_admin)
+async def aadmin(ctx, args):
+    """Adds a new bot admin"""
+    members = ctx.guild.members
+    for i, x in enumerate(members):
+        if args == x.name:
+            utils.insert("bot_admins", (x.name, ctx.guild.members[i].id), log)
+            await ctx.send("User is now an admin.")
+            break
+    await ctx.send("Error: User not found.")
+
 
 client.run(TOKEN)
