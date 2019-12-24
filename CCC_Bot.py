@@ -5,7 +5,7 @@ import sys
 import random
 import discord
 from dotenv import load_dotenv
-from discord.ext.commands import Bot
+from discord.ext import commands
 import utils
 
 
@@ -28,7 +28,7 @@ def check_admin(ctx):
     return ctx.message.author.id in utils.fetch("bot_admins", "id")
 
 
-client = Bot(command_prefix="$", owner_id=OWNER_ID)
+client = commands.Bot(command_prefix="$", owner_id=OWNER_ID)
 
 
 @client.event
@@ -43,7 +43,11 @@ async def on_ready():
         '{}'.format(client.user, client.guilds[0].name)
     )
     utils.insert("bot_admins", [OWNER_NAME, OWNER_ID], log)
-    await client.change_presence(activity=discord.Game(name='Here to help!'))
+    admin_role = discord.utils.get(client.guilds[0].roles, name="Admin")
+    for admin in admin_role:
+        utils.insert("bot_admins", [admin.name, admin.id], log)
+    await client.change_presence(activity=discord.Activity(
+        name='Here to help!', type=discord.ActivityType.playing))
 
 
 @client.command(name="ping",
@@ -55,12 +59,46 @@ async def ping(ctx):
     await ctx.send("pong")
 
 
+@client.command(name="list-admin",
+                help="Gets a list of bot admins")
+async def ladmin(ctx):
+    """Gets the name of bot admins"""
+    fetched = utils.fetch("bot_admins", "name")
+    await ctx.send(fetched)
+
+
+@client.command(name="add-admin",
+                help="Adds a bot admin")
+@commands.check(check_admin)
+async def aadmin(ctx, args):
+    """Adds a new bot admin"""
+    members = ctx.guild.members
+    for i, x in enumerate(members):
+        if args == x.name:
+            utils.insert("bot_admins", (x.name, ctx.guild.members[i].id), log)
+            await ctx.send("User is now an admin.")
+            break
+    await ctx.send("Error: User not found.")
+
+
+@client.command(name="list-schools",
+                help="Gets list of current schools")
+async def list_schools(ctx):
+    """Lists current schools in the database"""
+    if ctx.author.id in utils.fetch("bot_admins", "id"):
+        fetched = utils.fetch("Schools", "school, region, added_by")
+    else:
+        fetched = utils.fetch("Schools", "school")
+    await ctx.send(fetched)
+
+
 @client.command(name="add-school",
                 help="Creates a new school",
                 description="Adds a new school as a role.\n"
                 "Takes up to 3 arguments space seperated. "
                 "They are school, region, color. "
                 "Only school and region are required.\n"
+                "**Space seperated schools need to be added in quotes.\n"
                 "ie: $add-school \"Champlain College\" NORTHEAST #00a9e0")
 async def new_school(ctx, *args):
     "Creates school"
@@ -69,7 +107,6 @@ async def new_school(ctx, *args):
         await ctx.send("Error: The argument add-school "
                        "requires at least 2 arguments")
         return
-
     if len(args) < 3:
         color = int("0x%06x" % random.randint(0, 0xFFFFFF), 0)  # nosec
     else:
@@ -109,36 +146,29 @@ async def new_school(ctx, *args):
             .format(args[0], args[1], color)
             )
 
-@client.command(name="list-schools",
-                help="Gets list of current schools")
-async def list_schools(ctx):
-    """Lists current schools in the database"""
-    if ctx.author.id in utils.fetch("bot_admins", "admin"):
-        fetched = utils.fetch("Schools", "school, region")
+
+@client.command(name="join-school",
+                help="Joins a schools.")
+@commands.has_role("verified")
+async def joinschool(ctx, sname):
+    """Allows users to join a school"""
+    # log.debug(sname)
+    user = ctx.message.author
+    db_entry = utils.fetch("Schools", "school")
+    entries = [x for x in db_entry if x == sname]
+    entries = entries[0]
+    if not entries:
+        ctx.send("Role could not be found.")
     else:
-        fetched = utils.fetch("Schools", "school")
-    await ctx.send(fetched)
-
-@client.command(name="list-admin",
-                help="Gets a list of bot admins")
-async def ladmin(ctx):
-    """Gets the name of bot admins"""
-    fetched = utils.fetch("bot_admins", "name")
-    await ctx.send(fetched)
+        await ctx.send("School found: {}".format(entries))
+        role = discord.utils.get(ctx.guild.roles, name=entries)
+        await user.add_roles(role)
 
 
-@client.command(name="add-admin",
-                help="Adds a bot admin")
-@discord.ext.commands.check(check_admin)
-async def aadmin(ctx, args):
-    """Adds a new bot admin"""
-    members = ctx.guild.members
-    for i, x in enumerate(members):
-        if args == x.name:
-            utils.insert("bot_admins", (x.name, ctx.guild.members[i].id), log)
-            await ctx.send("User is now an admin.")
-            break
-    await ctx.send("Error: User not found.")
-
+@client.event
+async def on_command_error(ctx, error):
+    """Reports errors to users"""
+    if isinstance(error, commands.errors.MissingRole):
+        await ctx.send("You do not have the correct role for this command.")
 
 client.run(TOKEN)

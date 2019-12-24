@@ -70,10 +70,8 @@ def fetch(table, ident):
     fetched = cursor.fetchall()
     if ident == "*":
         result = fetched
-    # For items which are not selecting every column
     else:
         result = []
         for i, _ in enumerate(fetched):
-            # Gets all the first values and makes them into a list
             result.append(fetched[i][0])
     return result
