@@ -44,7 +44,7 @@ async def on_ready():
     )
     utils.insert("bot_admins", [OWNER_NAME, OWNER_ID], log)
     admin_role = discord.utils.get(client.guilds[0].roles, name="Admin")
-    for admin in admin_role:
+    for admin in admin_role.members:
         utils.insert("bot_admins", [admin.name, admin.id], log)
     await client.change_presence(activity=discord.Activity(
         name='Here to help!', type=discord.ActivityType.playing))
@@ -57,6 +57,7 @@ async def ping(ctx):
     "Simple command that replies pong to ping"
     log.debug("{} has sent ping.".format(ctx.author.name))
     await ctx.send("pong")
+    await ctx.author.send("pong")
 
 
 @client.command(name="list-admin",
@@ -132,6 +133,7 @@ async def new_school(ctx, *args):
             added_school.id,
             (ctx.author.name+ctx.author.discriminator),
             ctx.author.id]
+
     status = utils.insert("Schools", data, log)
     log.debug(status)
     if status == "error":
@@ -152,17 +154,18 @@ async def new_school(ctx, *args):
 @commands.has_role("verified")
 async def joinschool(ctx, sname):
     """Allows users to join a school"""
-    # log.debug(sname)
     user = ctx.message.author
-    db_entry = utils.fetch("Schools", "school")
-    entries = [x for x in db_entry if x == sname]
+    db_entry = utils.fetch("Schools", "school, region")
+    entries = [x for x in db_entry if x[0] == sname]
     entries = entries[0]
     if not entries:
         ctx.send("Role could not be found.")
     else:
-        await ctx.send("School found: {}".format(entries))
-        role = discord.utils.get(ctx.guild.roles, name=entries)
-        await user.add_roles(role)
+        await ctx.send("School found: {}".format(entries[0]))
+        srole = discord.utils.get(ctx.guild.roles, name=entries[0])
+        rrole = discord.utils.get(ctx.guild.roles, name=entries[1])
+        await user.add_roles(srole)
+        await user.add_roles(rrole)
 
 
 @client.event

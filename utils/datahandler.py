@@ -63,15 +63,9 @@ def insert(table, data, log=None):
 
 
 def fetch(table, ident):
-    "Retrives data from tables"
+    "Retrives ident from the table of choice."
     format_str = """SELECT {ident} FROM {table}""".\
                  format(table=table, ident=ident)
     cursor.execute(format_str)
     fetched = cursor.fetchall()
-    if ident == "*":
-        result = fetched
-    else:
-        result = []
-        for i, _ in enumerate(fetched):
-            result.append(fetched[i][0])
-    return result
+    return fetched
