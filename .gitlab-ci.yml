@@ -41,6 +41,7 @@ pypy-3:
 staging:
   stage: deploy_staging
   image: ruby:latest
-  script:
+  before_script:
   - gem install dpl
+  script:
   - dpl --provider=heroku --app=ccc-discord-bot-staging --api-key=$HEROKU_API
