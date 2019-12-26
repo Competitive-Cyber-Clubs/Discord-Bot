@@ -1,5 +1,6 @@
 stages:
 - test
+- deploy_staging
 
 include:
   - template: SAST.gitlab-ci.yml
@@ -36,3 +37,12 @@ pypy-3:
   extends: ".check"
   stage: test
   image: pypy:3
+
+staging:
+  stage: deploy_staging
+  image: ruby:latest
+  script:
+  - gem install dpl
+  - dpl --provider=heroku --app=ccc-discord-bot-staging --api-key=HEROKU_API
+  only:
+  - master
