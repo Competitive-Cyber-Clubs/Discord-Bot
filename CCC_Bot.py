@@ -3,6 +3,7 @@ import os
 import logging
 import sys
 import random
+import asyncio
 import discord
 from dotenv import load_dotenv
 from discord.ext import commands
@@ -16,7 +17,7 @@ OWNER_NAME = os.getenv('OWNER_NAME')
 OWNER_ID = os.getenv('OWNER_ID')
 
 
-utils.datahandler.create()
+utils.create()
 log = utils.make_logger("bot", logging.DEBUG)
 log.info("Starting up")
 log.debug("Using discord.py version: {} and Python version {}"
@@ -56,11 +57,12 @@ async def on_ready():
 async def ping(ctx):
     "Simple command that replies pong to ping"
     log.debug("{} has sent ping.".format(ctx.author.name))
-    await ctx.send("pong")
     await ctx.author.send("pong")
+    await ctx.message.delete()
 
 
 @client.command(name="list-admin",
+                aliases=["ladmin"],
                 help="Gets a list of bot admins")
 async def ladmin(ctx):
     """Gets the name of bot admins"""
@@ -96,18 +98,22 @@ async def list_schools(ctx):
 @client.command(name="add-school",
                 help="Creates a new school",
                 description="Adds a new school as a role.\n"
-                "Takes up to 3 arguments space seperated. "
-                "They are school, region, color. "
+                "Takes up to 3 arguments space seperated: "
+                "school, region, color. "
                 "Only school and region are required.\n"
                 "**Space seperated schools need to be added in quotes.\n"
                 "ie: $add-school \"Champlain College\" NORTHEAST #00a9e0")
-async def new_school(ctx, *args):
+async def add_school(ctx, *args):
     "Creates school"
     log.debug(args)
     if len(args) < 2:
         await ctx.send("Error: The argument add-school "
                        "requires at least 2 arguments")
         return
+
+    regions = utils.fetch("regions", "name")
+    if args[2].upper() not in regions:
+        ctx.send("Error: The region you have selected is not available.")
     if len(args) < 3:
         color = int("0x%06x" % random.randint(0, 0xFFFFFF), 0)  # nosec
     else:
@@ -161,11 +167,33 @@ async def joinschool(ctx, sname):
     if not entries:
         ctx.send("Role could not be found.")
     else:
-        await ctx.send("School found: {}".format(entries[0]))
         srole = discord.utils.get(ctx.guild.roles, name=entries[0])
         rrole = discord.utils.get(ctx.guild.roles, name=entries[1])
         await user.add_roles(srole)
         await user.add_roles(rrole)
+        await ctx.send("School assigned: {}".format(entries[0]))
+
+
+@client.command(name="import-school",
+                help="Admin Only Feature")
+@commands.check(check_admin)
+async def ischool(ctx, sname):
+    """Allows admins to import existing roles as schools"""
+    srole = discord.utils.get(ctx.guild.roles, name=sname)
+    if srole.name in utils.fetch("Schools", "school"):
+        await ctx.send("That school already exists.")
+    else:
+        await ctx.send("Please enter the region for the school.")
+        try:
+            region = client.wait_for('message', timeout=60.0)
+        except asyncio.TimeoutError:
+            await ctx.send("Took too long.")
+            return
+        new_school = [sname, region.content, srole.colour,
+                      "Imported", "Imported"]
+        status = utils.insert("Schools", new_school, log)
+        if status == "error":
+            await ctx.send("There was an error importing the school.")
 
 
 @client.event
@@ -174,4 +202,8 @@ async def on_command_error(ctx, error):
     if isinstance(error, commands.errors.MissingRole):
         await ctx.send("You do not have the correct role for this command.")
 
-client.run(TOKEN)
+try:
+    client.run(TOKEN)
+except KeyboardInterrupt:
+    log.info("Keyboard interrupt detected. Exiting")
+    client.logout()

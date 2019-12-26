@@ -21,14 +21,18 @@ CREATE TABLE IF NOT EXISTS bot_admins (
 name text NOT NULL DEFAULT '',
 id int NOT NULL DEFAULT '',
 PRIMARY KEY (name)
-)
+);
 """, """
 CREATE TABLE IF NOT EXISTS admin_channels (
 name text NOT NULL DEFAULT '',
 id int NOT NULL DEFAULT '',
 PRIMARY KEY (name)
-)
-"""]
+);
+""", """
+CREATE TABLE IF NOT EXISTS regions(
+name text NOT NULL DEFAULT '',
+PRIMARY KEY (name)
+);"""]
     for i in commands:
         cursor.execute(i)
 
