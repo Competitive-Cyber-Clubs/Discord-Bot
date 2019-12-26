@@ -1,0 +1,1 @@
+worker: python CCC_Bot.py
