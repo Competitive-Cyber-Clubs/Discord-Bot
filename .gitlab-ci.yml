@@ -43,6 +43,4 @@ staging:
   image: ruby:latest
   script:
   - gem install dpl
-  - dpl --provider=heroku --app=ccc-discord-bot-staging --api-key=HEROKU_API
-  only:
-  - master
+  - dpl --provider=heroku --app=ccc-discord-bot-staging --api-key=$HEROKU_API
