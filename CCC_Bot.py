@@ -189,7 +189,7 @@ async def ischool(ctx, sname):
         except asyncio.TimeoutError:
             await ctx.send("Took too long.")
             return
-        new_school = [sname, region.content, srole.colour,
+        new_school = [sname, region.content, srole.colour,  # pylint: disable=no-member
                       "Imported", "Imported"]
         status = utils.insert("Schools", new_school, log)
         if status == "error":
