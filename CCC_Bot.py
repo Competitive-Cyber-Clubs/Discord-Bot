@@ -80,7 +80,7 @@ async def aadmin(ctx, args):
         if args == x.name:
             utils.insert("bot_admins", (x.name, ctx.guild.members[i].id), log)
             await ctx.send("User is now an admin.")
-            break
+            return
     await ctx.send("Error: User not found.")
 
 
@@ -110,10 +110,11 @@ async def add_school(ctx, *args):
         await ctx.send("Error: The argument add-school "
                        "requires at least 2 arguments")
         return
-
-    regions = utils.fetch("regions", "name")
-    if args[2].upper() not in regions:
-        ctx.send("Error: The region you have selected is not available.")
+    r_regions = utils.fetch("regions", "name")
+    print(r_regions, args[1])
+    if args[1] not in r_regions:
+        await ctx.send("Error: The region you have selected is not available.")
+        return
     if len(args) < 3:
         color = int("0x%06x" % random.randint(0, 0xFFFFFF), 0)  # nosec
     else:
@@ -157,7 +158,7 @@ async def add_school(ctx, *args):
 
 @client.command(name="join-school",
                 help="Joins a schools.")
-@commands.has_role("verified")
+@commands.has_role("new")
 async def joinschool(ctx, sname):
     """Allows users to join a school"""
     user = ctx.message.author
@@ -165,13 +166,40 @@ async def joinschool(ctx, sname):
     entries = [x for x in db_entry if x[0] == sname]
     entries = entries[0]
     if not entries:
-        ctx.send("Role could not be found.")
+        await ctx.send("Role could not be found.")
     else:
-        srole = discord.utils.get(ctx.guild.roles, name=entries[0])
-        rrole = discord.utils.get(ctx.guild.roles, name=entries[1])
-        await user.add_roles(srole)
-        await user.add_roles(rrole)
+        await user.add_roles(
+            discord.utils.get(ctx.guild.roles, name=entries[0]),
+            discord.utils.get(ctx.guild.roles, name=entries[1]),
+            discord.utils.get(ctx.guild.roles, name="verified"),
+            reason="{u} joined {s}".format(u=user.name, s=entries[0])
+        )
+        await user.remove_roles(
+            discord.utils.get(ctx.guild.roles, name="new"),
+            reason="{u} joined {s}".format(u=user.name, s=entries[0])
+        )
         await ctx.send("School assigned: {}".format(entries[0]))
+
+
+@client.command(name="add-region",
+                help="Adds regions")
+@commands.check(check_admin)
+async def addregion(ctx, region):
+    """Allows admins to add regions"""
+    status = utils.insert("regions", [region], log)
+    print(status)
+    if not status == "error":
+        await ctx.send('Region has been created.')
+    else:
+        await ctx.send("There was an error creating the region.")
+
+
+@client.command(name="list-regions",
+                help="Lists available regions.")
+@commands.check(check_admin)
+async def listregion(ctx):
+    """Admin command to lists the regions"""
+    await ctx.send(utils.fetch("regions", "name"))
 
 
 @client.command(name="import-school",
@@ -189,7 +217,7 @@ async def ischool(ctx, sname):
         except asyncio.TimeoutError:
             await ctx.send("Took too long.")
             return
-        new_school = [sname, region.content, srole.colour,  # pylint: disable=no-member
+        new_school = [sname, region.content, srole.colour,  # noqa: E501 pylint: disable=no-member
                       "Imported", "Imported"]
         status = utils.insert("Schools", new_school, log)
         if status == "error":
@@ -202,8 +230,4 @@ async def on_command_error(ctx, error):
     if isinstance(error, commands.errors.MissingRole):
         await ctx.send("You do not have the correct role for this command.")
 
-try:
-    client.run(TOKEN)
-except KeyboardInterrupt:
-    log.info("Keyboard interrupt detected. Exiting")
-    client.logout()
+client.run(TOKEN)

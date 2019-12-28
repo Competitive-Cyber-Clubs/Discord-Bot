@@ -37,39 +37,47 @@ PRIMARY KEY (name)
         cursor.execute(i)
 
 
-def insert(table, data, log=None):
+def insert(table: str, data: list, log=None):
     "Adds data to existing tables"
     if table == "Schools":
-        # log.debug(data)
         format_str = """INSERT INTO Schools
                 (school, region, color, id, added_by) VALUES (?, ?, ?, ?, ?)"""
-        try:
-            cursor.execute(format_str,
-                           (data[0], data[1], data[2], data[3], data[4]))
-            connection.commit()
-            return None
-        except Exception as e:  # pylint: disable=broad-except
-            log.error(e)
-            return "error"
     elif table == "bot_admins":
         format_str = """INSERT OR IGNORE INTO bot_admins
-                        (name, id) VALUES (?, ?)"""
-        try:
+                    (name, id) VALUES (?, ?)"""
+    elif table == "regions":
+        format_str = """INSERT INTO regions
+                     (name) VALUES (?)"""
+    else:
+        log.error("Table not found.")
+        return "error"
+    try:
+        if table == "Schools":
+            cursor.execute(format_str,
+                           (data[0], data[1], data[2], data[3], data[4]))
+        elif table == "bot_admins":
             cursor.execute(format_str,
                            (data[0], data[1]))
-            connection.commit()
-            return None
-        except Exception as e:  # pylint: disable=broad-except
-            log.error(e)
-            return "error"
-    else:
+        elif table == "regions":
+            cursor.execute(format_str,
+                           (data))
+        connection.commit()
+        return None
+    except Exception as e:  # pylint: disable=broad-except
+        log.error("Error: {}".format(e))
         return "error"
 
 
-def fetch(table, ident):
+def fetch(table: str, ident: str):
     "Retrives ident from the table of choice."
     format_str = """SELECT {ident} FROM {table}""".\
                  format(table=table, ident=ident)
     cursor.execute(format_str)
     fetched = cursor.fetchall()
-    return fetched
+    if ident == "*" or ident.find(",") != -1:
+        result = fetched
+    else:
+        result = []
+        for _, x in enumerate(fetched):
+            result.append(x[0])
+    return result

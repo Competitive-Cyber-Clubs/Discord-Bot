@@ -16,13 +16,13 @@ Please visit this [link](https://discordapp.com/api/oauth2/authorize?client_id=6
 
 #### To Do
 
-- Add importing existing roles.
+- ~~Add importing existing roles.~~
 - Sync admin role with bot admins.
 - ~~Add custom admins.~~
-- Have the role assignment feature.
-  - Be able to assign two roles when joining a school.
+- ~~Have the role assignment feature.~~
+  - ~~Be able to assign two roles when joining a school.~~
 - Format joinable schools better.
-- Admin list schools
+- ~~Admin list schools~~
 
 ## Security Notice
 
