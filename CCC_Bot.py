@@ -5,8 +5,8 @@ import sys
 import random
 import asyncio
 import discord
-from dotenv import load_dotenv
 from discord.ext import commands
+from dotenv import load_dotenv
 import utils
 
 

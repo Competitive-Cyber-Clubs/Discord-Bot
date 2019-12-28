@@ -1,0 +1,28 @@
+version: 2
+checks:
+  method-complexity:
+      config:
+        threshold: 10
+plugins:
+  git-legal:
+    enabled: true
+  sonar-python:
+    enabled: true
+    checks:
+      python:S1542:
+        enabled: false
+      python:S3776:
+        enabled: false
+  markdownlint:
+    enabled: true
+    checks:
+      MD024:
+        enabled: false
+      MD009:
+        enabled: false
+      MD013:
+        enabled: false
+  pep8:
+    enabled: true
+  bandit:
+    enabled: true
