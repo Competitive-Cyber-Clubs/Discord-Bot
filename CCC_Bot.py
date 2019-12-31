@@ -11,14 +11,17 @@ import utils
 
 
 load_dotenv()
-GUILD = os.getenv('DISCORD_GUILD')
+# GUILD = os.getenv('DISCORD_GUILD')
 TOKEN = os.getenv('DISCORD_TOKEN')
 OWNER_NAME = os.getenv('OWNER_NAME')
 OWNER_ID = os.getenv('OWNER_ID')
+log_level = os.getenv('LOG_LEVEL')
+if not log_level:
+    log_level = logging.DEBUG
 
 
 utils.create()
-log = utils.make_logger("bot", logging.DEBUG)
+log = utils.make_logger("bot", log_level)
 log.info("Starting up")
 log.debug("Using discord.py version: {} and Python version {}"
           .format(discord.__version__, sys.version[0:5]))
@@ -35,9 +38,9 @@ client = commands.Bot(command_prefix="$", owner_id=OWNER_ID)
 @client.event
 async def on_ready():
     "Startup which shows servers it has conencted to"
-    for guild in client.guilds:
-        if guild.name == GUILD:
-            break
+    # for guild in client.guilds:
+    #    if guild.name == GUILD:
+    #        break
 
     log.info(
         '{} is connected to the following guild: '
@@ -131,6 +134,7 @@ async def add_school(ctx, *args):
 
     await ctx.guild.create_role(name=args[0], color=discord.Color(color),
                                 mentionable=True,
+                                hoist=True,
                                 reason="Added by {}".format(ctx.author.name))
     added_school = discord.utils.get(ctx.guild.roles, name=args[0])
 
@@ -222,6 +226,22 @@ async def ischool(ctx, sname):
         status = utils.insert("Schools", new_school, log)
         if status == "error":
             await ctx.send("There was an error importing the school.")
+
+
+@client.command(name="add-rank",
+                help="Adds student, alumni or professor role.")
+@commands.has_role("verified")
+async def addrank(ctx, rank):
+    """Allows users to set student, alumni or professor role."""
+    user = ctx.message.author
+    ranks = ["student", "professor", "alumni"]
+    checked = [i for i in user.roles if i.name in ranks]
+    if len(checked) > 0:
+        await ctx.send("Error: You already have a rank.")
+        return
+    rank = discord.utils.get(ctx.guild.roles, name=rank)
+    await user.add_roles(rank)
+    await ctx.send("Rank assigned successfully")
 
 
 @client.event

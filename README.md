@@ -1,9 +1,11 @@
 <!-- markdownlint-disable MD001 -->
 # CCC-Bot
 
-## This bot is still in early alpha stages
+## This bot is still in alpha stages
 
 Good coding practices and version will be implemented on its completion.
+
+[![Maintainability](https://api.codeclimate.com/v1/badges/027b6135ce0965aa69c1/maintainability)](https://codeclimate.com/github/Cyb3r-Jak3/CCC-Bot/maintainability)
 
 ## About
 
@@ -12,17 +14,12 @@ As such it is not recommended for most other discord channels, however it is som
 
 ### To add
 
-Please visit this [link](https://discordapp.com/api/oauth2/authorize?client_id=643200662045458444&permissions=268445696&scope=bot)
+Please visit this [link](https://discordapp.com/api/oauth2/authorize?client_id=643200662045458444&permissions=268443648&scope=bot)
 
 #### To Do
 
-- ~~Add importing existing roles.~~
 - Sync admin role with bot admins.
-- ~~Add custom admins.~~
-- ~~Have the role assignment feature.~~
-  - ~~Be able to assign two roles when joining a school.~~
 - Format joinable schools better.
-- ~~Admin list schools~~
 
 ## Security Notice
 
