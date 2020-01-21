@@ -100,12 +100,7 @@ async def list_schools(ctx):
 
 @client.command(name="add-school",
                 help="Creates a new school",
-                description="Adds a new school as a role.\n"
-                "Takes up to 3 arguments space seperated: "
-                "school, region, color. "
-                "Only school and region are required.\n"
-                "**Space seperated schools need to be added in quotes.\n"
-                "ie: $add-school \"Champlain College\" NORTHEAST #00a9e0")
+                description="Adds a new school as a role.\n Takes up to 3 arguments space seperated: school, region, color. Only school and region are required.\n**Space seperated schools need to be added in quotes.\nie: $add-school \"Champlain College\" NORTHEAST #00a9e0")  # noqa: E501 pylint: disable=line-too-long
 async def add_school(ctx, *args):
     "Creates school"
     log.debug(args)
