@@ -11,7 +11,6 @@ import utils
 
 
 load_dotenv()
-# GUILD = os.getenv('DISCORD_GUILD')
 TOKEN = os.getenv('DISCORD_TOKEN')
 OWNER_NAME = os.getenv('OWNER_NAME')
 OWNER_ID = os.getenv('OWNER_ID')
@@ -38,9 +37,6 @@ client = commands.Bot(command_prefix="$", owner_id=OWNER_ID)
 @client.event
 async def on_ready():
     "Startup which shows servers it has conencted to"
-    # for guild in client.guilds:
-    #    if guild.name == GUILD:
-    #        break
 
     log.info(
         '{} is connected to the following guild: '
@@ -64,8 +60,8 @@ async def ping(ctx):
     await ctx.message.delete()
 
 
-@client.command(name="list-admin",
-                aliases=["ladmin"],
+@client.command(name="list-admins",
+                aliases=["ladmins", "ladmin"],
                 help="Gets a list of bot admins")
 async def ladmin(ctx):
     """Gets the name of bot admins"""
@@ -95,7 +91,14 @@ async def list_schools(ctx):
         fetched = utils.fetch("Schools", "school, region, added_by")
     else:
         fetched = utils.fetch("Schools", "school")
-    await ctx.send(fetched)
+    if len(fetched) == 0:
+        await ctx.send("There are no schools to join.")
+        return
+    schools = "The list of available schools to join:\n"
+    for item in fetched:
+        schools += "- " + item[0] + "\n"
+    schools += "\nTo join your schools please use *$join-school \"<Your school name>\"*.\n**Please use quotes or it will not work**"  # noqa: E501 pylint: disable=line-too-long
+    await ctx.send(schools)
 
 
 @client.command(name="add-school",
@@ -109,7 +112,6 @@ async def add_school(ctx, *args):
                        "requires at least 2 arguments")
         return
     r_regions = utils.fetch("regions", "name")
-    print(r_regions, args[1])
     if args[1] not in r_regions:
         await ctx.send("Error: The region you have selected is not available.")
         return
@@ -141,13 +143,13 @@ async def add_school(ctx, *args):
             ctx.author.id]
 
     status = utils.insert("Schools", data, log)
-    log.debug(status)
+    log.debug("Add school status: {}".format(status))
     if status == "error":
         await ctx.send("There was an error with creating the role.\n"
                        "Please reach out to a bot admin.")
         rrole = discord.utils.get(ctx.guild.roles, name=args[0])
         await rrole.delete(reason="Error in creation")
-        log.debug("Role deleted")
+        log.debug("Role deleted, due to error with School Role creation.")
     else:
         await ctx.send(
             "School \"{}\" has been created in {} region with color of 0x{}"
@@ -177,7 +179,7 @@ async def joinschool(ctx, sname):
             discord.utils.get(ctx.guild.roles, name="new"),
             reason="{u} joined {s}".format(u=user.name, s=entries[0])
         )
-        await ctx.send("School assigned: {}".format(entries[0]))
+        await ctx.author.send("School assigned: {}".format(entries[0]))
 
 
 @client.command(name="add-region",
@@ -186,7 +188,6 @@ async def joinschool(ctx, sname):
 async def addregion(ctx, region):
     """Allows admins to add regions"""
     status = utils.insert("regions", [region], log)
-    print(status)
     if not status == "error":
         await ctx.send('Region has been created.')
     else:
