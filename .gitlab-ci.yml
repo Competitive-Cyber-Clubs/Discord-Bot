@@ -9,6 +9,9 @@ include:
 
 gemnasium-python-dependency_scanning:
   stage: test
+  before_script:
+    - which pg_config
+    - fine / -name "pg_config"
   services:
   - postgres:latest
 
@@ -48,3 +51,6 @@ staging:
   - gem install dpl
   script:
   - dpl --provider=heroku --app=ccc-discord-bot-staging --api-key=$HEROKU_API
+  only:
+    refs:
+      - master
