@@ -95,7 +95,7 @@ async def aadmin(ctx, args):
                 help="Gets list of current schools")
 async def list_schools(ctx):
     """Lists current schools in the database"""
-    if ctx.author.id in utils.fetch("bot_admins", "id"):
+    if ctx.author.id in utils.fetch("bot_admins", "id"):  # noqa: E501 pylint: disable=no-else-return,line-too-long
         fetched = utils.fetch("Schools", "school, region, added_by")
         for school in fetched:
             # await ctx.send(" | ".join(school))
