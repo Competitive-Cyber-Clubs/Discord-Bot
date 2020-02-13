@@ -7,13 +7,6 @@ include:
   - template: Dependency-Scanning.gitlab-ci.yml
   - template: License-Management.gitlab-ci.yml
 
-variables:
-  DS_DISABLE_DIND: "true"
-
-gemnasium-python-dependency_scanning:
-  stage: test
-  image: python:3-slim
-
 
 
 .check:
