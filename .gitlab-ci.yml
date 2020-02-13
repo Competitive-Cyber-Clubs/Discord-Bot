@@ -7,8 +7,7 @@ include:
   - template: Dependency-Scanning.gitlab-ci.yml
   - template: License-Management.gitlab-ci.yml
 
-services:
-  - postgres:latest
+
 
 .check:
   stage: Code_Check
@@ -44,3 +43,6 @@ staging:
   - gem install dpl
   script:
   - dpl --provider=heroku --app=ccc-discord-bot-staging --api-key=$HEROKU_API
+  only:
+    refs:
+      - master
