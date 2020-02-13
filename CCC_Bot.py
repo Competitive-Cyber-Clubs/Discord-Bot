@@ -28,7 +28,8 @@ log.debug("Using discord.py version: {} and Python version {}"
 
 def check_admin(ctx):
     """Checks to see if message author is in bot_admins"""
-    return ctx.message.author.id in utils.fetch("bot_admins", "id")
+    returned = [int(id) for id in utils.fetch("bot_admins", "id")]
+    return ctx.message.author.id in returned
 
 
 client = commands.Bot(command_prefix="$", owner_id=OWNER_ID)
@@ -69,6 +70,13 @@ async def ladmin(ctx):
     await ctx.send(fetched)
 
 
+@client.command(name="am-admin",
+                aliases=["cadmin"],
+                help="Tells you if you are admin")
+async def cadmin(ctx):
+    """Tells the user if they are in the bot admin table"""
+    await ctx.send(check_admin(ctx))
+
 @client.command(name="add-admin",
                 help="Adds a bot admin")
 @commands.check(check_admin)
@@ -89,12 +97,16 @@ async def list_schools(ctx):
     """Lists current schools in the database"""
     if ctx.author.id in utils.fetch("bot_admins", "id"):
         fetched = utils.fetch("Schools", "school, region, added_by")
+        for school in fetched:
+            # await ctx.send(" | ".join(school))
+            await ctx.author.send(" ".join(school))
+        return
     else:
         fetched = utils.fetch("Schools", "school")
     if len(fetched) == 0:
         await ctx.send("There are no schools to join.")
         return
-    schools = "The list of available schools to join:\n"
+    schools = "Available schools to join:\n"
     for item in fetched:
         schools += "- " + item[0] + "\n"
     schools += "\nTo join your schools please use *$join-school \"<Your school name>\"*.\n**Please use quotes or it will not work**"  # noqa: E501 pylint: disable=line-too-long
@@ -164,8 +176,7 @@ async def joinschool(ctx, sname):
     """Allows users to join a school"""
     user = ctx.message.author
     db_entry = utils.fetch("Schools", "school, region")
-    entries = [x for x in db_entry if x[0] == sname]
-    entries = entries[0]
+    entries = [x for x in db_entry if x[0] == sname][0]
     if not entries:
         await ctx.send("Role could not be found.")
     else:
@@ -231,7 +242,7 @@ async def addrank(ctx, rank):
     """Allows users to set student, alumni or professor role."""
     user = ctx.message.author
     ranks = ["student", "professor", "alumni"]
-    checked = [i for i in user.roles if i.name in ranks]
+    checked = [i for i in user.roles if i.name.lower() in ranks]
     if len(checked) > 0:
         await ctx.send("Error: You already have a rank.")
         return
