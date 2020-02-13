@@ -12,11 +12,12 @@ variables:
 
 gemnasium-python-dependency_scanning:
   stage: test
-  before_script:
-    - which pg_config
-    - fine / -name "pg_config"
   services:
   - postgres:latest
+  before_script:
+  - which pg_config
+  - fine / -name "pg_config"
+
 
 
 
