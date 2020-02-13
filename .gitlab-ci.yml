@@ -10,14 +10,9 @@ include:
 variables:
   DS_DISABLE_DIND: "true"
 
-#gemnasium-python-dependency_scanning:
-#  stage: test
-#  services:
-#  - postgres:latest
-#  before_script:
-#  - which pg_config
-#  - find / -name "pg_config"
-
+gemnasium-python-dependency_scanning:
+  stage: test
+  image: python:3-slim
 
 
 
