@@ -19,23 +19,23 @@ include:
 
 python-3.5:
   extends: ".check"
-  image: python:3.5-slim
+  image: python:3.5
 
 python-3.6:
   extends: ".check"
-  image: python:3.6-slim
+  image: python:3.6
 
 python-3.7:
   extends: ".check"
-  image: python:3.7-slim
+  image: python:3.7
 
 python-3.8:
   extends: ".check"
-  image: python:3.8-slim
+  image: python:3.8
 
 pypy-3:
   extends: ".check"
-  image: pypy:3-slim
+  image: pypy:3
 
 staging:
   stage: test
