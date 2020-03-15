@@ -16,25 +16,26 @@ include:
     - pip install pylint flake8 --quiet
     - pylint --ignored-classes=_socketobject CCC_Bot.py ./utils/
     - flake8 CCC_Bot.py ./utils/ --statistics --show-source
+
 python-3.5:
   extends: ".check"
-  image: python:3.5
+  image: python:3.5-slim
 
 python-3.6:
   extends: ".check"
-  image: python:3.6
+  image: python:3.6-slim
 
 python-3.7:
   extends: ".check"
-  image: python:3.7
+  image: python:3.7-slim
 
 python-3.8:
   extends: ".check"
-  image: python:3.8
+  image: python:3.8-slim
 
 pypy-3:
   extends: ".check"
-  image: pypy:3
+  image: pypy:3-slim
 
 staging:
   stage: test

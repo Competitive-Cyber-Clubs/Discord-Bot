@@ -25,7 +25,7 @@ cursor = connection.cursor()
 def create():
     "Creates tables if they do not exist at startup"
     commands = ["""
-CREATE TABLE IF NOT EXISTS Schools (
+CREATE TABLE IF NOT EXISTS schools (
 school text NOT NULL DEFAULT '',
 region text NOT NULL DEFAULT '',
 color text NOT NULL DEFAULT ' ',
@@ -35,8 +35,8 @@ added_by_id bigint NOT NULL DEFAULT '0',
 PRIMARY KEY (school)
 );""", """
 CREATE TABLE IF NOT EXISTS bot_admins (
-name text NOT NULL DEFAULT '',
 id bigint NOT NULL DEFAULT '0',
+name text NOT NULL DEFAULT '',
 PRIMARY KEY (name)
 );
 """, """
@@ -56,8 +56,8 @@ PRIMARY KEY (name)
 
 def insert(table: str, data: list, log):
     "Adds data to existing tables"
-    if table == "Schools":
-        format_str = "INSERT INTO Schools \
+    if table == "schools":
+        format_str = "INSERT INTO schools \
                      (school, region, color, id, added_by, added_by_id) \
                       VALUES (%s, %s, %s, %s, %s, %s);"
     elif table == "bot_admins":
@@ -70,7 +70,7 @@ def insert(table: str, data: list, log):
         log.error("Table not found.")
         return "error"
     try:
-        if table == "Schools":
+        if table == "schools":
             cursor.execute(format_str,
                            (data[0], data[1],
                             data[2], data[3],
