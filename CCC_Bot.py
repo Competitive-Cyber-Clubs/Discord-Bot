@@ -7,6 +7,7 @@ import asyncio
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
+import cogs
 import utils
 
 
@@ -70,36 +71,8 @@ async def ping(ctx):
     await ctx.message.delete()
 
 
-@client.command(name="list-admins",
-                aliases=["ladmins", "ladmin"],
-                help="Gets a list of bot admins")
-async def ladmin(ctx):
-    """Gets the name of bot admins"""
-    fetched = utils.fetch("bot_admins", "name")
-    await ctx.send(fetched)
-
-
-@client.command(name="am-admin",
-                aliases=["cadmin"],
-                help="Tells you if you are admin")
-async def cadmin(ctx):
-    """Tells the user if they are in the bot admin table"""
-    await ctx.send(check_admin(ctx))
-
-
-@client.command(name="add-admin",
-                help="Adds a bot admin")
-@commands.check(check_admin)
-async def aadmin(ctx, args):
-    """Adds a new bot admin"""
-    members = ctx.guild.members
-    for i, x in enumerate(members):
-        if args == x.name:
-            utils.insert("bot_admins", (x.name, ctx.guild.members[i].id), log)
-            await ctx.send("User is now an admin.")
-            return
-    await ctx.send("Error: User not found.")
-
+client.add_cog(cogs.RegionCog(client, log))
+client.add_cog(cogs.AdminCog(client, log))
 
 @client.command(name="list-schools",
                 help="Gets list of current schools")
@@ -120,8 +93,8 @@ async def list_schools(ctx):
         return
     schools = "Available schools to join:\n"
     for item in fetched:
-        schools += "- " + item[0] + "\n"
-    schools += "\nTo join your schools please use *$join-school \"<Your school name>\"*.\n**Please use quotes or it will not work**"  # noqa: E501 pylint: disable=line-too-long
+        schools += "- " + item + "\n"
+    schools += "\nTo join your schools please use `$join-school \"<Your school name>\"`.\n**Please use quotes or it will not work**"  # noqa: E501 pylint: disable=line-too-long
     await ctx.send(schools)
 
 
@@ -219,35 +192,6 @@ async def joinschool(ctx, sname):
             await ctx.author.send("School assigned: {}".format(entries[0]))
 
 
-@client.command(name="add-region",
-                help="Adds regions")
-@commands.check(check_admin)
-async def addregion(ctx, region):
-    """Allows admins to add regions"""
-    is_role = discord.utils.get(ctx.guild.roles, name=region)
-    if not is_role:
-        await ctx.guild.create_role(name=region,
-                                    mentionable=True,
-                                    reason="Added by {}".format(ctx.author.name))  # noqa: E501 pylint: disable=line-too-long
-    status = utils.insert("regions", [region], log)
-    if not status == "error":
-        await ctx.send('Region has been created.')
-    else:
-        await ctx.send("There was an error creating the region.")
-
-
-@client.command(name="list-regions",
-                help="Lists available regions.")
-@commands.check(check_admin)
-async def listregion(ctx):
-    """Admin command to lists the regions"""
-    regions = utils.fetch("regions", "name")
-    formated = "Available Regions:\n"
-    for item in regions:
-        formated += item + "\n"
-    await ctx.send(formated)
-
-
 @client.command(name="import-school",
                 help="Admin Only Feature")
 @commands.check(check_admin)
@@ -263,7 +207,7 @@ async def ischool(ctx, sname):
         except asyncio.TimeoutError:
             await ctx.send("Took too long.")
             return
-        new_school = [sname, region.content, srole.colour,
+        new_school = [sname, region.content, srole.color,
                       "Imported", "Imported"]
         status = utils.insert("schools", new_school, log)
         if status == "error":

@@ -14,8 +14,8 @@ include:
   script:
     - pip install -r requirements.txt --quiet
     - pip install pylint flake8 --quiet
-    - pylint --ignored-classes=_socketobject CCC_Bot.py ./utils/
-    - flake8 CCC_Bot.py ./utils/ --statistics --show-source
+    - pylint --ignored-classes=_socketobject CCC_Bot.py ./utils/ ./cogs/
+    - flake8 CCC_Bot.py ./utils/ ./cogs/ --statistics --show-source
 
 python-3.5:
   extends: ".check"
