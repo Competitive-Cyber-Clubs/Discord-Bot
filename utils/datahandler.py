@@ -1,5 +1,6 @@
-"Handles all SQL data and tables"
+"""Handles all SQL data and tables"""
 import os
+from datetime import datetime
 import psycopg2
 from psycopg2.extensions import AsIs
 from dotenv import load_dotenv
@@ -25,7 +26,7 @@ cursor = connection.cursor()
 def create():
     "Creates tables if they do not exist at startup"
     commands = ["""
-CREATE TABLE IF NOT EXISTS schools (
+CREATE TABLE IF NOT EXISTS schools(
 school text NOT NULL DEFAULT '',
 region text NOT NULL DEFAULT '',
 color text NOT NULL DEFAULT ' ',
@@ -34,13 +35,13 @@ added_by text NOT NULL DEFAULT '',
 added_by_id bigint NOT NULL DEFAULT '0',
 PRIMARY KEY (school)
 );""", """
-CREATE TABLE IF NOT EXISTS bot_admins (
+CREATE TABLE IF NOT EXISTS bot_admins(
 id bigint NOT NULL DEFAULT '0',
 name text NOT NULL DEFAULT '',
 PRIMARY KEY (name)
 );
 """, """
-CREATE TABLE IF NOT EXISTS admin_channels (
+CREATE TABLE IF NOT EXISTS admin_channels(
 name text NOT NULL DEFAULT '',
 id bigint NOT NULL DEFAULT '0',
 PRIMARY KEY (name)
@@ -49,6 +50,13 @@ PRIMARY KEY (name)
 CREATE TABLE IF NOT EXISTS regions(
 name text NOT NULL DEFAULT '',
 PRIMARY KEY (name)
+);
+""", """
+CREATE TABLE IF NOT EXISTS errors(
+id int NOT NULL DEFAULT '0',
+error text NOT NULL DEFAULT '',
+time text NOT NULL,
+PRIMARY KEY (id)
 );"""]
     for i in commands:
         cursor.execute(i)
@@ -66,6 +74,11 @@ def insert(table: str, data: list, log):
     elif table == "regions":
         format_str = "INSERT INTO regions \
                      (name) VALUES (%s);"
+    elif table == "errors":
+        timestamp = datetime.utcnow().strftime("%d-%m-%Y %H:%M:%S")
+        format_str = "INSERT INTO errors\
+                      (id, error, time) \
+                       VALUES (%s, %s, %s)"
     else:
         log.error("Table not found.")
         return "error"
@@ -81,6 +94,9 @@ def insert(table: str, data: list, log):
         elif table == "regions":
             cursor.execute(format_str,
                            (data))
+        elif table == "errors":
+            cursor.execute(format_str,
+                           (data[0], data[1], timestamp))
         connection.commit()
         return None
     except Exception as e:  # pylint: disable=broad-except

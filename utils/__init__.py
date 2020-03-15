@@ -1,4 +1,4 @@
-"Imports utility scripts"
+"""Imports utility scripts"""
 from .datahandler import create, fetch, insert
 from .logger import make_logger
 from .shared import check_admin

@@ -2,7 +2,8 @@ version = 1
 
 test_patterns = [
   "CCC_Bot.py",
-  "utils/**"
+  "utils/**",
+  "cogs/**"
 ]
 
 [[analyzers]]

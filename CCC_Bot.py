@@ -43,6 +43,7 @@ def check_react(ctx, user, reaction):
 
 
 client = commands.Bot(command_prefix="$", owner_id=OWNER_ID)
+errorID = len(utils.fetch("errors", "id"))
 
 
 @client.event
@@ -74,6 +75,7 @@ async def ping(ctx):
 client.add_cog(cogs.RegionCog(client, log))
 client.add_cog(cogs.AdminCog(client, log))
 
+
 @client.command(name="list-schools",
                 help="Gets list of current schools")
 async def list_schools(ctx):
@@ -101,7 +103,7 @@ async def list_schools(ctx):
 @client.command(name="add-school",
                 help="Creates a new school",
                 description="Adds a new school as a role.\n Takes up to 3 arguments space seperated: school, region, color. Only school and region are required.\n**Space seperated schools need to be added in quotes.\nie: $add-school \"Champlain College\" NORTHEAST #00a9e0")  # noqa: E501 pylint: disable=line-too-long
-async def add_school(ctx, *args):
+async def add_school(ctx, *args):  # pylint: disable=too-many-branches
     "Creates school"
     if len(args) < 2:
         await ctx.send("Error: The argument add-school "
@@ -207,7 +209,7 @@ async def ischool(ctx, sname):
         except asyncio.TimeoutError:
             await ctx.send("Took too long.")
             return
-        new_school = [sname, region.content, srole.color,
+        new_school = [sname, region.content, srole.color,  # noqa: E501 pylint: disable=no-member
                       "Imported", "Imported"]
         status = utils.insert("schools", new_school, log)
         if status == "error":
@@ -235,10 +237,16 @@ async def on_command_error(ctx, error):
     """Reports errors to users"""
     if isinstance(error, commands.errors.MissingRole):
         await ctx.send("You do not have the correct role for this command.")
+    elif isinstance(error, commands.errors.CommandNotFound):
+        await ctx.send("That command is not valid. Please use `$help`.")
     elif isinstance(error, commands.errors.CommandError):
-        log.error(error)
+        global errorID  # pylint: disable=global-statement
+        log.error((errorID, error))
         await ctx.send("There was a command error.\n"
-                       "Please report it for investgation.")
+                       "Please report it for investgation.\n"
+                       "Error #{}".format(errorID))
+        utils.insert("errors", [errorID, str(error)], log)
+        errorID += 1
     else:
         log.debug("There was the following error: {}".format(error))
 
