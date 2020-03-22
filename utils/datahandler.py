@@ -57,6 +57,16 @@ id int NOT NULL DEFAULT '0',
 error text NOT NULL DEFAULT '',
 time text NOT NULL,
 PRIMARY KEY (id)
+);""", """
+CREATE TABLE IF NOT EXISTS misc(
+key text NOT NULL DEFAULT '',
+value text NOT NULL DEFAULT '',
+PRIMARY KEY (key)
+);""", """
+CREATE TABLE IF NOT EXISTS messages(
+name text NOT NULL DEFAULT '',
+message text NOT NULL DEFAULT '',
+PRIMARY KEY (name)
 );"""]
     for i in commands:
         cursor.execute(i)
