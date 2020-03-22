@@ -5,3 +5,7 @@ logging-format-style=new
 [MESSAGES CONTROL]
 
 disable=invalid-name, logging-too-many-args, duplicate-code, logging-format-interpolation
+
+[FORMAT]
+
+max-line-length=240

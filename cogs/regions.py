@@ -1,4 +1,4 @@
-"""Commands responsible for region management"""
+"""Cog responsible for region management"""
 import discord
 from discord.ext import commands
 import utils
