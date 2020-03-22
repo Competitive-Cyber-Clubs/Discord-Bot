@@ -56,7 +56,7 @@ client.add_cog(cogs.SchoolCog(client, log))
 async def on_command_error(ctx, error):
     """Reports errors to users"""
     errorID = len(utils.fetch("errors", "id"))
-    if isinstance(error, commands.errors.MissingRole) or isinstance(error, commands.errors.CheckFailure):  # noqa: E501 pylint: disable=line-too-long
+    if isinstance(error, commands.errors.MissingRole, commands.errors.CheckFailure):  # noqa: E501 pylint: disable=line-too-long
         await ctx.send("You do not have the correct role for this command.")
     elif isinstance(error, commands.errors.CommandNotFound):
         await ctx.send("That command is not valid. Please use `$help`.")
