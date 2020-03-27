@@ -4,7 +4,7 @@ from discord.ext import commands
 
 
 class RankCog(commands.Cog, name="Rank"):
-    """Calls that deals with rank commands"""
+    """Cog that deals with rank commands"""
     def __init__(self, bot):
         self.bot = bot
 

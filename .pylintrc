@@ -8,4 +8,4 @@ disable=invalid-name, logging-too-many-args, duplicate-code, logging-format-inte
 
 [FORMAT]
 
-max-line-length=240
+max-line-length=100

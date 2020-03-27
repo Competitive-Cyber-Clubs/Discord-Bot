@@ -7,7 +7,7 @@ import utils
 
 
 class SchoolCog(commands.Cog, name="Schools"):
-    """Commands that deal with the schools"""
+    """Cog that deal with the school commands"""
     def __init__(self, bot, log):
         self.bot = bot
         self.log = log

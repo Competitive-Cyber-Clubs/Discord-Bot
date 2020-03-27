@@ -4,7 +4,7 @@ from discord.ext import commands
 
 
 class EventsCog(commands.Cog, name="Events"):
-    """Class that holds the events"""
+    """Cog that holds the events"""
     def __init__(self, bot):
         self.bot = bot
 

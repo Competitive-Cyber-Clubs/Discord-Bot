@@ -1,4 +1,4 @@
-"""Handles all SQL data and tables"""
+"""Handles all Postgresql data and tables"""
 import os
 from datetime import datetime
 import psycopg2
@@ -10,15 +10,7 @@ load_dotenv()
 
 DATABASE_URL = os.getenv('DATABASE_URL')
 
-if not DATABASE_URL:
-    connection = psycopg2.connect(host=os.getenv("DB_HOST"),
-                                  port=os.getenv("DB_PORT"),
-                                  user=os.getenv("DB_USER"),
-                                  password=os.getenv("DB_PASSWORD"),
-                                  dbname=os.getenv("DB_NAME"))
-
-else:
-    connection = psycopg2.connect(DATABASE_URL, sslmode='require')
+connection = psycopg2.connect(DATABASE_URL, sslmode='require')
 
 cursor = connection.cursor()
 
@@ -128,3 +120,35 @@ def fetch(table: str, ident: str):
         for _, x in enumerate(fetched):
             result.append(x[0])
     return result
+
+
+def update(table: str, ident: str, where: str, new_value: str):
+    """Updates a value in the table"""
+    try:
+        format_str = "UPDATE %s SET %s = %s where %s = %s"
+        cursor.execute(format_str, (
+            AsIs(table),
+            AsIs(ident),
+            new_value,
+            AsIs(ident),
+            where
+        ))
+        connection.commit()
+    except psycopg2.Error as e:
+        print(e)
+        cursor.execute("ROLLBACK")
+
+
+async def delete(table: str, indent: str, value: str):
+    """Removes an entry from the table"""
+    try:
+        format_str = "DELETE FROM %s WHERE %s = %s"
+        cursor.execute(format_str, (
+            AsIs(table),
+            AsIs(indent),
+            value
+        ))
+        connection.commit()
+    except psycopg2.Error as pye:
+        print(pye)
+        cursor.execute("ROLLBACK")

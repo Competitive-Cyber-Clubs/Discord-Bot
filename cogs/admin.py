@@ -4,7 +4,7 @@ import utils
 
 
 class AdminCog(commands.Cog, name="Admin"):
-    """Class that holds the region commands"""
+    """Cog that holds the admin commands"""
     def __init__(self, bot, log):
         self.bot = bot
         self.log = log
@@ -32,7 +32,7 @@ class AdminCog(commands.Cog, name="Admin"):
         members = ctx.guild.members
         for i, x in enumerate(members):
             if args == x.name:
-                utils.insert("bot_admins", (x.name, ctx.guild.members[i].id), self.log)  # noqa: E501 pylint: disable=line-too-long
+                utils.insert("bot_admins", (x.name, ctx.guild.members[i].id), self.log)
                 await ctx.send("User is now an admin.")
                 return
         await ctx.send("Error: User not found.")

@@ -31,7 +31,6 @@ client = commands.Bot(command_prefix="$", owner_id=OWNER_ID)
 @client.event
 async def on_ready():
     "Startup which shows servers it has conencted to"
-
     log.info(
         '{} is connected to the following guild: '
         '{}'.format(client.user, client.guilds[0].name)
@@ -44,31 +43,28 @@ async def on_ready():
         name='Here to help!', type=discord.ActivityType.playing))
 
 
-client.add_cog(cogs.RegionCog(client, log))
-client.add_cog(cogs.AdminCog(client, log))
-client.add_cog(cogs.RankCog(client))
-client.add_cog(cogs.MiscCog(client, log))
-client.add_cog(cogs.EventsCog(client))
-client.add_cog(cogs.SchoolCog(client, log))
+cogs_list = [cogs.RegionCog(client, log), cogs.AdminCog(client, log), cogs.MiscCog(client, log),
+             cogs.SchoolCog(client, log), cogs.HealthCog(client, log), cogs.RankCog(client),
+             cogs.EventsCog(client), cogs.ContactCog(client)]
+for cog in cogs_list:
+    client.add_cog(cog)
 
 
 @client.event
 async def on_command_error(ctx, error):
     """Reports errors to users"""
     errorID = len(utils.fetch("errors", "id"))
-    if isinstance(error, commands.errors.MissingRole, commands.errors.CheckFailure):  # noqa: E501 pylint: disable=line-too-long
+    if isinstance(error, (commands.errors.MissingRole, commands.errors.CheckFailure)):
         await ctx.send("You do not have the correct role for this command.")
     elif isinstance(error, commands.errors.CommandNotFound):
         await ctx.send("That command is not valid. Please use `$help`.")
     elif isinstance(error, commands.errors.CommandError):
-        errorID = len(utils.fetch("errors", "id"))
         log.error((errorID, error))
         await ctx.send("There was a command error.\n"
                        "Please report it for investgation.\n"
                        "Error #{}".format(errorID))
         utils.insert("errors", [errorID, str(error)], log)
     else:
-        errorID = len(utils.fetch("errors", "id"))
         log.error((errorID, error))
         await ctx.send("There was an unknown error.\n"
                        "Please report it for investigation.\n"

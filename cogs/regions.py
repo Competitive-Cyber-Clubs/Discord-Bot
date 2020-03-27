@@ -5,7 +5,7 @@ import utils
 
 
 class RegionCog(commands.Cog, name="Regions"):
-    """Class that holds the region commands"""
+    """Cog that holds the region commands"""
     def __init__(self, bot, log):
         self.bot = bot
         self.log = log
@@ -19,7 +19,7 @@ class RegionCog(commands.Cog, name="Regions"):
         if not is_role:
             await ctx.guild.create_role(name=region,
                                         mentionable=True,
-                                        reason="Added by {}".format(ctx.author.name))  # noqa: E501 pylint: disable=line-too-long
+                                        reason="Added by {}".format(ctx.author.name))
         status = utils.insert("regions", [region], self.log)
         if not status == "error":
             await ctx.send('Region has been created.')

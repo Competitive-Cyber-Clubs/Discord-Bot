@@ -3,7 +3,7 @@ from discord.ext import commands
 
 
 class MiscCog(commands.Cog, name="Misc"):
-    """Commands that deal with misc features"""
+    """Cog that deal with misc features"""
     def __init__(self, bot, log):
         self.bot = bot
         self.log = log
