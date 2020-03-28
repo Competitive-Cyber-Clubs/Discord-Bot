@@ -37,7 +37,7 @@ class SchoolCog(commands.Cog, name="Schools"):
     @commands.command(name="join-school",
                       help="Joins a schools.")
     @commands.has_role("new")
-    async def joinschool(self, ctx, sname):
+    async def joinschool(self, ctx, *, sname):
         """Allows users to join a school"""
         user = ctx.message.author
         db_entry = utils.fetch("schools", "school, region")
@@ -88,6 +88,9 @@ class SchoolCog(commands.Cog, name="Schools"):
                       description="Creates a new school")
     async def add_school(self, ctx, *args):  # pylint: disable=too-many-branches
         "Creates school"
+        if not await utils.school_check(args[0]):
+            await ctx.send("School name not valid")
+            return
         if len(args) < 2:
             await ctx.send("Error: The argument add-school "
                            "requires at least 2 arguments")
@@ -147,3 +150,22 @@ class SchoolCog(commands.Cog, name="Schools"):
                     "School \"{}\" has been created in {} region with color of 0x{}"
                     .format(args[0], args[1], color)
                     )
+
+    @commands.command(name="validate-school")
+    async def validate(self, ctx, *, school):
+        """Validates school name"""
+        await ctx.send(await utils.school_check(school))
+
+    @commands.command(name="state-search")
+    async def state_search(self, ctx, *, school):
+        """Returns all schools in a state"""
+        schools = await utils.state_list(school)
+        msg = ""
+        for item in schools:
+            msg += item + "\n"
+        if len(msg) >= 2000:
+            list_of_msgs = [msg[i:i+2000] for i in range(0, len(msg), 2000)]
+            for x in list_of_msgs:
+                await ctx.send(x)
+            return
+        await ctx.send(msg)
