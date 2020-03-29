@@ -35,15 +35,16 @@ async def on_ready():
         '{} is connected to the following guild: '
         '{}'.format(client.user, client.guilds[0].name)
     )
-    utils.insert("bot_admins", [OWNER_NAME, OWNER_ID], log)
-    admin_role = discord.utils.get(client.guilds[0].roles, name="Admin")
+    utils.insert("bot_admins", [OWNER_NAME, OWNER_ID])
+    admin_role = discord.utils.get(client.guilds[0].roles,
+                                   name=utils.select("keys", "value", "key", "admin_role"))
     for admin in admin_role.members:
-        utils.insert("bot_admins", [admin.name, admin.id], log)
+        utils.insert("bot_admins", [admin.name, admin.id])
     await client.change_presence(activity=discord.Activity(
         name='Here to help!', type=discord.ActivityType.playing))
 
 
-cogs_list = [cogs.RegionCog(client, log), cogs.AdminCog(client, log), cogs.MiscCog(client, log),
+cogs_list = [cogs.RegionCog(client), cogs.AdminCog(client), cogs.MiscCog(client, log),
              cogs.SchoolCog(client, log), cogs.HealthCog(client, log), cogs.RankCog(client),
              cogs.EventsCog(client), cogs.ContactCog(client)]
 for cog in cogs_list:
@@ -57,13 +58,16 @@ async def on_command_error(ctx, error):
     if isinstance(error, (commands.errors.MissingRole, commands.errors.CheckFailure)):
         await ctx.send("You do not have the correct role for this command.")
     elif isinstance(error, commands.errors.CommandNotFound):
-        await ctx.send("That command is not valid. Please use `$help`.")
+        await ctx.send("{} is not valid.\nPlease use `$help` to find valid commands.".format(
+            ctx.message.content))
+    elif isinstance(error, commands.MissingRequiredArgument):
+        await ctx.send("`{}` has missing required arguments".format(ctx.message.content))
     elif isinstance(error, commands.errors.CommandError):
         log.error((errorID, error))
         await ctx.send("There was a command error.\n"
                        "Please report it for investgation.\n"
                        "Error #{}".format(errorID))
-        utils.insert("errors", [errorID, str(error)], log)
+        utils.insert("errors", [errorID, str(error)])
     else:
         log.error((errorID, error))
         await ctx.send("There was an unknown error.\n"

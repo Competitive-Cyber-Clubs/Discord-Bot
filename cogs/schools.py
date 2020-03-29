@@ -17,22 +17,27 @@ class SchoolCog(commands.Cog, name="Schools"):
     async def list_schools(self, ctx):
         """Lists current schools in the database"""
         if ctx.author.id in utils.fetch("bot_admins", "id"):  # pylint: disable=no-else-return
+            channel = self.bot.get_channel(utils.select("admin_channels", "id", "log", "f"))
             fetched = utils.fetch("schools", "school, region, added_by")
             school_list = "Schools | Region | Added By\n"
             for school in fetched:
                 school_list += " | ".join(school) + "\n"
-            await ctx.send(school_list)
+            await channel.send(school_list)
             return
         else:
             fetched = utils.fetch("schools", "school")
         if len(fetched) == 0:
             await ctx.send("There are no schools to join.")
             return
-        schools = "Available schools to join:\n"
+        schools = ""
+        embed = discord.Embed(title="Available schools to join:",
+                              description="Use `$join-school` to join",
+                              color=discord.Color.teal())
         for item in fetched:
-            schools += "- " + item + "\n"
-        schools += "\nTo join your schools please use `$join-school \"<Your school name>\"`.\n**Please use quotes or it will not work**\n\nIf your school is not in the list then please use `$help add-school` to learn how to add your school."  # noqa: E501 pylint: disable=line-too-long
-        await ctx.send(schools)
+            schools += "- {} \n".format(item)
+        embed.add_field(name="Schools", value=schools, inline=False)
+        embed.set_footer(text="If your school is not in the list then please use `$help add-school` to learn how to add your school.")    # noqa: E501 pylint: disable=line-too-long
+        await ctx.send(embed=embed)
 
     @commands.command(name="join-school",
                       help="Joins a schools.")
@@ -77,45 +82,42 @@ class SchoolCog(commands.Cog, name="Schools"):
             except asyncio.TimeoutError:
                 await ctx.send("Took too long.")
                 return
-            new_school = [sname, region.content, srole.color,  # noqa: E501 pylint: disable=no-member
+            new_school = [sname, region.content, srole.color,  # pylint: disable=no-member
                           "Imported", "Imported"]
-            status = utils.insert("schools", new_school, self.log)
+            status = utils.insert("schools", new_school)
             if status == "error":
                 await ctx.send("There was an error importing the school.")
 
     @commands.command(name="add-school",
                       help="Adds a new school as a role.\n Takes up to 3 arguments space seperated: school, region, color. Only school and region are required.\n**Space seperated schools need to be added in quotes.**\nie: $add-school \"Champlain College\" NORTHEAST #00a9e0",  # noqa: E501 pylint: disable=line-too-long
                       description="Creates a new school")
-    async def add_school(self, ctx, *args):  # pylint: disable=too-many-branches
-        "Creates school"
-        if not await utils.school_check(args[0]):
+    async def add_school(self, ctx, school_name: str, color: str = None):  # noqa: E501 pylint: disable=too-many-branches,line-too-long
+        """Creates school"""
+        if not await utils.school_check(school_name):
             await ctx.send("School name not valid")
             return
-        if len(args) < 2:
-            await ctx.send("Error: The argument add-school "
-                           "requires at least 2 arguments")
-            return
         r_regions = utils.fetch("regions", "name")
-        if args[1] not in r_regions:
-            await ctx.send("Error: The region you have selected is not available.")
+        region = await utils.region_select(school_name)
+        region += " Region"
+        if region not in r_regions:
+            self.log.error("There is no region map for {}".format(school_name))
+            await ctx.send("There is no region mapped. Please contact an admin")
             return
-        if len(args) < 3:
+        if not color:
             color = int("0x%06x" % random.randint(0, 0xFFFFFF), 0)  # nosec
         else:
-            if len(args[2]) == 6:
-                color = '0x{color}'.format(color=args[2])
-            elif len(args[2]) == 7:
+            if len(color) == 6:
+                color = '0x{color}'.format(color=color)
+            elif len(color) == 7:
                 color = color.replace('#', '0x')
-            else:
-                color = args[2]
             try:
-                color = int(args[2])
+                color = int(color)
             except TypeError:
                 await ctx.send("Error: Please submit your color as hex")
                 return
 
         await ctx.send("You are about to create a new school: {}."
-                       "\nReact  👍  to confirm.".format(args[0]))
+                       "\nReact  👍  to confirm.".format(school_name))
         try:
             reactions, user = await self.bot.wait_for("reaction_add", timeout=30)
             if not utils.check_react(ctx, user, reactions, "👍"):
@@ -125,36 +127,54 @@ class SchoolCog(commands.Cog, name="Schools"):
         except utils.FailedCheck:
             await ctx.send("There was an error in the check. Most likely the wrong react was added or by the wrong user.")  # noqa: E501 pylint: disable=line-too-long
         else:
-            await ctx.guild.create_role(name=args[0], color=discord.Color(color),
+            await ctx.guild.create_role(name=school_name, color=discord.Color(color),
                                         mentionable=True,
                                         hoist=False,
                                         reason="Added by {}".format(ctx.author.name))
-            added_school = discord.utils.get(ctx.guild.roles, name=args[0])
+            added_school = discord.utils.get(ctx.guild.roles, name=school_name)
 
-            data = [args[0],
-                    args[1],
+            data = [school_name,
+                    region,
                     color,
                     added_school.id,
                     (ctx.author.name+ctx.author.discriminator),
                     ctx.author.id]
 
-            status = utils.insert("schools", data, self.log)
+            status = utils.insert("schools", data)
             if status == "error":
                 await ctx.send("There was an error with creating the role.\n"
                                "Please reach out to a bot admin.")
-                rrole = discord.utils.get(ctx.guild.roles, name=args[0])
+                rrole = discord.utils.get(ctx.guild.roles, name=school_name)
                 await rrole.delete(reason="Error in creation")
-                self.log.warning("Role deleted, due to error with School Role creation.")
+                self.log.warning("due to error with School Role creation.")
             else:
                 await ctx.send(
-                    "School \"{}\" has been created in {} region with color of 0x{}"
-                    .format(args[0], args[1], color)
+                    "School \"{}\" has been created in {} with color of 0x{}"
+                    .format(school_name, region, color)
                     )
 
     @commands.command(name="validate-school")
     async def validate(self, ctx, *, school):
         """Validates school name"""
         await ctx.send(await utils.school_check(school))
+
+    @commands.command(name="search-school")
+    async def school_search(self, ctx, *, school):
+        """Searchs for a school"""
+        async with ctx.typing():
+            results = await utils.school_search(school)
+            if not results:
+                msg = "No results found."
+            else:
+                msg = "Search Results:\n"
+                for item in results:
+                    msg += "- {} \n".format(item)
+            if len(msg) >= 2000:
+                list_of_msgs = [msg[i:i+2000] for i in range(0, len(msg), 2000)]
+                for x in list_of_msgs:
+                    await ctx.send(x)
+                return
+        await ctx.send(msg)
 
     @commands.command(name="state-search")
     async def state_search(self, ctx, *, school):

@@ -11,7 +11,7 @@ Good coding practices and version will be implemented on its completion.
 
 This is a bot for the CCC Discord. It is made specifically for it, so it has been highly tailored to meet the unique requirements of it.
 As such it is not recommended for most other discord channels, however it is something that you should be able to learn from to create your own.
-Written for Python 3.6+
+Written for Python 3.5+
 
 ### To add
 

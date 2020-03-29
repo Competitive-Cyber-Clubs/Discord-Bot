@@ -6,9 +6,8 @@ import utils
 
 class RegionCog(commands.Cog, name="Regions"):
     """Cog that holds the region commands"""
-    def __init__(self, bot, log):
+    def __init__(self, bot):
         self.bot = bot
-        self.log = log
 
     @commands.command(name="add-region",
                       help="Adds regions")
@@ -20,7 +19,7 @@ class RegionCog(commands.Cog, name="Regions"):
             await ctx.guild.create_role(name=region,
                                         mentionable=True,
                                         reason="Added by {}".format(ctx.author.name))
-        status = utils.insert("regions", [region], self.log)
+        status = utils.insert("regions", [region])
         if not status == "error":
             await ctx.send('Region has been created.')
         else:

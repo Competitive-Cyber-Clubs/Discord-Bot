@@ -1,5 +1,6 @@
 """Handles all Postgresql data and tables"""
 import os
+import logging
 from datetime import datetime
 import psycopg2
 from psycopg2.extensions import AsIs
@@ -7,7 +8,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-
+log = logging.getLogger("bot")
 DATABASE_URL = os.getenv('DATABASE_URL')
 
 connection = psycopg2.connect(DATABASE_URL, sslmode='require')
@@ -36,6 +37,7 @@ PRIMARY KEY (name)
 CREATE TABLE IF NOT EXISTS admin_channels(
 name text NOT NULL DEFAULT '',
 id bigint NOT NULL DEFAULT '0',
+log bool DEFAULT False,
 PRIMARY KEY (name)
 );
 """, """
@@ -50,7 +52,7 @@ error text NOT NULL DEFAULT '',
 time text NOT NULL,
 PRIMARY KEY (id)
 );""", """
-CREATE TABLE IF NOT EXISTS misc(
+CREATE TABLE IF NOT EXISTS keys(
 key text NOT NULL DEFAULT '',
 value text NOT NULL DEFAULT '',
 PRIMARY KEY (key)
@@ -64,20 +66,23 @@ PRIMARY KEY (name)
         cursor.execute(i)
 
 
-def insert(table: str, data: list, log):
+def insert(table: str, data: list):
     "Adds data to existing tables"
     if table == "schools":
         format_str = "INSERT INTO schools \
                      (school, region, color, id, added_by, added_by_id) \
                       VALUES (%s, %s, %s, %s, %s, %s);"
+    elif table == "admin_channels":
+        format_str = "INSERT INTO admin_channels (name, id, log)\
+                      VALUES (%s, %s, %s) ON CONFLICT DO NOTHING;"
     elif table == "bot_admins":
         format_str = "INSERT INTO bot_admins \
-                    (name, id) VALUES (%s, %s)  ON CONFLICT DO NOTHING;"
+                    (name, id) VALUES (%s, %s) ON CONFLICT DO NOTHING;"
     elif table == "regions":
         format_str = "INSERT INTO regions \
                      (name) VALUES (%s);"
     elif table == "errors":
-        timestamp = datetime.utcnow().strftime("%d-%m-%Y %H:%M:%S")
+        data.append(datetime.utcnow().strftime("%d-%m-%Y %H:%M:%S"))
         format_str = "INSERT INTO errors\
                       (id, error, time) \
                        VALUES (%s, %s, %s)"
@@ -96,23 +101,26 @@ def insert(table: str, data: list, log):
         elif table == "regions":
             cursor.execute(format_str,
                            (data))
-        elif table == "errors":
+        elif table in ["errors", "admin_channels"]:
             cursor.execute(format_str,
-                           (data[0], data[1], timestamp))
+                           (data[0], data[1], data[2]))
         connection.commit()
         return None
-    except Exception as e:  # pylint: disable=broad-except
-        log.error("Error: {}".format(e))
+    except psycopg2.Error as pge:
+        log.error(pge)
         cursor.execute("ROLLBACK")
         return "error"
 
 
 def fetch(table: str, ident: str):
-    "Retrives ident from the table of choice."
-    format_str = "SELECT %s FROM %s;"
-    cursor.execute(format_str, (AsIs(ident),
-                                AsIs(table)))
-    fetched = cursor.fetchall()
+    """Retrives ident from the table of choice."""
+    try:
+        format_str = "SELECT %s FROM %s;"
+        cursor.execute(format_str, (AsIs(ident),
+                                    AsIs(table)))
+        fetched = cursor.fetchall()
+    except psycopg2.Error as pge:
+        log.error(pge)
     if ident == "*" or ident.find(",") != -1:
         result = fetched
     else:
@@ -120,6 +128,23 @@ def fetch(table: str, ident: str):
         for _, x in enumerate(fetched):
             result.append(x[0])
     return result
+
+
+def select(table: str, ident: str, where: str, where_value: str):
+    """Selects one row from the table based on selector"""
+    try:
+        format_str = "SELECT %s FROM %s WHERE %s = %s"
+        cursor.execute(format_str, (
+            AsIs(ident),
+            AsIs(table),
+            AsIs(where),
+            where_value
+        ))
+        fetched = cursor.fetchone()[0]
+        return fetched
+    except psycopg2.Error as pge:
+        log.error(pge)
+        cursor.execute("ROLLBACK")
 
 
 def update(table: str, ident: str, where: str, new_value: str):
@@ -134,12 +159,12 @@ def update(table: str, ident: str, where: str, new_value: str):
             where
         ))
         connection.commit()
-    except psycopg2.Error as e:
-        print(e)
+    except psycopg2.Error as pge:
+        log.error(pge)
         cursor.execute("ROLLBACK")
 
 
-async def delete(table: str, indent: str, value: str):
+def delete(table: str, indent: str, value: str):
     """Removes an entry from the table"""
     try:
         format_str = "DELETE FROM %s WHERE %s = %s"
@@ -149,6 +174,6 @@ async def delete(table: str, indent: str, value: str):
             value
         ))
         connection.commit()
-    except psycopg2.Error as pye:
-        print(pye)
+    except psycopg2.Error as pge:
+        log.error(pge)
         cursor.execute("ROLLBACK")
