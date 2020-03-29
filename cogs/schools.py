@@ -25,18 +25,19 @@ class SchoolCog(commands.Cog, name="Schools"):
             await channel.send(school_list)
             return
         else:
-            fetched = utils.fetch("schools", "school")
+            fetched = sorted(utils.fetch("schools", "school"), key=str.lower)
         if len(fetched) == 0:
             await ctx.send("There are no schools to join.")
             return
         schools = ""
         embed = discord.Embed(title="Available schools to join:",
                               description="Use `$join-school` to join",
-                              color=discord.Color.teal())
+                              color=int("0x%06x" % random.randint(0, 0xFFFFFF), 0),  # nosec
+                              timestamp=ctx.message.created_at)
         for item in fetched:
             schools += "- {} \n".format(item)
         embed.add_field(name="Schools", value=schools, inline=False)
-        embed.set_footer(text="If your school is not in the list then please use `$help add-school` to learn how to add your school.")    # noqa: E501 pylint: disable=line-too-long
+        embed.set_footer(text="If your school is not in the list, use `$help add-school`")
         await ctx.send(embed=embed)
 
     @commands.command(name="join-school",
