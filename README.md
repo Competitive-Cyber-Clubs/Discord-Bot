@@ -16,3 +16,5 @@ Written for Python 3.5+
 ### To add
 
 Please visit this [link](https://discordapp.com/api/oauth2/authorize?client_id=643200662045458444&permissions=268443648&scope=bot)
+
+[![DeepSource](https://static.deepsource.io/deepsource-badge-light-mini.svg)](https://deepsource.io/gl/Cyb3r-Jak3/CCC-Bot/?ref=repository-badge)

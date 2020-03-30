@@ -66,29 +66,34 @@ PRIMARY KEY (name)
         cursor.execute(i)
 
 
-def insert(table: str, data: list):
-    "Adds data to existing tables"
+def format_step(table: str):
+    """Sets ups the formatstring to be used in insert"""
     if table == "schools":
-        format_str = "INSERT INTO schools \
+        query_str = "INSERT INTO schools \
                      (school, region, color, id, added_by, added_by_id) \
                       VALUES (%s, %s, %s, %s, %s, %s);"
     elif table == "admin_channels":
-        format_str = "INSERT INTO admin_channels (name, id, log)\
+        query_str = "INSERT INTO admin_channels (name, id, log)\
                       VALUES (%s, %s, %s) ON CONFLICT DO NOTHING;"
     elif table == "bot_admins":
-        format_str = "INSERT INTO bot_admins \
+        query_str = "INSERT INTO bot_admins \
                     (name, id) VALUES (%s, %s) ON CONFLICT DO NOTHING;"
     elif table == "regions":
-        format_str = "INSERT INTO regions \
+        query_str = "INSERT INTO regions \
                      (name) VALUES (%s);"
     elif table == "errors":
-        data.append(datetime.utcnow().strftime("%d-%m-%Y %H:%M:%S"))
-        format_str = "INSERT INTO errors\
+        query_str = "INSERT INTO errors\
                       (id, error, time) \
                        VALUES (%s, %s, %s)"
     else:
         log.error("Table not found.")
         return "error"
+    return query_str
+
+
+def insert(table: str, data: list):
+    "Adds data to existing tables"
+    format_str = format_step(table)
     try:
         if table == "schools":
             cursor.execute(format_str,
@@ -102,6 +107,7 @@ def insert(table: str, data: list):
             cursor.execute(format_str,
                            (data))
         elif table in ["errors", "admin_channels"]:
+            data.append(datetime.utcnow().strftime("%d-%m-%Y %H:%M:%S"))
             cursor.execute(format_str,
                            (data[0], data[1], data[2]))
         connection.commit()
