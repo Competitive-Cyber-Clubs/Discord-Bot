@@ -35,18 +35,23 @@ async def on_ready():
         '{} is connected to the following guild: '
         '{}'.format(client.user, client.guilds[0].name)
     )
-    utils.insert("bot_admins", [OWNER_NAME, OWNER_ID])
+    await utils.insert("bot_admins", [OWNER_NAME, OWNER_ID])
     admin_role = discord.utils.get(client.guilds[0].roles,
-                                   name=utils.select("keys", "value", "key", "admin_role"))
+                                   name=await utils.select("keys", "value", "key", "admin_role"))
     for admin in admin_role.members:
-        utils.insert("bot_admins", [admin.name, admin.id])
+        await utils.insert("bot_admins", [admin.name, admin.id])
     await client.change_presence(activity=discord.Activity(
         name='Here to help!', type=discord.ActivityType.playing))
 
 
-cogs_list = [cogs.RegionCog(client), cogs.AdminCog(client), cogs.MiscCog(client, log),
-             cogs.SchoolCog(client, log), cogs.HealthCog(client, log), cogs.RankCog(client),
-             cogs.EventsCog(client), cogs.ContactCog(client)]
+cogs_list = [cogs.RegionCog(client),
+             cogs.AdminCog(client),
+             cogs.MiscCog(client),
+             cogs.SchoolCog(client),
+             cogs.HealthCog(client),
+             cogs.RankCog(client),
+             cogs.EventsCog(client)
+             ]
 for cog in cogs_list:
     client.add_cog(cog)
 
@@ -54,7 +59,7 @@ for cog in cogs_list:
 @client.event
 async def on_command_error(ctx, error):
     """Reports errors to users"""
-    errorID = len(utils.fetch("errors", "id"))
+    errorID = len(await utils.fetch("errors", "id"))
     if isinstance(error, (commands.errors.MissingRole, commands.errors.CheckFailure)):
         await ctx.send("You do not have the correct role for this command.")
     elif isinstance(error, commands.errors.CommandNotFound):
@@ -67,12 +72,13 @@ async def on_command_error(ctx, error):
         await ctx.send("There was a command error.\n"
                        "Please report it for investgation.\n"
                        "Error #{}".format(errorID))
-        utils.insert("errors", [errorID, str(error)])
+        await utils.insert("errors", [errorID, str(error)])
     else:
         log.error((errorID, error))
         await ctx.send("There was an unknown error.\n"
                        "Please report it for investigation.\n"
                        "Error #{}".format(errorID))
         log.error("There was the following error: {}".format(error))
+        await utils.insert("errors", [errorID, str(error)])
 
-client.run(TOKEN)
+client.run(TOKEN, reconnect=True)

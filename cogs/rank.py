@@ -1,24 +1,39 @@
 """Rank features cog for CCC Bot"""
-import discord
+import discord.utils
 from discord.ext import commands
 
 
 class RankCog(commands.Cog, name="Rank"):
-    """Cog that deals with rank commands"""
+    """RankCog
+
+    Cog that deals with rank commands
+
+    Commands:
+        `add-rank`: Command that add either student, alumni, or professor role.
+
+    Arguments:
+        `bot` `discord.commands.Bot` -- The bot class that deals with all the commands.
+    """
     def __init__(self, bot):
         self.bot = bot
 
     @commands.command(name="add-rank",
                       help="Adds student, alumni or professor role.")
     @commands.has_role("verified")
-    async def addrank(self, ctx, rank):
-        """Allows users to set student, alumni or professor role."""
+    async def add_rank(self, ctx, rank: str):
+        """Add_Rank
+
+        Allows users to set student, alumni or professor role.
+
+        Arguments:
+            ctx {discord.ext.commands.Context} -- Context of the command.
+            rank {str} -- name of rank to add.
+        """
         user = ctx.message.author
         ranks = ["student", "professor", "alumni"]
         checked = [i for i in user.roles if i.name.lower() in ranks]
         if len(checked) > 0:
             await ctx.send("Error: You already have a rank.")
             return
-        rank = discord.utils.get(ctx.guild.roles, name=rank)
-        await user.add_roles(rank)
+        await user.add_roles(discord.utils.get(ctx.guild.roles, name=rank))
         await ctx.send("Rank assigned successfully")

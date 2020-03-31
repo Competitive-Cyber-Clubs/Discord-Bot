@@ -2,13 +2,13 @@
 from .datahandler import fetch
 
 
-class FailedCheck(Exception):
+class FailedReactionCheck(Exception):
     """Exception if react checks fail"""
 
 
-def check_admin(ctx):
+async def check_admin(ctx):
     """Checks to see if message author is in bot_admins"""
-    returned = [int(id) for id in fetch("bot_admins", "id")]
+    returned = [int(id) for id in await fetch("bot_admins", "id")]
     return ctx.message.author.id in returned
 
 

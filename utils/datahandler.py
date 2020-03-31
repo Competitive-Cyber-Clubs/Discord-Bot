@@ -1,6 +1,7 @@
 """Handles all Postgresql data and tables"""
 import os
 import logging
+import asyncio
 from datetime import datetime
 import psycopg2
 from psycopg2.extensions import AsIs
@@ -29,7 +30,7 @@ added_by_id bigint NOT NULL DEFAULT '0',
 PRIMARY KEY (school)
 );""", """
 CREATE TABLE IF NOT EXISTS bot_admins(
-id bigint NOT NULL DEFAULT '0',
+id bigint UNIQUE NOT NULL DEFAULT '0',
 name text NOT NULL DEFAULT '',
 PRIMARY KEY (name)
 );
@@ -43,6 +44,7 @@ PRIMARY KEY (name)
 """, """
 CREATE TABLE IF NOT EXISTS regions(
 name text NOT NULL DEFAULT '',
+id bigint NOT NULL DEFAULT '0',
 PRIMARY KEY (name)
 );
 """, """
@@ -80,7 +82,7 @@ def format_step(table: str):
                     (name, id) VALUES (%s, %s) ON CONFLICT DO NOTHING;"
     elif table == "regions":
         query_str = "INSERT INTO regions \
-                     (name) VALUES (%s);"
+                     (name, id) VALUES (%s, %s);"
     elif table == "errors":
         query_str = "INSERT INTO errors\
                       (id, error, time) \
@@ -91,6 +93,7 @@ def format_step(table: str):
     return query_str
 
 
+@asyncio.coroutine
 def insert(table: str, data: list):
     "Adds data to existing tables"
     format_str = format_step(table)
@@ -100,12 +103,9 @@ def insert(table: str, data: list):
                            (data[0], data[1],
                             data[2], data[3],
                             data[4], data[5]))
-        elif table == "bot_admins":
+        elif table in ["bot_admins", "regions"]:
             cursor.execute(format_str,
                            (data[0], data[1]))
-        elif table == "regions":
-            cursor.execute(format_str,
-                           (data))
         elif table in ["errors", "admin_channels"]:
             data.append(datetime.utcnow().strftime("%d-%m-%Y %H:%M:%S"))
             cursor.execute(format_str,
@@ -118,7 +118,8 @@ def insert(table: str, data: list):
         return "error"
 
 
-def fetch(table: str, ident: str):
+@asyncio.coroutine
+async def fetch(table: str, ident: str):
     """Retrives ident from the table of choice."""
     try:
         format_str = "SELECT %s FROM %s;"
@@ -136,7 +137,8 @@ def fetch(table: str, ident: str):
     return result
 
 
-def select(table: str, ident: str, where: str, where_value: str):
+@asyncio.coroutine
+async def select(table: str, ident: str, where: str, where_value: str):
     """Selects one row from the table based on selector"""
     try:
         format_str = "SELECT %s FROM %s WHERE %s = %s"
@@ -153,7 +155,8 @@ def select(table: str, ident: str, where: str, where_value: str):
         cursor.execute("ROLLBACK")
 
 
-def update(table: str, ident: str, where: str, new_value: str):
+@asyncio.coroutine
+async def update(table: str, ident: str, where: str, new_value: str):
     """Updates a value in the table"""
     try:
         format_str = "UPDATE %s SET %s = %s where %s = %s"
@@ -170,7 +173,8 @@ def update(table: str, ident: str, where: str, new_value: str):
         cursor.execute("ROLLBACK")
 
 
-def delete(table: str, indent: str, value: str):
+@asyncio.coroutine
+async def delete(table: str, indent: str, value: str):
     """Removes an entry from the table"""
     try:
         format_str = "DELETE FROM %s WHERE %s = %s"

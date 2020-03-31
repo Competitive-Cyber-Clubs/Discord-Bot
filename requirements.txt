@@ -2,4 +2,5 @@ python-dotenv
 discord.py
 psycopg2-binary
 pandas
+asyncio
 asyncpg

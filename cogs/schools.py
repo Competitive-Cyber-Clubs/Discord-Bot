@@ -1,31 +1,48 @@
 """Schools commands for bot"""
 import asyncio
 import random
+import logging
 import discord
 from discord.ext import commands
 import utils
 
 
 class SchoolCog(commands.Cog, name="Schools"):
-    """Cog that deal with the school commands"""
-    def __init__(self, bot, log):
+    """SchoolCog
+
+    Cog that deal with the school commands as well as the searching commands.
+
+    Commands:
+        `list-schools`: List all the available school roles that are joinable.
+        `import-school`: Allows admin to import current roles into schools. *WIP*
+        `join-school`: Allows users to join any available school role.
+        `add-school`: Command that allows users to create their own school.
+        `validate-school`: Allows users to see if the school they select is valid.
+        `search-school`: Allows users to search all valid schools.
+        `search-state`: Allows users to see all valid schools per state.
+
+    Arguments:
+        `bot` `discord.commands.Bot` -- The bot class that deals with all the commands.
+
+    Raises:
+        utils.FailedReactionCheck: Custom exception if the reaction check fails.
+    """
+    def __init__(self, bot):
         self.bot = bot
-        self.log = log
+        self.log = logging.getLogger("bot")
 
     @commands.command(name="list-schools",
                       help="Gets list of current schools")
     async def list_schools(self, ctx):
-        """Lists current schools in the database"""
-        if ctx.author.id in utils.fetch("bot_admins", "id"):  # pylint: disable=no-else-return
-            channel = self.bot.get_channel(utils.select("admin_channels", "id", "log", "f"))
-            fetched = utils.fetch("schools", "school, region, added_by")
-            school_list = "Schools | Region | Added By\n"
-            for school in fetched:
-                school_list += " | ".join(school) + "\n"
-            await channel.send(school_list)
-            return
-        else:
-            fetched = sorted(utils.fetch("schools", "school"), key=str.lower)
+        """list-schools
+
+        Lists current schools in the database. Message is a embed that has a random color with the
+        list of all schools.
+
+        Arguments:
+            ctx {discord.ext.commands.Context} -- Context of the command.
+        """
+        fetched = sorted(await utils.fetch("schools", "school"), key=str.lower)
         if len(fetched) == 0:
             await ctx.send("There are no schools to join.")
             return
@@ -40,14 +57,52 @@ class SchoolCog(commands.Cog, name="Schools"):
         embed.set_footer(text="If your school is not in the list, use `$help add-school`")
         await ctx.send(embed=embed)
 
+    @commands.command(name="import-school",
+                      help="Admin Only Feature")
+    @commands.check(utils.check_admin)
+    async def import_school(self, ctx, *, school_name: str):
+        """import-school
+
+        Allows admins to import existing roles as schools.
+
+        Arguments:
+            ctx {discord.ext.commands.Context} -- Context of the command.
+            school_name {str} -- Name of the school role to import.
+        """
+        srole = discord.utils.get(ctx.guild.roles, name=school_name)
+        if srole.name in await utils.fetch("schools", "school"):
+            await ctx.send("That school already exists.")
+        else:
+            await ctx.send("Please enter the region for the school.")
+            try:
+                region = self.bot.wait_for('message', timeout=60.0)
+            except asyncio.TimeoutError:
+                await ctx.send("Took too long.")
+                return
+            new_school = [school_name, region.content, srole.color,  # pylint: disable=no-member
+                          "Imported", "Imported"]
+            status = await utils.insert("schools", new_school)
+            if status == "error":
+                await ctx.send("There was an error importing the school.")
+
     @commands.command(name="join-school",
                       help="Joins a schools.")
     @commands.has_role("new")
-    async def joinschool(self, ctx, *, sname):
-        """Allows users to join a school"""
+    async def join_school(self, ctx, *, school_name: str):
+        """join-school
+
+        Enables users to join a school role. school_name arguments is not to be quote seperated.
+        Users are required to have the role "new". Users will be assigned the school role, region
+        role and "verified" role. They will lose their "new" role.
+
+
+        Arguments:
+            ctx {discord.ext.commands.Context} -- Context of the command.
+            school_name {str} -- Name of the school the user wants to join.
+        """
         user = ctx.message.author
-        db_entry = utils.fetch("schools", "school, region")
-        entries = [x for x in db_entry if x[0] == sname][0]
+        db_entry = await utils.fetch("schools", "school, region")
+        entries = [x for x in db_entry if x[0] == school_name][0]
         if entries is None:
             await ctx.send("School could not be found.")
         else:
@@ -68,71 +123,52 @@ class SchoolCog(commands.Cog, name="Schools"):
                 )
                 await ctx.author.send("School assigned: {}".format(entries[0]))
 
-    @commands.command(name="import-school",
-                      help="Admin Only Feature")
-    @commands.check(utils.check_admin)
-    async def ischool(self, ctx, sname):
-        """Allows admins to import existing roles as schools"""
-        srole = discord.utils.get(ctx.guild.roles, name=sname)
-        if srole.name in utils.fetch("schools", "school"):
-            await ctx.send("That school already exists.")
-        else:
-            await ctx.send("Please enter the region for the school.")
-            try:
-                region = self.bot.wait_for('message', timeout=60.0)
-            except asyncio.TimeoutError:
-                await ctx.send("Took too long.")
-                return
-            new_school = [sname, region.content, srole.color,  # pylint: disable=no-member
-                          "Imported", "Imported"]
-            status = utils.insert("schools", new_school)
-            if status == "error":
-                await ctx.send("There was an error importing the school.")
-
     @commands.command(name="add-school",
                       help="Adds a new school as a role.\n Takes up to 3 arguments space seperated: school, region, color. Only school and region are required.\n**Space seperated schools need to be added in quotes.**\nie: $add-school \"Champlain College\" NORTHEAST #00a9e0",  # noqa: E501 pylint: disable=line-too-long
                       description="Creates a new school")
-    async def add_school(self, ctx, school_name: str, color: str = None):  # noqa: E501 pylint: disable=too-many-branches,line-too-long
-        """Creates school"""
+    @commands.has_role("new")
+    async def add_school(self, ctx, *, school_name: str):  # noqa: E501 pylint: disable=too-many-branches,line-too-long
+        """add_school
+
+        Enables users to create a school role. They are required to have the role "new". Schools
+        will automatically be assigned a region based on the schools.csv in utils.
+
+        Arguments:
+            ctx {discord.ext.commands.Context} -- Context of the command.
+            school_name {str} -- Name of the school the user wants to join.
+
+        Raises:
+            utils.FailedReactionCheck: Expection is raised if the reaction check does not validate.
+        """
         if not await utils.school_check(school_name):
             await ctx.send("School name not valid")
             return
-        r_regions = utils.fetch("regions", "name")
+        r_regions = await utils.fetch("regions", "name")
         region = await utils.region_select(school_name)
         region += " Region"
         if region not in r_regions:
             self.log.error("There is no region map for {}".format(school_name))
             await ctx.send("There is no region mapped. Please contact an admin")
             return
-        if not color:
-            color = int("0x%06x" % random.randint(0, 0xFFFFFF), 0)  # nosec
-        else:
-            if len(color) == 6:
-                color = '0x{color}'.format(color=color)
-            elif len(color) == 7:
-                color = color.replace('#', '0x')
-            try:
-                color = int(color)
-            except TypeError:
-                await ctx.send("Error: Please submit your color as hex")
-                return
-
         await ctx.send("You are about to create a new school: {}."
                        "\nReact  👍  to confirm.".format(school_name))
+        # Gives the user 30 seconds to add the reaction '👍' to the message.
         try:
             reactions, user = await self.bot.wait_for("reaction_add", timeout=30)
             if not utils.check_react(ctx, user, reactions, "👍"):
-                raise utils.FailedCheck
+                raise utils.FailedReactionCheck
         except asyncio.TimeoutError:
             await ctx.send("Took to long please try again")
-        except utils.FailedCheck:
+        except utils.FailedReactionCheck:
             await ctx.send("There was an error in the check. Most likely the wrong react was added or by the wrong user.")  # noqa: E501 pylint: disable=line-too-long
         else:
-            await ctx.guild.create_role(name=school_name, color=discord.Color(color),
-                                        mentionable=True,
-                                        hoist=False,
-                                        reason="Added by {}".format(ctx.author.name))
-            added_school = discord.utils.get(ctx.guild.roles, name=school_name)
+            color = int("0x%06x" % random.randint(0, 0xFFFFFF), 0)  # nosec
+            added_school = await ctx.guild.create_role(
+                name=school_name,
+                color=discord.Color(color),
+                mentionable=True,
+                hoist=False,
+                reason="Added by {}".format(ctx.author.name))
 
             data = [school_name,
                     region,
@@ -141,7 +177,7 @@ class SchoolCog(commands.Cog, name="Schools"):
                     (ctx.author.name+ctx.author.discriminator),
                     ctx.author.id]
 
-            status = utils.insert("schools", data)
+            status = await utils.insert("schools", data)
             if status == "error":
                 await ctx.send("There was an error with creating the role.\n"
                                "Please reach out to a bot admin.")
@@ -155,13 +191,31 @@ class SchoolCog(commands.Cog, name="Schools"):
                     )
 
     @commands.command(name="validate-school")
-    async def validate(self, ctx, *, school):
-        """Validates school name"""
+    async def validate_school(self, ctx, *, school: str):
+        """validate_school
+
+        Validates school name. Only returns true or false.
+
+        Arguments:
+            ctx {discord.ext.commands.Context} -- Context of the command.
+            school {str} -- name of the school the user wants to validate.
+        """
         await ctx.send(await utils.school_check(school))
 
     @commands.command(name="search-school")
-    async def school_search(self, ctx, *, school):
-        """Searchs for a school"""
+    async def search_school(self, ctx, *, school: str):
+        """search-school
+
+        Searches for a school based on the school arguments. It search the school.csv in utils
+        as a list using the `in` statement.
+
+        Arguments:
+            ctx {discord.ext.commands.Context} -- Context of the command.
+            school {str} -- Part of the name the user wants to search for.
+
+        TODO:
+            - Filter out common words such as College, Community, University
+        """
         async with ctx.typing():
             results = await utils.school_search(school)
             if not results:
@@ -177,10 +231,17 @@ class SchoolCog(commands.Cog, name="Schools"):
                 return
         await ctx.send(msg)
 
-    @commands.command(name="state-search")
-    async def state_search(self, ctx, *, school):
-        """Returns all schools in a state"""
-        schools = await utils.state_list(school)
+    @commands.command(name="search-state")
+    async def search_state(self, ctx, *, state: str):
+        """search_state
+
+        Returns all schools in a state.
+
+        Arguments:
+            ctx {discord.ext.commands.Context} -- Context of the command.
+            state {str} -- Name of the state that the user wants to get schools from.
+        """
+        schools = await utils.state_list(state)
         msg = ""
         for item in schools:
             msg += item + "\n"

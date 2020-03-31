@@ -25,9 +25,9 @@ validate is a csv parser
 """
 from .datahandler import create, fetch, select, insert, update, delete
 from .logger import make_logger
-from .shared import check_admin, check_react, FailedCheck
+from .shared import check_admin, check_react, FailedReactionCheck
 from .validate import school_check, state_list, school_search, region_select
 __all__ = ["create", "fetch", "select", "insert", "update", "delete",
            "make_logger",
-           "check_admin", "check_react", "FailedCheck",
+           "check_admin", "check_react", "FailedReactionCheck",
            "school_check", "state_list", "school_search", "region_select"]
