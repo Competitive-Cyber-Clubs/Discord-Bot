@@ -1,4 +1,18 @@
-"Main bot file"
+
+"""CCC Bot
+---
+Discord Bot for Competitive Cyber Clubs Server.
+
+All values are loaded from environment variables. Also can be loaded from a .env file.
+Required Variables:
+---
+DISCORD_TOKEN: The token for the bot.
+OWNER_NAME: The username of the bot owner
+OWNER_ID: The Discord ID of the bot owner
+
+Optional:
+LOG_LEVEL {DEFAULT: INFO}:
+"""
 import os
 import sys
 from datetime import datetime

@@ -7,9 +7,10 @@ from psycopg2.extensions import AsIs
 from dotenv import load_dotenv
 
 load_dotenv()
-
+# Imports the main logger
 log = logging.getLogger("bot")
 
+# Creates the connection to the database
 connection = psycopg2.connect(os.getenv('DATABASE_URL'), sslmode='require')
 cursor = connection.cursor()
 
@@ -127,19 +128,18 @@ def format_step(table: str):
         query_str = "INSERT INTO schools \
                      (school, region, color, id, added_by, added_by_id) \
                       VALUES (%s, %s, %s, %s, %s, %s);"
+    elif table == "errors":
+        query_str = "INSERT INTO errors\
+                      (id, message, command, error, time) \
+                       VALUES (%s, %s, %s, %s, %s);"
     elif table == "admin_channels":
         query_str = "INSERT INTO admin_channels (name, id, log)\
                       VALUES (%s, %s, %s) ON CONFLICT DO NOTHING;"
-    elif table == "bot_admins":
-        query_str = "INSERT INTO bot_admins \
-                    (name, id) VALUES (%s, %s) ON CONFLICT DO NOTHING;"
-    elif table == "regions":
+    elif table in ["regions", "bot_admins"]:
         query_str = "INSERT INTO regions \
-                     (name, id) VALUES (%s, %s);"
-    elif table == "errors":
-        query_str = "INSERT INTO errors\
-                      (id, error, time) \
-                       VALUES (%s, %s, %s);"
+                     (name, id) VALUES (%s, %s)"
+        if table == "bot_admins":
+            query_str += "ON CONFLICT DO NOTHING"
     else:
         log.error("Table not found.")
         return "error"

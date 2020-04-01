@@ -1,21 +1,22 @@
 """Cogs
 ---
     All cogs responsible for commands.
-    * AdminCog commands: list-admin, am-admin, add-admin
 
-    * EventCog has an event for members joining
+    * :ref:`AdminCog` commands: list-admin, am-admin, add-admin.
 
-    * HealthCog has command check-heath which checks the make sure that role names match in the
-        tables.Also updates the table if role names change or are removed.
+    * :ref:`EventCog` has an event for members joining.
 
-    * MiscCog commands: ping, contact-admin
+    * :ref:`HealthCog` has command check-heath which checks the make sure that role names match in
+        the tables.Also updates the table if role names change or are removed.
 
-    * RankCog commands: add-rank
+    * :ref:`MiscCog` commands: ping, contact-admin.
 
-    * RegionsCog commands: add-region, list-region
+    * :ref:`RankCog` commands: add-rank.
 
-    * SchoolCog commands: add-school, join-school, list-schools, validate-school, state-search,
-        import-school
+    * :ref:`RegionsCog` commands: add-region, list-region.
+
+    * :ref:`SchoolCog` commands: add-school, join-school, list-schools, validate-school,
+        state-search, import-school.
 """
 from .admin import AdminCog
 from .events import EventsCog
