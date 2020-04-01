@@ -2,7 +2,7 @@
 import os
 import sys
 from datetime import datetime
-import secrets
+import random
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
@@ -72,9 +72,9 @@ async def on_command_error(ctx, error):
         await ctx.send("`{}` has missing required arguments".format(ctx.message.content))
     elif isinstance(error, commands.errors.CommandError):
         errors = await utils.fetch("errors", "id")
-        errorID = secrets.SystemRandom().randint(1, 32767)
+        errorID = random.randint(1, 32767)  # nosec
         while errorID in errors:
-            errorID = secrets.SystemRandom().randint(1, 32767)
+            errorID = random.randint(1, 32767)  # nosec
         log.error((errorID, error))
         await ctx.send("There was a command error.\n"
                        "Please report it for investgation.\n"
