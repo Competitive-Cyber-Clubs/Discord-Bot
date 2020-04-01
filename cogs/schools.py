@@ -9,10 +9,12 @@ import utils
 
 class SchoolCog(commands.Cog, name="Schools"):
     """SchoolCog
+    ---
 
     Cog that deal with the school commands as well as the searching commands.
 
     Commands:
+    ---
         `list-schools`: List all the available school roles that are joinable.
         `import-school`: Allows admin to import current roles into schools. *WIP*
         `join-school`: Allows users to join any available school role.
@@ -22,9 +24,11 @@ class SchoolCog(commands.Cog, name="Schools"):
         `search-state`: Allows users to see all valid schools per state.
 
     Arguments:
+    ---
         `bot` `discord.commands.Bot` -- The bot class that deals with all the commands.
 
     Raises:
+    ---
         utils.FailedReactionCheck: Custom exception if the reaction check fails.
     """
     def __init__(self, bot):
@@ -35,11 +39,13 @@ class SchoolCog(commands.Cog, name="Schools"):
                       help="Gets list of current schools")
     async def list_schools(self, ctx):
         """list-schools
+        ---
 
         Lists current schools in the database. Message is a embed that has a random color with the
         list of all schools.
 
         Arguments:
+        ---
             ctx {discord.ext.commands.Context} -- Context of the command.
         """
         fetched = sorted(await utils.fetch("schools", "school"), key=str.lower)
@@ -62,10 +68,12 @@ class SchoolCog(commands.Cog, name="Schools"):
     @commands.check(utils.check_admin)
     async def import_school(self, ctx, *, school_name: str):
         """import-school
+        ---
 
         Allows admins to import existing roles as schools.
 
         Arguments:
+        ---
             ctx {discord.ext.commands.Context} -- Context of the command.
             school_name {str} -- Name of the school role to import.
         """
@@ -90,6 +98,7 @@ class SchoolCog(commands.Cog, name="Schools"):
     @commands.has_role("new")
     async def join_school(self, ctx, *, school_name: str):
         """join-school
+        ---
 
         Enables users to join a school role. school_name arguments is not to be quote seperated.
         Users are required to have the role "new". Users will be assigned the school role, region
@@ -97,6 +106,7 @@ class SchoolCog(commands.Cog, name="Schools"):
 
 
         Arguments:
+        ---
             ctx {discord.ext.commands.Context} -- Context of the command.
             school_name {str} -- Name of the school the user wants to join.
         """
@@ -129,15 +139,18 @@ class SchoolCog(commands.Cog, name="Schools"):
     @commands.has_role("new")
     async def add_school(self, ctx, *, school_name: str):  # noqa: E501 pylint: disable=too-many-branches,line-too-long
         """add_school
+        ---
 
         Enables users to create a school role. They are required to have the role "new". Schools
         will automatically be assigned a region based on the schools.csv in utils.
 
         Arguments:
+        ---
             ctx {discord.ext.commands.Context} -- Context of the command.
             school_name {str} -- Name of the school the user wants to join.
 
         Raises:
+        ---
             utils.FailedReactionCheck: Expection is raised if the reaction check does not validate.
         """
         if not await utils.school_check(school_name):
@@ -193,6 +206,7 @@ class SchoolCog(commands.Cog, name="Schools"):
     @commands.command(name="validate-school")
     async def validate_school(self, ctx, *, school: str):
         """validate_school
+        ---
 
         Validates school name. Only returns true or false.
 
@@ -205,15 +219,18 @@ class SchoolCog(commands.Cog, name="Schools"):
     @commands.command(name="search-school")
     async def search_school(self, ctx, *, school: str):
         """search-school
+        ---
 
         Searches for a school based on the school arguments. It search the school.csv in utils
         as a list using the `in` statement.
 
         Arguments:
+        ---
             ctx {discord.ext.commands.Context} -- Context of the command.
             school {str} -- Part of the name the user wants to search for.
 
         TODO:
+        ---
             - Filter out common words such as College, Community, University
         """
         async with ctx.typing():
@@ -234,10 +251,12 @@ class SchoolCog(commands.Cog, name="Schools"):
     @commands.command(name="search-state")
     async def search_state(self, ctx, *, state: str):
         """search_state
+        ---
 
         Returns all schools in a state.
 
         Arguments:
+        ---
             ctx {discord.ext.commands.Context} -- Context of the command.
             state {str} -- Name of the state that the user wants to get schools from.
         """

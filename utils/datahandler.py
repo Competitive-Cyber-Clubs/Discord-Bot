@@ -1,8 +1,7 @@
-"""Handles all Postgresql data and tables"""
+"""Handles all postgresql data and tables"""
 import os
 import logging
 import asyncio
-from datetime import datetime
 import psycopg2
 from psycopg2.extensions import AsIs
 from dotenv import load_dotenv
@@ -10,20 +9,59 @@ from dotenv import load_dotenv
 load_dotenv()
 
 log = logging.getLogger("bot")
-DATABASE_URL = os.getenv('DATABASE_URL')
 
-connection = psycopg2.connect(DATABASE_URL, sslmode='require')
-
+connection = psycopg2.connect(os.getenv('DATABASE_URL'), sslmode='require')
 cursor = connection.cursor()
 
 
-def create():
-    "Creates tables if they do not exist at startup"
-    commands = ["""
+def table_create():
+    """table_create
+
+    Creates tables if they do not exist at startup
+
+    Tables:
+    ---
+        schools: Table for school roles.
+            school {text}: name of the school
+            region {text}: name of the region where the school is
+            color {int}: hex code of the color **
+            id {bigint}: Discord ID of the role
+            added_by {text}: Username who created the school **
+            added_by_id {bigint}: Discord ID of the user who created the school
+
+        bot_admins: Table for users that are bot admins.
+            id {bigint}: Discord ID of admin
+            name {text}: username of the admin
+
+        admin_channels: Table for discord channels that are for admin.
+            name {text}: Name of the channel
+            id {bigint}: Discord ID of the channel
+            log {bool}: If the channel is a logging channel or not
+
+        regions: Table for region roles
+            name {text}: Name of the region
+            id {bigint}: Discord ID of the role
+
+        errors: Table of information about errors
+            id {smallint}: ID for the error. Each number is random.
+            message {text}: The message that was sent causing the error.
+            command {text}: The command that was triggered to run
+            error {text}: The error that occurred
+            time {timestampz}: The time when the error occurred.
+
+        keys: Table for misc information stored.
+            key {text}: Name of the value
+            value {text}: The value
+
+        messages: Table for storing messages
+            name {text}: Name of the messssage
+            message {text}: Content of the message
+    """
+    tables = ["""
 CREATE TABLE IF NOT EXISTS schools(
-school text NOT NULL DEFAULT '',
+school text UNIQUE NOT NULL DEFAULT '',
 region text NOT NULL DEFAULT '',
-color text NOT NULL DEFAULT ' ',
+color int NOT NULL DEFAULT '0',
 id bigint NOT NULL DEFAULT '0',
 added_by text NOT NULL DEFAULT '',
 added_by_id bigint NOT NULL DEFAULT '0',
@@ -49,9 +87,11 @@ PRIMARY KEY (name)
 );
 """, """
 CREATE TABLE IF NOT EXISTS errors(
-id int NOT NULL DEFAULT '0',
+id smallint NOT NULL DEFAULT '0',
+message text NOT NULL DEFAULT '',
+command text NOT NULL DEFAULT '',
 error text NOT NULL DEFAULT '',
-time text NOT NULL,
+time timestamptz NOT NULL,
 PRIMARY KEY (id)
 );""", """
 CREATE TABLE IF NOT EXISTS keys(
@@ -64,12 +104,25 @@ name text NOT NULL DEFAULT '',
 message text NOT NULL DEFAULT '',
 PRIMARY KEY (name)
 );"""]
-    for i in commands:
-        cursor.execute(i)
+    for table in tables:
+        cursor.execute(table)
 
 
 def format_step(table: str):
-    """Sets ups the formatstring to be used in insert"""
+    """format_step
+    ---
+
+    Returns the format string to be used in insert. This was split from insert to make it less
+        complex and easier to read.
+
+    Arguments:
+    ---
+        table {str} -- The name of the table for the insert
+
+    Returns:
+    ---
+        str -- Returns a string that will be used for cursor execution
+    """
     if table == "schools":
         query_str = "INSERT INTO schools \
                      (school, region, color, id, added_by, added_by_id) \
@@ -86,7 +139,7 @@ def format_step(table: str):
     elif table == "errors":
         query_str = "INSERT INTO errors\
                       (id, error, time) \
-                       VALUES (%s, %s, %s)"
+                       VALUES (%s, %s, %s);"
     else:
         log.error("Table not found.")
         return "error"
@@ -95,21 +148,49 @@ def format_step(table: str):
 
 @asyncio.coroutine
 def insert(table: str, data: list):
-    "Adds data to existing tables"
+    """insert
+    ---
+
+    Asynchronous Function
+
+    Inserts a new row to an existing table. Get the string to execute with from :ref:`format_step`.
+
+    Arguments:
+    ---
+        table {str} -- c to perform the insert on
+        data {list} -- The data that gets placed into the format_str
+
+    Returns:
+    ---
+        str -- In the event of an error inserting into the table the string 'error' will be
+            returned. If there is no error then 'None' will be returned.
+    Postgresql Equivalent:
+    ---
+    INSERT into :ref:`table` VALUE (:ref:`*data`);
+    """
     format_str = format_step(table)
     try:
+        # Tables with 6 values
         if table == "schools":
             cursor.execute(format_str,
                            (data[0], data[1],
                             data[2], data[3],
                             data[4], data[5]))
+        # Tables with 5 values
+        elif table == "errors":
+            cursor.execute(format_str,
+                           (data[0], data[1],
+                            data[2], data[3],
+                            data[4]))
+        # Tables with 3 values
+        elif table == "admin_channels":
+            cursor.execute(format_str,
+                           (data[0], data[1],
+                            data[2]))
+        # Tables with 2 values
         elif table in ["bot_admins", "regions"]:
             cursor.execute(format_str,
                            (data[0], data[1]))
-        elif table in ["errors", "admin_channels"]:
-            data.append(datetime.utcnow().strftime("%d-%m-%Y %H:%M:%S"))
-            cursor.execute(format_str,
-                           (data[0], data[1], data[2]))
         connection.commit()
         return None
     except psycopg2.Error as pge:
@@ -119,17 +200,39 @@ def insert(table: str, data: list):
 
 
 @asyncio.coroutine
-async def fetch(table: str, ident: str):
-    """Retrives ident from the table of choice."""
+async def fetch(table: str, column: str):
+    """fetch
+    ---
+
+    Asynchronous Function
+
+    Retrives values from the :ref:`column` from the :ref:`table`.
+
+    Arguments:
+    ---
+        table {str} -- Name of the table that data is being fetched from.
+        column {str} -- The column(s) that is being fetched. Multiple columns need to comma
+            seperated, if all columns are wanted then use '*'.
+
+    Returns:
+    ---
+        list -- A list of tuples for '*' or multiple columns. For one column it is a list.
+
+    Postgresql Equivalent:
+    ---
+    SELECT :ref:`column` from :ref:`table`;
+    """
     try:
         format_str = "SELECT %s FROM %s;"
-        cursor.execute(format_str, (AsIs(ident),
+        cursor.execute(format_str, (AsIs(column),
                                     AsIs(table)))
         fetched = cursor.fetchall()
     except psycopg2.Error as pge:
         log.error(pge)
-    if ident == "*" or ident.find(",") != -1:
+    # To made it not break up the tuples.
+    if column == "*" or column.find(",") != -1:
         result = fetched
+    # Breaks up the tuples to a standard list.
     else:
         result = []
         for _, x in enumerate(fetched):
@@ -138,17 +241,40 @@ async def fetch(table: str, ident: str):
 
 
 @asyncio.coroutine
-async def select(table: str, ident: str, where: str, where_value: str):
-    """Selects one row from the table based on selector"""
+async def select(table: str, column: str, where_column: str, where_value: str):
+    """select
+    ---
+
+    Asynchronous Function
+
+    Selects one row from the table based on selector.
+
+
+    Arguments:
+    ---
+        table {str} -- Name of the table that data is being fetched from.
+        column {str} -- The column(s) that is being fetched. Multiple columns need to comma
+            seperated, if all columns are wanted then use '*'.
+        where_column {str} -- The column that is going have the value of :ref:`where_value`.
+        where_value {str} -- The value that you are matching.
+
+    Returns:
+    ---
+        list -- List of values that are the results.
+
+    Postgresql Equivalent:
+    ---
+    SELECT :ref:`column` FROM :ref:`table` WHERE :ref:`where_column` = :ref:`where_value`;
+    """
     try:
-        format_str = "SELECT %s FROM %s WHERE %s = %s"
+        format_str = "SELECT %s FROM %s WHERE %s = %s;"
         cursor.execute(format_str, (
-            AsIs(ident),
+            AsIs(column),
             AsIs(table),
-            AsIs(where),
+            AsIs(where_column),
             where_value
         ))
-        fetched = cursor.fetchone()[0]
+        fetched = cursor.fetchall()[0]
         return fetched
     except psycopg2.Error as pge:
         log.error(pge)
@@ -156,16 +282,37 @@ async def select(table: str, ident: str, where: str, where_value: str):
 
 
 @asyncio.coroutine
-async def update(table: str, ident: str, where: str, new_value: str):
-    """Updates a value in the table"""
+async def update(table: str, column: str, where_value: str, new_value: str):
+    """Update
+    ---
+
+    Asynchronous Function
+
+    Updates a value in the table
+
+    Arguments:
+        table {str} -- Name of the table that the data is being updated on.
+        column {str} -- The column that is being updated. Multiple columns are not supported.
+        where_value {str} -- The value that is going to be updated.
+        new_value {str} -- The new value for :ref:`where_value`
+
+    Postgresql Equivalent:
+    ---
+    UPDATE :ref:`table` SET :ref:`column` = :ref:`new_value` WHERE :ref:`column` = :ref:`where_value`; # noqa: E501 pylint: disable=line-too-long
+
+    TODO:
+    ---
+     - Add multiple column support
+     - Allow a different column to be updated then 'column'
+    """
     try:
         format_str = "UPDATE %s SET %s = %s where %s = %s"
         cursor.execute(format_str, (
             AsIs(table),
-            AsIs(ident),
+            AsIs(column),
             new_value,
-            AsIs(ident),
-            where
+            AsIs(column),
+            where_value
         ))
         connection.commit()
     except psycopg2.Error as pge:
@@ -174,13 +321,28 @@ async def update(table: str, ident: str, where: str, new_value: str):
 
 
 @asyncio.coroutine
-async def delete(table: str, indent: str, value: str):
-    """Removes an entry from the table"""
+async def delete(table: str, column: str, value: str):
+    """Delete
+    ---
+    Asynchronous Function
+
+    Removes an entry from the table where :ref:`value` is equal.
+
+    Arguments:
+    ---
+        table {str} -- Name of the table that the data is being deleted from.
+        column {str} -- The column to which the :ref:`value` is going to match.
+        value {str} -- The value in the row which is going to match to a value in :ref:`column`
+
+    Postgresql Equivalent:
+    ---
+    DELETE FROM :ref:`table` WHERE :ref:`column` = :ref:`value`;
+    """
     try:
         format_str = "DELETE FROM %s WHERE %s = %s"
         cursor.execute(format_str, (
             AsIs(table),
-            AsIs(indent),
+            AsIs(column),
             value
         ))
         connection.commit()

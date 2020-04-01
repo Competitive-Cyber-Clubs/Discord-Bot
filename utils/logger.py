@@ -2,9 +2,21 @@
 import logging
 
 
-def make_logger(name, log_level):
-    """Creates the logger.
-       Might look to make this happen in the main script
+def make_logger(name: str, log_level: str):
+    """Make_logger
+    ---
+
+    Creates the logger that is used by the bot. Also imported to cogs and datahandler.
+
+    Arguments:
+    ---
+        name {str} -- Name of the logger
+        log_level {str} -- The logging level. Valid strings are 'DEBUG', 'INFO', 'WARNING',
+            'ERROR', 'CRITICAL'
+
+    Returns:
+    ---
+        logger.Logger -- Logger class that handled the logging.
     """
     logger = logging.getLogger(name)
     logger.setLevel(log_level)

@@ -6,14 +6,17 @@ import utils
 
 class RegionCog(commands.Cog, name="Regions"):
     """RegionCog
+    ---
 
     Cog that holds the region commands
 
     Commands:
+    ---
         `add-region`: Command that adds a region and its role to to the regions database.
         `list-regions`: Commands that list all the regions available to join.
 
     Arguments:
+    ---
         `bot` `discord.commands.Bot` -- The bot class that deals with all the commands.
     """
     def __init__(self, bot):
@@ -24,10 +27,12 @@ class RegionCog(commands.Cog, name="Regions"):
     @commands.check(utils.check_admin)
     async def add_region(self, ctx, *, region: str):
         """Add_region
+        ---
 
         Allows admins to add regions.
 
         Arguments:
+        ---
             ctx {discord.ext.commands.Context} -- Context of the command.
             region {str} -- name of region to add.
         """
@@ -47,10 +52,12 @@ class RegionCog(commands.Cog, name="Regions"):
     @commands.check(utils.check_admin)
     async def listregion(self, ctx):
         """list-regions
+        ---
 
         Admin command to lists the regions. Only returns a list.
 
         Arguments:
+        ---
             ctx {discord.ext.commands.Context} -- Context of the command.
         """
         regions = await utils.fetch("regions", "name")

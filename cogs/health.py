@@ -7,20 +7,24 @@ import utils
 
 class HealthCog(commands.Cog, name="Health"):
     """HealthCog
+    ---
 
     Cog that holds the health commands and is responsible for updating the
     tables when roles change in discord.
 
     Commands:
+    ---
         `check-health`: Makes sure that all the roles in the tables `schools` and `regions` map
              to roles in the discord server.
 
     Events:
+    ---
         `on_guild_role_update`: Event that is triggered when a role is updated.
 
         `on_guild_role_delete`: Event that is triggered when a role is deleted.
 
     Arguments:
+    ---
         `bot` `discord.commands.Bot` -- The bot class that deals with all the commands.
     """
     def __init__(self, bot):
@@ -32,6 +36,7 @@ class HealthCog(commands.Cog, name="Health"):
     @commands.check(utils.check_admin)
     async def check_health(self, ctx):
         """check-health
+        ---
 
         Checks health of roles for schools and regions. It pulls all the IDs for school and
         region roles. Then compares the names of the matching ids to see if they match. If
@@ -39,6 +44,7 @@ class HealthCog(commands.Cog, name="Health"):
         both names are added to a list called fail.
 
         Arguments:
+        ---
             ctx {discord.ext.commands.Context} -- Context of the command.
 
         """
@@ -63,11 +69,13 @@ class HealthCog(commands.Cog, name="Health"):
     @commands.Cog.listener()
     async def on_guild_role_update(self, before: discord.Role, after: discord.Role):
         """on_guild_role_update
+        ---
 
         Runs when a role is edited. Logs the old name and new name then updates the name in the
         table.
 
         Arguments:
+        ---
             before {discord.Role} -- The discord role before it was edited.
             after {discord.Role} -- The discord role after it was edited.
         """
@@ -77,12 +85,18 @@ class HealthCog(commands.Cog, name="Health"):
     @commands.Cog.listener()
     async def on_guild_role_delete(self, role: discord.Role):
         """on_guild_role_delete
+        ---
 
         Runs when a role is deleted. Will only delete an entry if it existed in the schools or
         regions table.
 
         Arguments:
+        ---
             role {discord.Role} -- The role that was deleted.
+
+        TODO:
+        ---
+        Use utils.select instead of utils.fetch
         """
         managed = False
         for table in ["schools", "regions"]:
