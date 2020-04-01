@@ -15,8 +15,9 @@
 
     * :ref:`RegionsCog` commands: add-region, list-region.
 
-    * :ref:`SchoolCog` commands: add-school, join-school, list-schools, validate-school,
-        state-search, import-school.
+    * :ref:`SchoolCog` commands: add-school, join-school, list-schools.
+
+    * :ref:`SearchCog` commands:  validate-school, state-search, import-school.
 """
 from .admin import AdminCog
 from .events import EventsCog
@@ -25,10 +26,12 @@ from .misc import MiscCog
 from .rank import RankCog
 from .regions import RegionCog
 from .schools import SchoolCog
+from .search import SearchCog
 __all__ = ["AdminCog",
            "RegionCog",
            "RankCog",
            "MiscCog",
            "EventsCog",
            "SchoolCog",
-           "HealthCog"]
+           "HealthCog",
+           "SearchCog"]

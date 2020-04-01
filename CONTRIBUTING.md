@@ -12,3 +12,11 @@ Please open issues on [GitLab](https://gitlab.com/Cyb3r-Jak3/ccc-bot/issues). if
 ## Documentation
 
 All of the cog, functions, etc should be documented in a way that allows for people with an understanding of python to get how the information flows through the bot. If you would like easier understand, then I recommend checking out the project on [sourcegraph](https://sourcegraph.com/gitlab.com/Cyb3r-Jak3/ccc-bot).
+
+### Commands
+
+When adding a new command the format should be `verb-noun`, i.e. `search-school`, `add-school`.
+
+### Cogs
+
+When adding a new cog make sure that it is added to [cogs/__init__.py](cogs/__init__.py) and documented there. A good example cog to copy and get started with is [cog/regions.py](cogs/regions.py).
