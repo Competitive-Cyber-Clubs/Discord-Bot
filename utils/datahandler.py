@@ -146,6 +146,30 @@ def format_step(table: str):
     return query_str
 
 
+def result_parser(column: str, fetched: list):
+    """result_parser
+    ---
+
+    Arguments:
+    ---
+        column {str} -- The name of the column(s) only used to determine how to parse the results.
+        fetched {list} -- The results pulled from the table.
+
+    Returns:
+    ---
+        list -- A normal list or a list of tuples.
+    """
+    # To made it not break up the tuples.
+    if column == "*" or column.find(",") != -1:
+        result = fetched
+    # Breaks up the tuples to a standard list.
+    else:
+        result = []
+        for _, x in enumerate(fetched):
+            result.append(x[0])
+    return result
+
+
 @asyncio.coroutine
 def insert(table: str, data: list):
     """insert
@@ -227,21 +251,13 @@ async def fetch(table: str, column: str):
         cursor.execute(format_str, (AsIs(column),
                                     AsIs(table)))
         fetched = cursor.fetchall()
+        return result_parser(column, fetched)
     except psycopg2.Error as pge:
         log.error(pge)
-    # To made it not break up the tuples.
-    if column == "*" or column.find(",") != -1:
-        result = fetched
-    # Breaks up the tuples to a standard list.
-    else:
-        result = []
-        for _, x in enumerate(fetched):
-            result.append(x[0])
-    return result
 
 
 @asyncio.coroutine
-async def select(table: str, column: str, where_column: str, where_value: str):
+async def select(table: str, column: str, where_column: str, where_value: str, symbol: str = "="):
     """select
     ---
 
@@ -257,6 +273,7 @@ async def select(table: str, column: str, where_column: str, where_value: str):
             seperated, if all columns are wanted then use '*'.
         where_column {str} -- The column that is going have the value of :ref:`where_value`.
         where_value {str} -- The value that you are matching.
+        symbol {str} -- [description] (default: {"="})
 
     Returns:
     ---
@@ -264,18 +281,19 @@ async def select(table: str, column: str, where_column: str, where_value: str):
 
     Postgresql Equivalent:
     ---
-    SELECT :ref:`column` FROM :ref:`table` WHERE :ref:`where_column` = :ref:`where_value`;
+    SELECT :ref:`column` FROM :ref:`table` WHERE :ref:`where_column` :ref:`symbol` :ref:`where_value`;  # noqa: E501 pylint: disable=line-too-long
     """
     try:
-        format_str = "SELECT %s FROM %s WHERE %s = %s;"
+        format_str = "SELECT %s FROM %s WHERE %s %s %s;"
         cursor.execute(format_str, (
             AsIs(column),
             AsIs(table),
             AsIs(where_column),
+            AsIs(symbol),
             where_value
         ))
-        fetched = cursor.fetchall()[0]
-        return fetched
+        fetched = cursor.fetchall()
+        return result_parser(column, fetched)
     except psycopg2.Error as pge:
         log.error(pge)
         cursor.execute("ROLLBACK")
@@ -299,11 +317,6 @@ async def update(table: str, column: str, where_value: str, new_value: str):
     Postgresql Equivalent:
     ---
     UPDATE :ref:`table` SET :ref:`column` = :ref:`new_value` WHERE :ref:`column` = :ref:`where_value`; # noqa: E501 pylint: disable=line-too-long
-
-    TODO:
-    ---
-     - Add multiple column support
-     - Allow a different column to be updated then 'column'
     """
     try:
         format_str = "UPDATE %s SET %s = %s where %s = %s"

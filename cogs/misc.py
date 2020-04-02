@@ -55,10 +55,6 @@ class MiscCog(commands.Cog, name="Misc"):
         Arguments:
         ---
             ctx {discord.ext.commands.Context} -- Context of the command.
-
-        TODO:
-        ---
-            Look at filtering/rate limiting/blacklisting to prevent spam.
         """
         await ctx.send("What is the issue that you want the admin to respond to.")
         try:
@@ -66,8 +62,7 @@ class MiscCog(commands.Cog, name="Misc"):
         except asyncio.TimeoutError:
             ctx.send("Took to long. You have 300 seconds to send a response.")
             return
-        results = await utils.fetch("bot_admins", "id")
-        bot_admins = [x for x in results if x != self.bot.user.id]
-        for admin in bot_admins:
-            user = self.bot.get_user(admin)
-            await user.send("{} send the report:\n> {}".format(msg.author, msg.content))
+        channels = await utils.select("admin_channels", "id", "log", "f")[0]
+        for channel in channels:
+            to_send = self.bot.get_channel(channel)
+            await to_send.send("{} send the report:\n> {}".format(msg.author, msg.content))

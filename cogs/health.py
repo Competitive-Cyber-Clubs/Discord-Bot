@@ -93,14 +93,10 @@ class HealthCog(commands.Cog, name="Health"):
         Arguments:
         ---
             role {discord.Role} -- The role that was deleted.
-
-        TODO:
-        ---
-        Use utils.select instead of utils.fetch
         """
         managed = False
         for table in ["schools", "regions"]:
-            if role.id in await utils.fetch(table, "id"):
+            if await utils.select(table, "id", "id", role.id):
                 await utils.delete("schools", "id", role.id)
                 self.log.warning("Role \"{}\" was deleted. It was in {}".format(role.name, table))
                 managed = True
