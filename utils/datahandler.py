@@ -116,7 +116,7 @@ PRIMARY KEY (name)
 CREATE TABLE IF NOT EXISTS reports(
 id int NOT NULL DEFAULT '0',
 name text NOT NULL DEFAULT '',
-name_id bigint NOT NULL DEFAULT '',
+name_id bigint NOT NULL DEFAULT '0',
 message text NOT NULL DEFAULT '',
 time timestamptz NOT NULL,
 PRIMARY KEY(id)
