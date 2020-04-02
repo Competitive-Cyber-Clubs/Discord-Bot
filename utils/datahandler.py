@@ -57,6 +57,14 @@ def table_create():
         messages: Table for storing messages
             name {text}: Name of the messssage
             message {text}: Content of the message
+
+        reports: Table for reports
+            id {int}: ID of the report
+            name {text}: Discord user name of reporter
+            name_id {bigint}: Discord user ID reporter
+            message {text}: Text of the report
+            time {timestampz}: Time of the report
+
     """
     tables = ["""
 CREATE TABLE IF NOT EXISTS schools(
@@ -104,6 +112,14 @@ CREATE TABLE IF NOT EXISTS messages(
 name text NOT NULL DEFAULT '',
 message text NOT NULL DEFAULT '',
 PRIMARY KEY (name)
+);""", """
+CREATE TABLE IF NOT EXISTS reports(
+id int NOT NULL DEFAULT '0',
+name text NOT NULL DEFAULT '',
+name_id bigint NOT NULL DEFAULT '',
+message text NOT NULL DEFAULT '',
+time timestamptz NOT NULL,
+PRIMARY KEY(id)
 );"""]
     for table in tables:
         cursor.execute(table)
@@ -132,6 +148,10 @@ def format_step(table: str):
         query_str = "INSERT INTO errors\
                       (id, message, command, error, time) \
                        VALUES (%s, %s, %s, %s, %s);"
+    elif table == "reports":
+        query_str = "INSERT INTO reports\
+                     (id, name, name_id, message, time) \
+                     VALUES (%s, %s, %s, %s, %s);"
     elif table == "admin_channels":
         query_str = "INSERT INTO admin_channels (name, id, log)\
                       VALUES (%s, %s, %s) ON CONFLICT DO NOTHING;"
@@ -193,6 +213,8 @@ def insert(table: str, data: list):
     INSERT into :ref:`table` VALUE (:ref:`*data`);
     """
     format_str = format_step(table)
+    if format_str == "error":
+        return "error"
     try:
         # Tables with 6 values
         if table == "schools":
@@ -201,7 +223,7 @@ def insert(table: str, data: list):
                             data[2], data[3],
                             data[4], data[5]))
         # Tables with 5 values
-        elif table == "errors":
+        elif table in ["errors", "reports"]:
             cursor.execute(format_str,
                            (data[0], data[1],
                             data[2], data[3],

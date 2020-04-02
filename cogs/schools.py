@@ -131,7 +131,7 @@ class SchoolCog(commands.Cog, name="Schools"):
                 await ctx.author.send("School assigned: {}".format(entries[0]))
 
     @commands.command(name="add-school",
-                      help="Adds a new school as a role.\n Takes up to 3 arguments space seperated: school, region, color. Only school and region are required.\n**Space seperated schools need to be added in quotes.**\nie: $add-school \"Champlain College\" NORTHEAST #00a9e0",  # noqa: E501 pylint: disable=line-too-long
+                      help="Adds a new school and makes a role for it .",
                       description="Creates a new school")
     @commands.has_role("new")
     async def add_school(self, ctx, *, school_name: str):  # noqa: E501 pylint: disable=too-many-branches,line-too-long

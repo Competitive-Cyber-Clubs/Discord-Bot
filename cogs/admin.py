@@ -26,7 +26,7 @@ class AdminCog(commands.Cog, name="Admin"):
 
     @commands.command(name="list-admins",
                       aliases=["ladmins", "ladmin"],
-                      help="List bot admins")
+                      help="List users that are bot admins")
     async def list_admins(self, ctx):
         """List-admins
         ---
@@ -44,7 +44,7 @@ class AdminCog(commands.Cog, name="Admin"):
 
     @commands.command(name="check-admin",
                       aliases=["cadmin", "am-admin"],
-                      help="Tells you if you are admin")
+                      help="Tells you if you are a bot admin")
     async def check_admin(self, ctx):
         """Check Admin
         ---
@@ -78,7 +78,7 @@ class AdminCog(commands.Cog, name="Admin"):
             return
         await ctx.send("Error: User not found.")
 
-    @commands.command(name="add-admin-channel", help="Sets the channel as an admin channel")
+    @commands.command(name="add-admin-channel", help="Marks the channel as an admin channel")
     @commands.guild_only()
     @commands.check(utils.check_admin)
     async def add_admin_channel(self, ctx, log_status=False):

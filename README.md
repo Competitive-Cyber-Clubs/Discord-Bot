@@ -8,6 +8,8 @@
 
 [![Maintainability](https://api.codeclimate.com/v1/badges/027b6135ce0965aa69c1/maintainability)](https://codeclimate.com/github/Cyb3r-Jak3/CCC-Bot/maintainability) [![Code Climate issues](https://img.shields.io/codeclimate/issues/Cyb3r-Jak3/CCC-Bot?style=flat-square)](https://codeclimate.com/github/Cyb3r-Jak3/CCC-Bot/issues)
 
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Cyb3r-Jak3/CCC-Bot/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Cyb3r-Jak3/CCC-Bot/?branch=master)
+
 ## About
 
 This is a bot for the CCC Discord. It is made specifically for it, so it has

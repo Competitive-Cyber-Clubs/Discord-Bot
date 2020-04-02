@@ -68,7 +68,8 @@ cogs_list = [cogs.RegionCog(bot),
              cogs.HealthCog(bot),
              cogs.RankCog(bot),
              cogs.EventsCog(bot),
-             cogs.SearchCog(bot)
+             cogs.SearchCog(bot),
+             cogs.TaskCog(bot)
              ]
 for cog in cogs_list:
     bot.add_cog(cog)
@@ -98,7 +99,7 @@ async def on_command_error(ctx, error):
             str(error),
             datetime.utcnow()]
 
-        log.error((errorID, error))
+        log.error(error_info)
         await ctx.send("There was a command error.\n"
                        "Please report it for investgation.\n"
                        "Error #{}".format(errorID))

@@ -1,4 +1,5 @@
 """Cog the preforms health functions"""
+from datetime import datetime
 import logging
 from discord.ext import commands
 import discord
@@ -66,6 +67,36 @@ class HealthCog(commands.Cog, name="Health"):
         await ctx.send("Check complete.\nThere were {} successes and {} failures".format(
             len(success), len(fail)))
 
+    @commands.command(name="error-report", help="Gets all errors for the day.")
+    @commands.check(utils.check_admin)
+    async def error_report(self, ctx: commands.Context):
+        """error_report
+        ---
+
+        Gets all the errors for the same day.
+
+        Arguments:
+        ---
+            ctx {discord.ext.commands.Context} -- Context of the command.
+        """
+        date = datetime.utcnow().strftime("%Y-%m-%d")
+        errors = await utils.select("errors",
+                                    "id, message, command, error",
+                                    "date_trunc('day', time)",
+                                    date)
+        if not errors:
+            await ctx.send("No results found")
+        else:
+            msg = "Errors:\n"
+            for error in errors:
+                msg += "> - {}\n".format(error)
+            if len(msg) >= 2000:
+                list_of_msgs = [msg[i:i+2000] for i in range(0, len(msg), 2000)]
+                for x in list_of_msgs:
+                    await ctx.send(x)
+            else:
+                await ctx.send(msg)
+
     @commands.Cog.listener()
     async def on_guild_role_update(self, before: discord.Role, after: discord.Role):
         """on_guild_role_update
@@ -102,5 +133,7 @@ class HealthCog(commands.Cog, name="Health"):
                 managed = True
         if not managed:
             self.log.info("Role \"{}\" was deleted. It was not a managed role".format(role.name))
-        channel = self.bot.get_channel(await utils.select("admin_channels", "id", "log", "t"))
-        await channel.send("Role: {} was deleted".format(role.name))
+        channels = self.bot.get_channel(await utils.select("admin_channels", "id", "log", "t"))
+        for channel in channels:
+            to_send = self.bot.get_channel(channel)
+            await to_send.send("Role: {} was deleted".format(role.name))

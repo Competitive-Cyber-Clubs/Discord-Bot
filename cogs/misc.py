@@ -1,5 +1,6 @@
 """Misc features cog for CCC Bot"""
-import asyncio
+import random
+from datetime import datetime
 import logging
 from discord.ext import commands
 import utils
@@ -44,8 +45,8 @@ class MiscCog(commands.Cog, name="Misc"):
 
     @commands.command(name="contact-admin",
                       aliases=["report"],
-                      help="Contacts a bot admin")
-    async def contact_admin(self, ctx):
+                      help="Reporting feature.")
+    async def contact_admin(self, ctx, *, message: str):
         """Contact-Admin
         ---
 
@@ -56,13 +57,18 @@ class MiscCog(commands.Cog, name="Misc"):
         ---
             ctx {discord.ext.commands.Context} -- Context of the command.
         """
-        await ctx.send("What is the issue that you want the admin to respond to.")
-        try:
-            msg = await self.bot.wait_for('message', timeout=300)
-        except asyncio.TimeoutError:
-            ctx.send("Took to long. You have 300 seconds to send a response.")
-            return
-        channels = await utils.select("admin_channels", "id", "log", "f")[0]
+        reports = await utils.fetch("reports", "id")
+        reportID = random.randint(1, 32767)  # nosec
+        while reportID in reports:
+            self.log.debug("reportID had to be regenerated")
+            reportID = random.randint(1, 32767)  # nosec
+        await utils.insert("reports",
+                           [reportID,
+                            ctx.author.name,
+                            (ctx.author.name+ctx.author.discriminator),
+                            message,
+                            datetime.nowutc()])
+        channels = await utils.select("admin_channels", "id", "log", "f")
         for channel in channels:
             to_send = self.bot.get_channel(channel)
-            await to_send.send("{} send the report:\n> {}".format(msg.author, msg.content))
+            await to_send.send("{} submitted the report:\n> {}".format(ctx.author.name, message))

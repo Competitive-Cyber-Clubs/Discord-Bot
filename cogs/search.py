@@ -22,7 +22,8 @@ class SearchCog(commands.Cog, name="Search"):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="validate-school")
+    @commands.command(name="check-school",
+                      help="Checks to see if <school> exists in the csv.")
     async def validate_school(self, ctx, *, school: str):
         """validate_school
         ---
@@ -35,7 +36,8 @@ class SearchCog(commands.Cog, name="Search"):
         """
         await ctx.send(await utils.school_check(school))
 
-    @commands.command(name="search-school")
+    @commands.command(name="search-school",
+                      help="Search all schools for <school>. 'College, University, community are blocked")  # noqa: E501 pylint: disable=line-too-long
     async def search_school(self, ctx, *, school: str):
         """search-school
         ---
@@ -64,12 +66,12 @@ class SearchCog(commands.Cog, name="Search"):
                 msg = "Search Results:\n"
                 for item in results:
                     msg += "- {} \n".format(item)
-            if len(msg) >= 2000:
-                list_of_msgs = [msg[i:i+2000] for i in range(0, len(msg), 2000)]
-                for x in list_of_msgs:
-                    await ctx.send(x)
-            else:
-                await ctx.send(msg)
+                if len(msg) >= 2000:
+                    list_of_msgs = [msg[i:i+2000] for i in range(0, len(msg), 2000)]
+                    for x in list_of_msgs:
+                        await ctx.send(x)
+                else:
+                    await ctx.send(msg)
 
     @commands.command(name="search-state")
     async def search_state(self, ctx, *, state: str):
@@ -86,13 +88,13 @@ class SearchCog(commands.Cog, name="Search"):
         schools = await utils.state_list(state)
         if not schools:
             await ctx.send("No results found.")
-            return
-        msg = ""
-        for item in schools:
-            msg += item + "\n"
-        if len(msg) >= 2000:
-            list_of_msgs = [msg[i:i+2000] for i in range(0, len(msg), 2000)]
-            for x in list_of_msgs:
-                await ctx.send(x)
-            return
-        await ctx.send(msg)
+        else:
+            msg = "Schools in State '{}'".format(state)
+            for school in schools:
+                msg += "- {}\n".format(school)
+            if len(msg) >= 2000:
+                list_of_msgs = [msg[i:i+2000] for i in range(0, len(msg), 2000)]
+                for x in list_of_msgs:
+                    await ctx.send(x)
+                return
+            await ctx.send(msg)

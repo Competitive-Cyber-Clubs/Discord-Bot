@@ -58,5 +58,7 @@ class EventsCog(commands.Cog, name="Events"):
         ---
             member {discord.Member} -- The member that left
         """
-        channel = self.bot.get_channel(await utils.select("admin_channels", "id", "log", "t"))
-        await channel.send("{} user left".format(member.name))
+        channels = self.bot.get_channel(await utils.select("admin_channels", "id", "log", "t"))
+        for channel in channels:
+            to_send = self.bot.get_channel(channel)
+            await to_send.send("{} user left".format(member.name))

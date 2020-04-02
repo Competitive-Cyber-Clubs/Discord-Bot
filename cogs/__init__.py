@@ -27,6 +27,7 @@ from .rank import RankCog
 from .regions import RegionCog
 from .schools import SchoolCog
 from .search import SearchCog
+from .tasks import TaskCog
 __all__ = ["AdminCog",
            "RegionCog",
            "RankCog",
@@ -34,4 +35,5 @@ __all__ = ["AdminCog",
            "EventsCog",
            "SchoolCog",
            "HealthCog",
-           "SearchCog"]
+           "SearchCog",
+           "TaskCog"]
