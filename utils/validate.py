@@ -88,5 +88,5 @@ async def state_list(state: str):
     ---
         list -- List of all the schools in :ref:`state`.
     """
-    schools_in_state = school_list.Institution_Name.values[school_list.States == state]
+    schools_in_state = school_list.Institution_Name.values[school_list.States == state.all()]
     return schools_in_state

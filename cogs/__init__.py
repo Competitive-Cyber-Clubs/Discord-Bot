@@ -18,6 +18,8 @@
     * :ref:`SchoolCog` commands: add-school, join-school, list-schools.
 
     * :ref:`SearchCog` commands:  validate-school, state-search, import-school.
+
+    * :ref:`TaskCog` task: report_errors
 """
 from .admin import AdminCog
 from .events import EventsCog

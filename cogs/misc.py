@@ -43,8 +43,8 @@ class MiscCog(commands.Cog, name="Misc"):
         await ctx.author.send("pong")
         await ctx.message.delete()
 
-    @commands.command(name="contact-admin",
-                      aliases=["report"],
+    @commands.command(name="report",
+                      aliases=["contact-admin"],
                       help="Reporting feature.")
     async def contact_admin(self, ctx, *, message: str):
         """Contact-Admin
@@ -64,11 +64,13 @@ class MiscCog(commands.Cog, name="Misc"):
             reportID = random.randint(1, 32767)  # nosec
         await utils.insert("reports",
                            [reportID,
-                            ctx.author.name,
                             (ctx.author.name+ctx.author.discriminator),
+                            ctx.author.id,
                             message,
-                            datetime.nowutc()])
+                            datetime.utcnow()])
         channels = await utils.select("admin_channels", "id", "log", "f")
         for channel in channels:
             to_send = self.bot.get_channel(channel)
+            if to_send is None:
+                self.log.warning('No channel found for id {}'.format(channel))
             await to_send.send("{} submitted the report:\n> {}".format(ctx.author.name, message))

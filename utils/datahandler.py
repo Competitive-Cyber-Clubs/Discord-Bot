@@ -155,11 +155,12 @@ def format_step(table: str):
     elif table == "admin_channels":
         query_str = "INSERT INTO admin_channels (name, id, log)\
                       VALUES (%s, %s, %s) ON CONFLICT DO NOTHING;"
-    elif table in ["regions", "bot_admins"]:
+    elif table == "bot_admins":
+        query_str = "INSERT INTO bot_admins \
+                     (name, id) VALUES (%s, %s) ON CONFLICT DO NOTHING;"
+    elif table == "regions":
         query_str = "INSERT INTO regions \
                      (name, id) VALUES (%s, %s)"
-        if table == "bot_admins":
-            query_str += "ON CONFLICT DO NOTHING"
     else:
         log.error("Table not found.")
         return "error"

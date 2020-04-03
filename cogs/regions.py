@@ -62,6 +62,6 @@ class RegionCog(commands.Cog, name="Regions"):
         """
         regions = await utils.fetch("regions", "name")
         formated = "Available Regions:\n"
-        for item in regions:
-            formated += item + "\n"
+        for region in regions:
+            formated += " - {} \n".format(region)
         await ctx.send(formated)

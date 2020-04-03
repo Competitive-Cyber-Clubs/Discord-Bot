@@ -67,7 +67,7 @@ class HealthCog(commands.Cog, name="Health"):
         await ctx.send("Check complete.\nThere were {} successes and {} failures".format(
             len(success), len(fail)))
 
-    @commands.command(name="error-report", help="Gets all errors for the day.")
+    @commands.command(name="get-errors", help="Gets all errors for the day.")
     @commands.check(utils.check_admin)
     async def error_report(self, ctx: commands.Context):
         """error_report
@@ -85,11 +85,41 @@ class HealthCog(commands.Cog, name="Health"):
                                     "date_trunc('day', time)",
                                     date)
         if not errors:
-            await ctx.send("No results found")
+            await ctx.send("No errors for {}".format(date))
         else:
             msg = "Errors:\n"
             for error in errors:
                 msg += "> - {}\n".format(error)
+            if len(msg) >= 2000:
+                list_of_msgs = [msg[i:i+2000] for i in range(0, len(msg), 2000)]
+                for x in list_of_msgs:
+                    await ctx.send(x)
+            else:
+                await ctx.send(msg)
+
+    @commands.command(name="get-reports", help="Gets all the reports for the current day")
+    @commands.check(utils.check_admin)
+    async def get_reports(self, ctx: commands.Context):
+        """get-reports
+        ---
+
+        Gets all the reports for the current day
+
+        Arguments:
+        ---
+            ctx {Discord.ext.commands.Context} -- Context of the command.
+        """
+        date = datetime.utcnow().strftime("%Y-%m-%d")
+        reports = await utils.select("reports",
+                                     "name, message",
+                                     "date_trunc('day', time)",
+                                     date)
+        if not reports:
+            await ctx.send("No reports for {}".format(date))
+        else:
+            msg = "Reports:\n"
+            for report in reports:
+                msg += "> - {}\n".format(report)
             if len(msg) >= 2000:
                 list_of_msgs = [msg[i:i+2000] for i in range(0, len(msg), 2000)]
                 for x in list_of_msgs:
@@ -133,7 +163,7 @@ class HealthCog(commands.Cog, name="Health"):
                 managed = True
         if not managed:
             self.log.info("Role \"{}\" was deleted. It was not a managed role".format(role.name))
-        channels = self.bot.get_channel(await utils.select("admin_channels", "id", "log", "t"))
+        channels = self.bot.get_channel(await utils.select("admin_channels", "id", "log", "t")[0])
         for channel in channels:
             to_send = self.bot.get_channel(channel)
             await to_send.send("Role: {} was deleted".format(role.name))
