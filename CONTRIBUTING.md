@@ -1,5 +1,7 @@
 # CONTRIBUTING
 
+<!-- markdownlint-disable MD024 -->
+
 ## How to contribute
 
 Thanks for reading this because I am always looking to collaborate with other people to see their ideas.
@@ -20,3 +22,17 @@ When adding a new command the format should be `verb-noun`, i.e. `search-school`
 ### Cogs
 
 When adding a new cog make sure that it is added to [cogs/__init__.py](cogs/__init__.py) and documented there. A good example cog to copy and get started with is [cog/regions.py](cogs/regions.py).
+
+## Testing
+
+There no current methodology for writing tests for discord.py, thus all tests have to be run manually when the bot is online.
+
+### Cogs/Commands
+
+All commands need to be tested to ensure that nothing changes.
+For simplicity sake, all cogs will be given a check box and once all commands for that cog are tested then it can be checked.
+
+### Tables
+
+It is important the all tables in the database are build correctly. All tables need to be dropped then rebuilt and test populated.  
+This test is not mandatory based on the changes implemented.
