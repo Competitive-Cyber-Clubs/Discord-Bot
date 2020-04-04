@@ -157,7 +157,8 @@ class SchoolCog(commands.Cog, name="Schools"):
         region = await utils.region_select(school_name)
         region += " Region"
         if region not in r_regions:
-            self.log.error("There is no region map for {}".format(school_name))
+            # No region map error
+            self.log.error("There is no region map for {}, region: {}".format(school_name, region))
             await ctx.send("There is no region mapped. Please contact an admin")
             return
         await ctx.send("You are about to create a new school: {}."

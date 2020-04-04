@@ -37,7 +37,9 @@ from .datahandler import table_create, fetch, select, insert, update, delete
 from .logger import make_logger
 from .shared import check_admin, check_react, FailedReactionCheck
 from .validate import school_check, state_list, school_search, region_select
+from .messages import list_message
 __all__ = ["table_create", "fetch", "select", "insert", "update", "delete",
            "make_logger",
            "check_admin", "check_react", "FailedReactionCheck",
-           "school_check", "state_list", "school_search", "region_select"]
+           "school_check", "state_list", "school_search", "region_select",
+           "list_message"]

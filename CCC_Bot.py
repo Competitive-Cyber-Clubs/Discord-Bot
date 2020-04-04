@@ -50,7 +50,7 @@ async def on_ready():
         '{} is connected to the following guild: '
         '{}'.format(bot.user, bot.guilds[0].name)
     )
-    await utils.insert("bot_admins", [OWNER_NAME, OWNER_ID])
+    await utils.insert("bot_admins", [OWNER_NAME, int(OWNER_ID)])
     admin_roles = await utils.select("keys", "value", "key", "admin_role")
     for admin_role in admin_roles:
         role = discord.utils.get(bot.guilds[0].roles,

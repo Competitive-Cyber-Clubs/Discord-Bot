@@ -67,9 +67,9 @@ class HealthCog(commands.Cog, name="Health"):
         await ctx.send("Check complete.\nThere were {} successes and {} failures".format(
             len(success), len(fail)))
 
-    @commands.command(name="get-errors", help="Gets all errors for the day.")
+    @commands.command(name="get-x", help="Gets all errors or reports for the day.")
     @commands.check(utils.check_admin)
-    async def error_report(self, ctx: commands.Context):
+    async def error_report(self, ctx: commands.Context, which: str):
         """error_report
         ---
 
@@ -78,54 +78,23 @@ class HealthCog(commands.Cog, name="Health"):
         Arguments:
         ---
             ctx {discord.ext.commands.Context} -- Context of the command.
+            which {str} --- which item to get, reports or errors.
         """
-        date = datetime.utcnow().strftime("%Y-%m-%d")
-        errors = await utils.select("errors",
-                                    "id, message, command, error",
-                                    "date_trunc('day', time)",
-                                    date)
-        if not errors:
-            await ctx.send("No errors for {}".format(date))
+        if which == "errors":
+            columns = "id, message, command, error"
+        elif which == "reports":
+            columns = "name, message"
         else:
-            msg = "Errors:\n"
-            for error in errors:
-                msg += "> - {}\n".format(error)
-            if len(msg) >= 2000:
-                list_of_msgs = [msg[i:i+2000] for i in range(0, len(msg), 2000)]
-                for x in list_of_msgs:
-                    await ctx.send(x)
-            else:
-                await ctx.send(msg)
-
-    @commands.command(name="get-reports", help="Gets all the reports for the current day")
-    @commands.check(utils.check_admin)
-    async def get_reports(self, ctx: commands.Context):
-        """get-reports
-        ---
-
-        Gets all the reports for the current day
-
-        Arguments:
-        ---
-            ctx {Discord.ext.commands.Context} -- Context of the command.
-        """
+            return await ctx.send("Please pick a valid option.")
         date = datetime.utcnow().strftime("%Y-%m-%d")
-        reports = await utils.select("reports",
-                                     "name, message",
+        results = await utils.select(which,
+                                     columns,
                                      "date_trunc('day', time)",
                                      date)
-        if not reports:
-            await ctx.send("No reports for {}".format(date))
+        if not results:
+            await ctx.send("No {} for {}".format(which, date))
         else:
-            msg = "Reports:\n"
-            for report in reports:
-                msg += "> - {}\n".format(report)
-            if len(msg) >= 2000:
-                list_of_msgs = [msg[i:i+2000] for i in range(0, len(msg), 2000)]
-                for x in list_of_msgs:
-                    await ctx.send(x)
-            else:
-                await ctx.send(msg)
+            await utils.list_message(ctx, results, which)
 
     @commands.Cog.listener()
     async def on_guild_role_update(self, before: discord.Role, after: discord.Role):

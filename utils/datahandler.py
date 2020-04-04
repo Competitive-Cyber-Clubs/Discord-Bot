@@ -5,6 +5,7 @@ import asyncio
 import psycopg2
 from psycopg2.extensions import AsIs
 from dotenv import load_dotenv
+from .tables import tables
 
 load_dotenv()
 # Imports the main logger
@@ -66,61 +67,6 @@ def table_create():
             time {timestampz}: Time of the report
 
     """
-    tables = ["""
-CREATE TABLE IF NOT EXISTS schools(
-school text UNIQUE NOT NULL DEFAULT '',
-region text NOT NULL DEFAULT '',
-color int NOT NULL DEFAULT '0',
-id bigint NOT NULL DEFAULT '0',
-added_by text NOT NULL DEFAULT '',
-added_by_id bigint NOT NULL DEFAULT '0',
-PRIMARY KEY (school)
-);""", """
-CREATE TABLE IF NOT EXISTS bot_admins(
-id bigint UNIQUE NOT NULL DEFAULT '0',
-name text NOT NULL DEFAULT '',
-PRIMARY KEY (name)
-);
-""", """
-CREATE TABLE IF NOT EXISTS admin_channels(
-name text NOT NULL DEFAULT '',
-id bigint NOT NULL DEFAULT '0',
-log bool DEFAULT False,
-PRIMARY KEY (name)
-);
-""", """
-CREATE TABLE IF NOT EXISTS regions(
-name text NOT NULL DEFAULT '',
-id bigint NOT NULL DEFAULT '0',
-PRIMARY KEY (name)
-);
-""", """
-CREATE TABLE IF NOT EXISTS errors(
-id smallint NOT NULL DEFAULT '0',
-message text NOT NULL DEFAULT '',
-command text NOT NULL DEFAULT '',
-error text NOT NULL DEFAULT '',
-time timestamptz NOT NULL,
-PRIMARY KEY (id)
-);""", """
-CREATE TABLE IF NOT EXISTS keys(
-key text NOT NULL DEFAULT '',
-value text NOT NULL DEFAULT '',
-PRIMARY KEY (key)
-);""", """
-CREATE TABLE IF NOT EXISTS messages(
-name text NOT NULL DEFAULT '',
-message text NOT NULL DEFAULT '',
-PRIMARY KEY (name)
-);""", """
-CREATE TABLE IF NOT EXISTS reports(
-id int NOT NULL DEFAULT '0',
-name text NOT NULL DEFAULT '',
-name_id bigint NOT NULL DEFAULT '0',
-message text NOT NULL DEFAULT '',
-time timestamptz NOT NULL,
-PRIMARY KEY(id)
-);"""]
     for table in tables:
         cursor.execute(table)
 
@@ -238,6 +184,7 @@ def insert(table: str, data: list):
         elif table in ["bot_admins", "regions"]:
             cursor.execute(format_str,
                            (data[0], data[1]))
+        log.debug(format_str, *data)
         connection.commit()
         return None
     except psycopg2.Error as pge:

@@ -28,6 +28,27 @@ async def school_check(name: str):
 
 
 @asyncio.coroutine
+async def region_select(name: str):
+    """region_select
+    ---
+    Asynchronous Function
+
+    Maps a regions for a school, :refs:`name`. Looks school name in the 'Institution_Name' column,
+        if it finds a match then pulls from 'Regions' column.
+
+    Arguments:
+    ---
+        name {str} -- Name of the school that needs a region.
+
+    Returns:
+    ---
+        str -- The region which the school has been mapped to.
+    """
+    region = school_list.Regions.values[school_list.Institution_Name == name][0]
+    return region
+
+
+@asyncio.coroutine
 async def school_search(name: str):
     """school_search
     ---
@@ -52,27 +73,6 @@ async def school_search(name: str):
 
 
 @asyncio.coroutine
-async def region_select(name: str):
-    """region_select
-    ---
-    Asynchronous Function
-
-    Maps a regions for a school, :refs:`name`. Looks school name in the 'Institution_Name' column,
-        if it finds a match then pulls from 'Regions' column.
-
-    Arguments:
-    ---
-        name {str} -- Name of the school that needs a region.
-
-    Returns:
-    ---
-        str -- The region which the school has been mapped to.
-    """
-    region = school_list.Regions.values[school_list.Institution_Name == name][0]
-    return region
-
-
-@asyncio.coroutine
 async def state_list(state: str):
     """state_list
     ---
@@ -88,5 +88,5 @@ async def state_list(state: str):
     ---
         list -- List of all the schools in :ref:`state`.
     """
-    schools_in_state = school_list.Institution_Name.values[school_list.States == state.all()]
+    schools_in_state = school_list.Institution_Name.values[school_list.States == state]
     return schools_in_state

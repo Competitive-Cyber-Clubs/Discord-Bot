@@ -19,3 +19,7 @@
 #### Database
 
 * [ ] Tables test
+
+### Changelog
+
+* [ ] Changelog updated

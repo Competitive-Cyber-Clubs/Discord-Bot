@@ -63,15 +63,7 @@ class SearchCog(commands.Cog, name="Search"):
             if not results:
                 await ctx.send("No results found.")
             else:
-                msg = "Search Results:\n"
-                for item in results:
-                    msg += "- {} \n".format(item)
-                if len(msg) >= 2000:
-                    list_of_msgs = [msg[i:i+2000] for i in range(0, len(msg), 2000)]
-                    for x in list_of_msgs:
-                        await ctx.send(x)
-                else:
-                    await ctx.send(msg)
+                await utils.list_message(ctx, results, "Search Results:\n")
 
     @commands.command(name="search-state")
     async def search_state(self, ctx, *, state: str):
@@ -86,15 +78,8 @@ class SearchCog(commands.Cog, name="Search"):
             state {str} -- Name of the state that the user wants to get schools from.
         """
         schools = await utils.state_list(state)
-        if not schools:
+        if len(schools) == 0:
             await ctx.send("No results found.")
         else:
-            msg = "Schools in State '{}'".format(state)
-            for school in schools:
-                msg += "- {}\n".format(school)
-            if len(msg) >= 2000:
-                list_of_msgs = [msg[i:i+2000] for i in range(0, len(msg), 2000)]
-                for x in list_of_msgs:
-                    await ctx.send(x)
-                return
-            await ctx.send(msg)
+            title = "Schools in State '{}'".format(state)
+            await utils.list_message(ctx, schools, title)
