@@ -59,6 +59,8 @@ async def on_ready():
             await utils.insert("bot_admins", [admin.name, admin.id])
     await bot.change_presence(activity=discord.Activity(
         name='Here to help!', type=discord.ActivityType.playing))
+    # TaskCog added here because it needs to be able to find channels.
+    bot.add_cog(cogs.TaskCog(bot))
 
 
 cogs_list = [cogs.RegionCog(bot),
@@ -69,7 +71,6 @@ cogs_list = [cogs.RegionCog(bot),
              cogs.RankCog(bot),
              cogs.EventsCog(bot),
              cogs.SearchCog(bot),
-             cogs.TaskCog(bot)
              ]
 for cog in cogs_list:
     bot.add_cog(cog)

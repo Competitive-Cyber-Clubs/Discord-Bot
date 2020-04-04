@@ -17,7 +17,7 @@ class SearchCog(commands.Cog, name="Search"):
 
     Arguments:
     ---
-        `bot` `discord.commands.Bot` -- The bot class that deals with all the commands.
+        bot {discord.commands.Bot} -- The bot
     """
     def __init__(self, bot):
         self.bot = bot
@@ -37,7 +37,7 @@ class SearchCog(commands.Cog, name="Search"):
         await ctx.send(await utils.school_check(school))
 
     @commands.command(name="search-school",
-                      help="Search all schools for <school>. 'College, University, community are blocked")  # noqa: E501 pylint: disable=line-too-long
+                      help="Search all schools for <school>.\nCollege, University, Community are blocked as they return a log of results.")  # noqa: E501 pylint: disable=line-too-long
     async def search_school(self, ctx, *, school: str):
         """search-school
         ---
@@ -56,7 +56,7 @@ class SearchCog(commands.Cog, name="Search"):
                  ]
         if any(rules):
             await ctx.send(
-                "Please refine your search as '{}' returns a lot of results ".format(school))
+                "Please refine your search as \"{}\" returns a lot of results ".format(school))
             return
         async with ctx.typing():
             results = await utils.school_search(school)

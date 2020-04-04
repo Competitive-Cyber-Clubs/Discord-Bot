@@ -22,7 +22,7 @@ class SchoolCog(commands.Cog, name="Schools"):
 
     Arguments:
     ---
-        `bot` `discord.commands.Bot` -- The bot class that deals with all the commands.
+        bot {discord.commands.Bot} -- The bot
 
     Raises:
     ---

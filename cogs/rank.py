@@ -15,7 +15,7 @@ class RankCog(commands.Cog, name="Rank"):
 
     Arguments:
     ---
-        `bot` `discord.commands.Bot` -- The bot class that deals with all the commands.
+        bot {discord.commands.Bot} -- The bot
     """
     def __init__(self, bot):
         self.bot = bot

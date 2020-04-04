@@ -17,7 +17,7 @@ class TaskCog(commands.Cog, name="Tasks"):
 
     Arguments:
     ---
-        `bot` `discord.commands.Bot` -- The bot class that deals with all the commands.
+        bot {discord.commands.Bot} -- The bot
     """
     def __init__(self, bot):
         self.bot = bot
@@ -26,19 +26,16 @@ class TaskCog(commands.Cog, name="Tasks"):
 
     @tasks.loop(hours=24.0)
     async def report_errors(self):
-        """error_report
+        """report_errors
         ---
-        Every 24 hours, all error for the current day are send to the admin channels.
+        Every 24 hours, all errors for the current day are send to the admin channels.
         """
         date = datetime.utcnow().strftime("%Y-%m-%d")
-        errors = await utils.select("errors", "*", "date_trunc('day', time)", date)
-        if not errors:
+        error_record = await utils.select("errors", "*", "date_trunc('day', time)", date)
+        if not error_record:
             errors = "No errors found for {}".format(date)
         else:
-            channels = await utils.select("admin_channels", "id", "log", "t")
-            for channel in channels:
-                to_send = self.bot.get_channel(channel)
-                if to_send is None:
-                    self.log.warning('No channel found for id {}'.format(channel))
-                for error in errors:
-                    await to_send.send(error)
+            errors = "Errors for {}.\n".format(date)
+            for error in error_record:
+                errors += "> - {}\n".format(error)
+        await utils.admin_log(self.bot, errors, True)

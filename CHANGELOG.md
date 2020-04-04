@@ -1,10 +1,26 @@
 # Changelog
 
-<!-- markdownlint-disable MD001 -->
-<!-- markdownlint-disable MD003 -->
-<!-- markdownlint-disable MD024 -->
+<!-- markdownlint-disable MD001 MD003 MD024 -->
 
-[Latest] - 03/04/2020
+[Latest]
+---
+
+### Added
+
+- `admin_log` function in [messages](utils/messages.py) a function that will centralize log reporting.
+- `test-log` command in [health](cogs/health.py) that will test to make sure that `admin_log` is working.
+
+### Changed
+
+- Format of [Contributing.md](CONTRIBUTING.md).
+- Date format for [Contributing.md](CONTRIBUTING.md).
+- Change description for bot argument in [cogs](cogs/)
+
+### Removed
+
+- Debugging print statements.
+
+[Commit: 3366269]
 ---
 
 ### Added

@@ -26,15 +26,29 @@ class HealthCog(commands.Cog, name="Health"):
 
     Arguments:
     ---
-        `bot` `discord.commands.Bot` -- The bot class that deals with all the commands.
+        bot {discord.commands.Bot} -- The bot
     """
     def __init__(self, bot):
         self.bot = bot
         self.log = logging.getLogger("bot")
 
+    async def cog_check(self, ctx):
+        """cog_check
+        ---
+
+        cog_check is set for the whole cog. Which makes all the commands in health admin only.
+
+        Arguments:
+        ---
+            ctx {discord.ext.commands.Context} -- Context of the command.
+
+        Returns:
+            bool -- True if the user in the bot admins
+        """
+        return await utils.check_admin(ctx)
+
     @commands.command(name="check-health",
                       help="Checks health of roles for schools and regions")
-    @commands.check(utils.check_admin)
     async def check_health(self, ctx):
         """check-health
         ---
@@ -68,7 +82,6 @@ class HealthCog(commands.Cog, name="Health"):
             len(success), len(fail)))
 
     @commands.command(name="get-x", help="Gets all errors or reports for the day.")
-    @commands.check(utils.check_admin)
     async def error_report(self, ctx: commands.Context, which: str):
         """error_report
         ---
@@ -95,6 +108,21 @@ class HealthCog(commands.Cog, name="Health"):
             await ctx.send("No {} for {}".format(which, date))
         else:
             await utils.list_message(ctx, results, which)
+
+    @commands.command(name="test-log")
+    async def check_log(self, ctx):
+        """test-log
+        ---
+
+        Tests to makesure that that logging feature works.
+
+        Arguments:
+        ---
+            ctx {discord.ext.commands.Context} -- Context of the command.
+        """
+        await utils.admin_log(self.bot, "Test-log", True)
+        await utils.admin_log(self.bot, 'Test-log', False)
+        await ctx.send("Test Complete")
 
     @commands.Cog.listener()
     async def on_guild_role_update(self, before: discord.Role, after: discord.Role):
@@ -132,7 +160,5 @@ class HealthCog(commands.Cog, name="Health"):
                 managed = True
         if not managed:
             self.log.info("Role \"{}\" was deleted. It was not a managed role".format(role.name))
-        channels = self.bot.get_channel(await utils.select("admin_channels", "id", "log", "t")[0])
-        for channel in channels:
-            to_send = self.bot.get_channel(channel)
-            await to_send.send("Role: {} was deleted".format(role.name))
+
+        await utils.admin_log(self.bot, "Role: {} was deleted".format(role.name), True)

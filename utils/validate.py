@@ -65,7 +65,6 @@ async def school_search(name: str):
         list -- Schools which had :ref:`name` in them.
     """
     possible_schools = []
-
     for school in school_list.Institution_Name.values:
         if name in school:
             possible_schools.append(school)
