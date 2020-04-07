@@ -1,15 +1,15 @@
 """Handles all postgresql data and tables"""
 import os
-import logging
 import asyncio
 import psycopg2
 from psycopg2.extensions import AsIs
 from dotenv import load_dotenv
 from .tables import tables
+from .logger import make_logger
 
 load_dotenv()
 # Imports the main logger
-log = logging.getLogger("bot")
+log = make_logger("database", "DEBUG")
 
 # Creates the connection to the database
 connection = psycopg2.connect(os.getenv('DATABASE_URL'), sslmode='require')
@@ -87,26 +87,26 @@ def format_step(table: str):
         str -- Returns a string that will be used for cursor execution
     """
     if table == "schools":
-        query_str = "INSERT INTO schools \
-                     (school, region, color, id, added_by, added_by_id) \
-                      VALUES (%s, %s, %s, %s, %s, %s);"
+        query_str = ("INSERT INTO schools"
+                     "(school, region, color, id, added_by, added_by_id)"
+                     "(VALUES (%s, %s, %s, %s, %s, %s);")
     elif table == "errors":
-        query_str = "INSERT INTO errors\
-                      (id, message, command, error, time) \
-                       VALUES (%s, %s, %s, %s, %s);"
+        query_str = ("INSERT INTO errors"
+                     "(id, command, message, error, time)"
+                     "VALUES (%s, %s, %s, %s, %s);")
     elif table == "reports":
-        query_str = "INSERT INTO reports\
-                     (id, name, name_id, message, time) \
-                     VALUES (%s, %s, %s, %s, %s);"
+        query_str = ("INSERT INTO reports"
+                     "(id, name, name_id, message, time)"
+                     "VALUES (%s, %s, %s, %s, %s);")
     elif table == "admin_channels":
-        query_str = "INSERT INTO admin_channels (name, id, log)\
-                      VALUES (%s, %s, %s) ON CONFLICT DO NOTHING;"
+        query_str = ("INSERT INTO admin_channels (name, id, log)"
+                     "VALUES (%s, %s, %s) ON CONFLICT DO NOTHING;")
     elif table == "bot_admins":
-        query_str = "INSERT INTO bot_admins \
-                     (name, id) VALUES (%s, %s) ON CONFLICT DO NOTHING;"
+        query_str = ("INSERT INTO bot_admins"
+                     "(name, id) VALUES (%s, %s) ON CONFLICT DO NOTHING;")
     elif table == "regions":
-        query_str = "INSERT INTO regions \
-                     (name, id) VALUES (%s, %s)"
+        query_str = ("INSERT INTO regions"
+                     "(name, id) VALUES (%s, %s)")
     else:
         log.error("Table not found.")
         return "error"

@@ -37,10 +37,12 @@ class AdminCog(commands.Cog, name="Admin"):
             ctx {discord.ext.commands.Context} -- Context of the command.
         """
         fetched = [x for x in await utils.fetch("bot_admins", "name") if x != "CCC-Dev-Bot"]
-        msg = "Bot Admins:\n"
+        embed = await utils.make_embed(ctx, title="Bot Admins:")
+        admins = ""
         for admin in fetched:
-            msg += "- {} \n".format(admin)
-        await ctx.send(msg)
+            admins += "- {} \n".format(admin)
+        embed.add_field(name="Admins", value=admins, inline=False)
+        await ctx.send(embed=embed)
 
     @commands.command(name="check-admin",
                       aliases=["cadmin", "am-admin"],
@@ -55,7 +57,8 @@ class AdminCog(commands.Cog, name="Admin"):
         ---
             ctx {discord.ext.commands.Context} -- Context of the command.
         """
-        await ctx.send(await utils.check_admin(ctx))
+        embed = await utils.make_embed(ctx, title=await utils.check_admin(ctx))
+        await ctx.send(embed=embed)
 
     @commands.command(name="add-admin",
                       help="Adds <user> to the bot admins table.")
@@ -74,9 +77,13 @@ class AdminCog(commands.Cog, name="Admin"):
         new_admin = discord.utils.get(ctx.guild.members, name=user)
         if new_admin:
             await utils.insert("bot_admins", (new_admin.name, new_admin.id))
-            await ctx.send("User: {} is now an admin.".format(new_admin))
-            return
-        await ctx.send("Error: User not found.")
+            embed = await utils.make_embed(ctx, color="28b463",
+                                           title="User: {} is now an admin.".format(new_admin))
+        else:
+            embed = await utils.make_embed(ctx, color="FF0000",
+                                           title="Error: User not found.")
+
+        await ctx.send(embed=embed)
 
     @commands.command(name="add-admin-channel", help="Marks the channel as an admin channel")
     @commands.guild_only()
@@ -101,4 +108,6 @@ class AdminCog(commands.Cog, name="Admin"):
             ctx.channel.name,
             ctx.channel.id,
             log_status])
-        await ctx.send("Channel has been added with log status: {}".format(log_status))
+        embed = await utils.make_embed(ctx, color="28b463", title="Admin Channel Success",
+                                       description="Channel has been added with log status: {}".format(log_status))    # noqa: E501 pylint: disable=line-too-long
+        await ctx.send(embed=embed)

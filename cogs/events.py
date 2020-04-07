@@ -43,7 +43,11 @@ class EventsCog(commands.Cog, name="Events"):
             reason="{} joined the server".format(member.name))
         welcome_message = await utils.select("messages", "message", "name", "welcome")
         if welcome_message:
-            await member.send(welcome_message[0].replace(r"\n", "\n"))
+            welcome_message = welcome_message[0].replace(r"\n", "\n")
+            embed = discord.Embed(title="Welcome to the server!",
+                                  description=welcome_message,
+                                  timestamp=member.joined_at)
+            await member.send(embed=embed)
 
     @commands.Cog.listener()
     async def on_member_remove(self, member: discord.Member):
@@ -58,6 +62,9 @@ class EventsCog(commands.Cog, name="Events"):
             member {discord.Member} -- The member that left
         """
         channels = await utils.select("admin_channels", "id", "log", "t")
+        embed = await discord.Embed(title="User left",
+                                    color=discord.Color(int("FF0000", 16)),
+                                    description="{} user left".format(member.name))
         for channel in channels:
             to_send = self.bot.get_channel(channel)
-            await to_send.send("{} user left".format(member.name))
+            await to_send.send(embed=embed)

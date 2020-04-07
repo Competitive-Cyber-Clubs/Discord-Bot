@@ -7,6 +7,26 @@
 
 ### Added
 
+- [utils.messages.make_embed](utils/messages.py) to make a centralized embed location.
+- Made all commands use embeds return in embeds.
+- Add more help and documentation for commands.
+- [datahandler](utils/datahandler.py) makes its own logger file.
+
+### Changed
+
+- Changed how schools were being searched. Using pandas searching rather then list searching.
+- Made it so all returns in [validate](utils/validate.py) are one line.
+- Changed error reporting to make an embed and only one ctx send.
+- Add cog_checks to [health](cogs/health.py) and [admin](cogs/admin.py).
+- Changed the strings for query_str to remove the \\.
+- Changed order of the errors table.
+- Fixed bug where errorID would not be set.
+
+[Commit: 7d0ae94]
+---
+
+### Added
+
 - `admin_log` function in [messages](utils/messages.py) a function that will centralize log reporting.
 - `test-log` command in [health](cogs/health.py) that will test to make sure that `admin_log` is working.
 

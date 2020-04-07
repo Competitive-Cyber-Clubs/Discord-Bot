@@ -22,9 +22,23 @@ class RegionCog(commands.Cog, name="Regions"):
     def __init__(self, bot):
         self.bot = bot
 
+    async def cog_check(self, ctx):
+        """cog_check
+        ---
+
+        cog_check is set for the whole cog. Which makes all the commands in health admin only.
+
+        Arguments:
+        ---
+            ctx {discord.ext.commands.Context} -- Context of the command.
+
+        Returns:
+            bool -- True if the user in the bot admins
+        """
+        return await utils.check_admin(ctx)
+
     @commands.command(name="add-region",
                       help="Adds regions")
-    @commands.check(utils.check_admin)
     async def add_region(self, ctx, *, region: str):
         """Add_region
         ---
@@ -34,23 +48,27 @@ class RegionCog(commands.Cog, name="Regions"):
         Arguments:
         ---
             ctx {discord.ext.commands.Context} -- Context of the command.
-            region {str} -- name of region to add.
+            region {str} -- Name of region to add.
         """
         is_role = discord.utils.get(ctx.guild.roles, name=region)
         if not is_role:
             added_region = await ctx.guild.create_role(name=region,
                                                        mentionable=True,
                                                        reason="Added by {}".format(ctx.author.name))
-        status = await utils.insert("regions", [region, added_region.id])
-        if status != "error":
-            await ctx.send('Region has been created.')
+            status = await utils.insert("regions", [region, added_region.id])
         else:
-            await ctx.send("There was an error creating the region.")
+            status = "error"
+        if status == "error":
+            embed = await utils.make_embed(ctx, color="FF0000",
+                                           title="There was an error creating the region.")
+        else:
+            embed = await utils.make_embed(ctx, color="28b463", title="Region has been created.")
+
+        await ctx.send(embed=embed)
 
     @commands.command(name="list-regions",
                       help="Lists available regions.")
-    @commands.check(utils.check_admin)
-    async def listregion(self, ctx):
+    async def list_region(self, ctx):
         """list-regions
         ---
 
@@ -61,7 +79,8 @@ class RegionCog(commands.Cog, name="Regions"):
             ctx {discord.ext.commands.Context} -- Context of the command.
         """
         regions = await utils.fetch("regions", "name")
-        formated = "Available Regions:\n"
+        formatted = ""
         for region in regions:
-            formated += " - {} \n".format(region)
-        await ctx.send(formated)
+            formatted += " - {} \n".format(region)
+        embed = await utils.make_embed(ctx, title="Available Regions:", description=formatted)
+        await ctx.send(embed=embed)

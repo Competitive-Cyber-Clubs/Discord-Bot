@@ -76,8 +76,8 @@ PRIMARY KEY (name)
 """, """
 CREATE TABLE IF NOT EXISTS errors(
 id smallint NOT NULL DEFAULT '0',
-message text NOT NULL DEFAULT '',
 command text NOT NULL DEFAULT '',
+message text NOT NULL DEFAULT '',
 error text NOT NULL DEFAULT '',
 time timestamptz NOT NULL,
 PRIMARY KEY (id)

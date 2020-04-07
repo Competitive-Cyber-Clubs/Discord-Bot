@@ -22,9 +22,7 @@ async def school_check(name: str):
     ---
         bool -- Returns true if :ref:`name` is in :ref:`schools.csv`
     """
-    if name in school_list.Institution_Name.values:
-        return True
-    return False
+    return name in school_list.Institution_Name.values
 
 
 @asyncio.coroutine
@@ -44,8 +42,7 @@ async def region_select(name: str):
     ---
         str -- The region which the school has been mapped to.
     """
-    region = school_list.Regions.values[school_list.Institution_Name == name][0]
-    return region
+    return school_list.Regions.values[school_list.Institution_Name == name][0]
 
 
 @asyncio.coroutine
@@ -54,7 +51,8 @@ async def school_search(name: str):
     ---
     Asynchronous Function
 
-    Searchs for part of a school name in the 'Institution_Name' column in schools.csv
+    Searchs for part of a school name in the 'Institution_Name' column in schools.csv.
+    Turns the 'Instituion_Name' into a series then gets all names using pandas.Series.str.contains.
 
     Arguments:
     ---
@@ -64,11 +62,9 @@ async def school_search(name: str):
     ---
         list -- Schools which had :ref:`name` in them.
     """
-    possible_schools = []
-    for school in school_list.Institution_Name.values:
-        if name in school:
-            possible_schools.append(school)
-    return possible_schools
+
+    return school_list.Institution_Name.values[
+                school_list["Institution_Name"].str.contains(name, case=False)]
 
 
 @asyncio.coroutine
@@ -87,5 +83,4 @@ async def state_list(state: str):
     ---
         list -- List of all the schools in :ref:`state`.
     """
-    schools_in_state = school_list.Institution_Name.values[school_list.States == state]
-    return schools_in_state
+    return school_list.Institution_Name.values[school_list.States == state]

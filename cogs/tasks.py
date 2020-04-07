@@ -31,11 +31,12 @@ class TaskCog(commands.Cog, name="Tasks"):
         Every 24 hours, all errors for the current day are send to the admin channels.
         """
         date = datetime.utcnow().strftime("%Y-%m-%d")
-        error_record = await utils.select("errors", "*", "date_trunc('day', time)", date)
+        error_record = await utils.select("errors", "message, error",
+                                          "date_trunc('day', time)", date)
         if not error_record:
             errors = "No errors found for {}".format(date)
         else:
             errors = "Errors for {}.\n".format(date)
             for error in error_record:
-                errors += "> - {}\n".format(error)
+                errors += "- {}; {}\n".format(*error)
         await utils.admin_log(self.bot, errors, True)

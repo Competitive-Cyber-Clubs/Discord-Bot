@@ -70,7 +70,7 @@ cogs_list = [cogs.RegionCog(bot),
              cogs.HealthCog(bot),
              cogs.RankCog(bot),
              cogs.EventsCog(bot),
-             cogs.SearchCog(bot),
+             cogs.SearchCog(bot)
              ]
 for cog in cogs_list:
     bot.add_cog(cog)
@@ -80,12 +80,14 @@ for cog in cogs_list:
 async def on_command_error(ctx, error):
     """Reports errors to users"""
     if isinstance(error, (commands.errors.MissingRole, commands.errors.CheckFailure)):
-        await ctx.send("You do not have the correct role for this command.")
+        error_msg = "You do not have the correct role for this command."
+        embed = await utils.make_embed(ctx, "FF0000", title="Error:",
+                                       description=error_msg)
     elif isinstance(error, commands.errors.CommandNotFound):
-        await ctx.send("{} is not valid.\nPlease use `$help` to find valid commands.".format(
-            ctx.message.content))
+        error_msg = "{} is not valid.\nPlease use `$help` to find valid commands.".format(
+            ctx.message.content)
     elif isinstance(error, commands.MissingRequiredArgument):
-        await ctx.send("`{}` has missing required arguments".format(ctx.message.content))
+        error_msg = "`{}` has missing required arguments".format(ctx.message.content)
     elif isinstance(error, commands.errors.CommandError):
         errors = await utils.fetch("errors", "id")
         errorID = random.randint(1, 32767)  # nosec
@@ -101,16 +103,26 @@ async def on_command_error(ctx, error):
             datetime.utcnow()]
 
         log.error(error_info)
-        await ctx.send("There was a command error.\n"
-                       "Please report it for investgation.\n"
-                       "Error #{}".format(errorID))
+        error_msg = ("There was a command error.\n"
+                     "Please report it for investgation.\n"
+                     "Error #{}".format(errorID))
         await utils.insert("errors", error_info)
     else:
+        errors = await utils.fetch("errors", "id")
+        errorID = random.randint(1, 32767)  # nosec
+        while errorID in errors:
+            log.debug("Error ID had to be regenerated")
+            errorID = random.randint(1, 32767)  # nosec
+
         log.error((errorID, error))
-        await ctx.send("There was an unknown error.\n"
-                       "Please report it for investigation.\n"
-                       "Error #{}".format(errorID))
+        error_msg = ("There was an unknown error.\n"
+                     "Please report it for investigation.\n"
+                     "Error #{}".format(errorID))
         log.error("There was the following error: {}".format(error))
         await utils.insert("errors", error_info)
+
+    embed = await utils.make_embed(ctx, "FF0000", title="Error:",
+                                   description=error_msg)
+    await ctx.send(embed=embed)
 
 bot.run(TOKEN, reconnect=True)

@@ -3,7 +3,7 @@
 
 datahandler
 ---
-Deals with the database management.:
+Deals with the database management:
     `utils.create` makes default tables.
     `utils.fetch` fetches a query from the table selected.
     `utils.select` fetches one row based on the selector values
@@ -31,15 +31,22 @@ Deals with schools.csv:
     `utils.school_check` checks if the input is a valid school name.
     `utils.state_list` returns all schools in a state.
     `utils.school_search` returns a list of possible schools
-    `utils.region_select` return the region that a school is in.
+    `utils.region_select` returns the region that a school is in.
+
+messages
+---
+Deals with various messaging cases:
+    `utils.list_messages take a list and sends it as a message
+    `utils.admin_log` logs anything to the admin_channels
+    `utils.make_embed` returns an initial discord.Embed
 """
 from .datahandler import table_create, fetch, select, insert, update, delete
 from .logger import make_logger
 from .shared import check_admin, check_react, FailedReactionCheck
 from .validate import school_check, state_list, school_search, region_select
-from .messages import list_message, admin_log
+from .messages import list_message, admin_log, make_embed
 __all__ = ["table_create", "fetch", "select", "insert", "update", "delete",
            "make_logger",
            "check_admin", "check_react", "FailedReactionCheck",
            "school_check", "state_list", "school_search", "region_select",
-           "list_message", "admin_log"]
+           "list_message", "admin_log", "make_embed"]

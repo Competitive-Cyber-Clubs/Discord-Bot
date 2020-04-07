@@ -40,8 +40,11 @@ class MiscCog(commands.Cog, name="Misc"):
             ctx {discord.ext.commands.Context} -- Context of the command.
         """
         self.log.debug("{} has sent ping.".format(ctx.author.name))
-        await ctx.author.send("pong")
         await ctx.message.delete()
+        embed = await utils.make_embed(ctx, title="PONG")
+        url = "https://peterfrezzini.com/content/images/2016/12/pong_logo.jpg"
+        embed.set_thumbnail(url=url)
+        await ctx.author.send(embed=embed)
 
     @commands.command(name="report",
                       aliases=["contact-admin"],
@@ -73,4 +76,12 @@ class MiscCog(commands.Cog, name="Misc"):
             to_send = self.bot.get_channel(channel)
             if to_send is None:
                 self.log.warning('No channel found for id {}'.format(channel))
-            await to_send.send("{} submitted the report:\n> {}".format(ctx.author.name, message))
+            embed = await utils.make_embed(ctx, title="New Report",
+                                           description="{} submitted the report:\n> {}"
+                                           .format(ctx.author.name, message))
+            await to_send.send(embed=embed)
+        respone_msg = ("The admins have received your report.\n"
+                       "They will investigation and may reach out")
+        response_embed = await utils.make_embed(ctx, title="Report Received",
+                                                description=respone_msg)
+        await ctx.send(embed=response_embed)

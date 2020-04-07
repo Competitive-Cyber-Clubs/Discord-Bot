@@ -70,18 +70,24 @@ class HealthCog(commands.Cog, name="Health"):
             for roles in [table_schools, regions]:
                 for role in roles:
                     try:
-                        role_name = discord.utils.get(ctx.guild.roles, name=role).name
-                        if role_name == role:
+                        role_name = discord.utils.get(ctx.guild.roles, name=role)
+                        if role_name.name == role:
                             success.append(role_name)
                         else:
                             fail.append((role_name, role))
                     except AttributeError:
-                        self.log.error("Attribute error with role {}".format(role_name))
+                        self.log.error("Attribute error with role {}".format(role))
                         fail.append((role, None))
-        await ctx.send("Check complete.\nThere were {} successes and {} failures".format(
-            len(success), len(fail)))
 
-    @commands.command(name="get-x", help="Gets all errors or reports for the day.")
+        message = "There were {} successes and {} failures".format(
+            len(success), len(fail))
+        embed = await utils.make_embed(ctx, "28b463",
+                                       title="Check Complete",
+                                       description=message)
+        await ctx.send(embed=embed)
+
+    @commands.command(name="get-x", help="Gets all errors or reports for the day.",
+                      description="Admin Only Feature")
     async def error_report(self, ctx: commands.Context, which: str):
         """error_report
         ---
@@ -98,31 +104,38 @@ class HealthCog(commands.Cog, name="Health"):
         elif which == "reports":
             columns = "name, message"
         else:
-            return await ctx.send("Please pick a valid option.")
+            error_embed = await utils.make_embed(ctx, "FF0000", title="Error",
+                                                 description="Please pick a valid option.")
+            return await ctx.send(embed=error_embed)
         date = datetime.utcnow().strftime("%Y-%m-%d")
         results = await utils.select(which,
                                      columns,
                                      "date_trunc('day', time)",
                                      date)
         if not results:
-            await ctx.send("No {} for {}".format(which, date))
+            good_embed = await utils.make_embed(ctx, "28b463", title="Success",
+                                                description="No {} for {}".format(which, date))
+            await ctx.send(embed=good_embed)
         else:
             await utils.list_message(ctx, results, which)
 
-    @commands.command(name="test-log")
+    @commands.command(name="test-log",
+                      help="Tests to make sure that that logging feature works.",
+                      description="Admin Only Feature")
     async def check_log(self, ctx):
         """test-log
         ---
 
-        Tests to makesure that that logging feature works.
+        Tests to make sure that that logging feature works.
 
         Arguments:
         ---
             ctx {discord.ext.commands.Context} -- Context of the command.
         """
-        await utils.admin_log(self.bot, "Test-log", True)
-        await utils.admin_log(self.bot, 'Test-log', False)
-        await ctx.send("Test Complete")
+        await utils.admin_log(self.bot, "TESTING LOG: True", True)
+        await utils.admin_log(self.bot, 'TESTING LOG: False', False)
+        embed = await utils.make_embed(ctx, color="28b463", title="Test Complete")
+        await ctx.send(embed=embed)
 
     @commands.Cog.listener()
     async def on_guild_role_update(self, before: discord.Role, after: discord.Role):
@@ -158,6 +171,7 @@ class HealthCog(commands.Cog, name="Health"):
                 await utils.delete("schools", "id", role.id)
                 self.log.warning("Role \"{}\" was deleted. It was in {}".format(role.name, table))
                 managed = True
+
         if not managed:
             self.log.info("Role \"{}\" was deleted. It was not a managed role".format(role.name))
 
