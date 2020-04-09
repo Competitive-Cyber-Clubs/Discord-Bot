@@ -121,9 +121,8 @@ class SchoolCog(commands.Cog, name="Schools"):
             await ctx.send(embed=error_embed)
             return
         else:
-            roles = (*entries, "verified")
             to_add = []
-            for item in roles:
+            for item in (*entries, "verified"):
                 to_add.append(discord.utils.get(ctx.guild.roles, name=item))
             if None in to_add:
                 title = "The school you select does not have valid role."
@@ -143,9 +142,8 @@ class SchoolCog(commands.Cog, name="Schools"):
                     reason="{u} joined {s}".format(u=user.name, s=entries[0])
                 )
                 msg = "School assigned: {}".format(entries[0])
-                embed = await utils.make_embed(ctx, "28b463",
-                                               title=msg)
-                await ctx.author.send(embed=embed)
+                await ctx.author.send(embed=await utils.make_embed(ctx, "28b463",
+                                                                   title=msg))
 
     @commands.command(name="add-school",
                       help="Adds a new school and makes a role for it .",

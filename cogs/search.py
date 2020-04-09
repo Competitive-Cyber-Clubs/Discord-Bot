@@ -22,8 +22,10 @@ class SearchCog(commands.Cog, name="Search"):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="check-school",
-                      help="Checks to see if <school> exists in the csv.")
+    @commands.command(
+        name="check-school",
+        help="Checks to see if <school> exists in the csv.\n"
+             "Only returns True or False")
     async def validate_school(self, ctx, *, school: str):
         """validate_school
         ---
@@ -37,8 +39,12 @@ class SearchCog(commands.Cog, name="Search"):
         embed = await utils.make_embed(ctx, title=str(await utils.school_check(school)))
         await ctx.send(embed=embed)
 
-    @commands.command(name="search-school",
-                      help="Search all schools for <school>.\nCollege, University, Community are blocked as they return a lot of results.")  # noqa: E501 pylint: disable=line-too-long
+    @commands.command(
+        name="search-school",
+        help="Search all schools for <school>.\n"
+             "College, University, Community are blocked as they return a lot of results.\n"
+             "The full list is at https://github.com/Cyb3r-Jak3/CCC-Bot/blob/master/utils/schools.csv"   # noqa: E501 pylint: disable=line-too-long
+        )
     async def search_school(self, ctx, *, school: str):
         """search-school
         ---
@@ -84,5 +90,5 @@ class SearchCog(commands.Cog, name="Search"):
         if len(schools) == 0:
             await ctx.send("No results found.")
         else:
-            title = "Schools in State '{}'".format(state)
+            title = "Schools in State '{}'".format(state.title())
             await utils.list_message(ctx, schools, title)

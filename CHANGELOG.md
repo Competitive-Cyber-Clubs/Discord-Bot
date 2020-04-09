@@ -2,7 +2,33 @@
 
 <!-- markdownlint-disable MD001 MD003 MD024 -->
 
-[Latest]
+<!--
+
+[LATEST]
+---
+### Added
+
+### Changed
+
+### Removed
+-->
+
+[LATEST]
+---
+
+### Added
+
+- More help and better help to commands.
+
+### Changed
+
+- Big rework of the list_message function in [messages](utils/messages.py) to change to using embed field to make it cleaner.
+  - Related to #11 & #12
+- Worked on cleaning up [join_school](cogs/schools.py) for readability and complexity.
+
+### Removed
+
+[Commit: 0b3808aa]
 ---
 
 ### Added

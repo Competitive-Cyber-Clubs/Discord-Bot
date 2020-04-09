@@ -48,7 +48,8 @@ class MiscCog(commands.Cog, name="Misc"):
 
     @commands.command(name="report",
                       aliases=["contact-admin"],
-                      help="Reporting feature.")
+                      help="Reporting feature.\n"
+                           "Use if you are experaincing issues with the bot or in the server.")
     async def contact_admin(self, ctx, *, message: str):
         """Contact-Admin
         ---

@@ -7,7 +7,7 @@ from .datahandler import select
 log = logging.getLogger("bot")
 
 
-async def list_message(ctx, message: list, title: str = None,):
+async def list_message(ctx, message: list, title: str):
     """list_message
     ---
     Asynchronous Function
@@ -15,29 +15,50 @@ async def list_message(ctx, message: list, title: str = None,):
     Breaks up messages that contain a list and sends the parts of them. Shared function between
     multiple commands.
 
+
+    I'm sorry for everyong dealing with this function. It is not clean and I have commented to
+    the best that I can.
+
     Arguments:
     ---
         ctx {discord.ext.commands.Context} -- Context of the command.
-        message {list} -- list of items to send
-
-    Keyword Arguments:
-        title {str} -- First line of the message to send (default: {None})
+        message {list} -- list of items to send.
+        title {str} -- First line of the message to send.
     """
-    msg = ""
-    part = 0
-    for item in message:
-        msg += "- {}\n".format(item)
-    if len(msg) >= 2000:
-        part += 1
-        list_of_msgs = [msg[i:i+2000] for i in range(0, len(msg), 2000)]
-        for x in list_of_msgs:
-            part_embed = await make_embed(ctx, title=title.capitalize(),
-                                          description=x)
-            await ctx.send(embed=part_embed)
+    joined_message = len("".join(message))
+    list_of_embeds = []
+    if joined_message >= 1500:
+        # If the message needs to be split.
+        part = 1
+        item = 0
+        amount_of_embeds = len(range(0, joined_message, 6000))
+        for _ in range(amount_of_embeds):
+            # Each embed can only be 6000 chararcter so if the length is over that more are created
+            embed = await make_embed(ctx, title=title)
+            for _ in range(0, joined_message, 6000):
+                temp_msg = ""
+                while len(temp_msg) < 980:
+                    # Each field can only be 1024 character so prevent overflow it cuts off at 980
+                    try:
+                        temp_msg += "- {}\n".format(message[item])
+                        item += 1
+                    except IndexError:
+                        # Error happens when there the length of temp_msg is still under 1000 but
+                        # no items left.
+                        break
+                embed.add_field(name="Part: {}".format(part), value=temp_msg, inline=True)
+                part += 1
+            list_of_embeds.append(embed)
     else:
+        msg = ""
+        for item in message:
+            msg += "- {}\n".format(item)
         embed = await make_embed(ctx, title=title.capitalize(),
                                  description=msg)
-        await ctx.send(embed=embed)
+        list_of_embeds.append(embed)
+
+    for item in list_of_embeds:
+        await ctx.send(embed=item)
 
 
 async def admin_log(bot, message: str, log_status: bool = True):
@@ -53,18 +74,19 @@ async def admin_log(bot, message: str, log_status: bool = True):
         log_status {[type]} -- [description]
     """
     if len(message) > 2000:
-        log.warning("Log message length too long, it will not be sent. Length: {}".format(
-            len(message)))
-    else:
-        channels = await select("admin_channels", "id", "log", log_status)
-        for channel in channels:
-            to_send = bot.get_channel(channel)
-            if to_send is None:
-                log.warning('No channel found for id {}'.format(channel))
-            else:
-                embed = discord.Embed(title="Errors:", description=message,
-                                      color=discord.Color(int("FF0000", 16)))
-                await to_send.send(embed=embed)
+        message = "Log message length too long, it will not be sent. Length: {}".format(
+            len(message))
+        log.warning(message)
+
+    channels = await select("admin_channels", "id", "log", log_status)
+    for channel in channels:
+        to_send = bot.get_channel(channel)
+        if to_send is None:
+            log.warning('No channel found for id {}'.format(channel))
+        else:
+            embed = discord.Embed(title="Errors:", description=message,
+                                  color=discord.Color(int("FF0000", 16)))
+            await to_send.send(embed=embed)
 
 
 async def make_embed(ctx, color: str = None, **kwargs):
