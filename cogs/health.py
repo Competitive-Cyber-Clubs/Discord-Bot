@@ -81,15 +81,14 @@ class HealthCog(commands.Cog, name="Health"):
 
         message = "There were {} successes and {} failures".format(
             len(success), len(fail))
-        embed = await utils.make_embed(ctx, "28b463",
-                                       title="Check Complete",
-                                       description=message)
-        await ctx.send(embed=embed)
+        await utils.make_embed(ctx, "28b463",
+                               title="Check Complete",
+                               description=message)
 
-    @commands.command(name="get-x", help="Gets all errors or reports for the day.",
+    @commands.command(name="get-status", help="Gets all errors or reports for the day.",
                       description="Admin Only Feature")
-    async def error_report(self, ctx: commands.Context, which: str):
-        """error_report
+    async def get_status(self, ctx, which: str):
+        """get-status
         ---
 
         Gets all the errors for the same day.
@@ -104,20 +103,21 @@ class HealthCog(commands.Cog, name="Health"):
         elif which == "reports":
             columns = "name, message"
         else:
-            error_embed = await utils.make_embed(ctx, "FF0000", title="Error",
-                                                 description="Please pick a valid option.")
-            return await ctx.send(embed=error_embed)
+            return await utils.make_embed(ctx, "FF0000", title="Error",
+                                          description="Please pick a valid option.")
         date = datetime.utcnow().strftime("%Y-%m-%d")
         results = await utils.select(which,
                                      columns,
                                      "date_trunc('day', time)",
                                      date)
         if not results:
-            good_embed = await utils.make_embed(ctx, "28b463", title="Success",
-                                                description="No {} for {}".format(which, date))
-            await ctx.send(embed=good_embed)
+            await utils.make_embed(ctx, "28b463", title="Success",
+                                   description="No {} for {}".format(which, date))
         else:
-            await utils.list_message(ctx, results, which)
+            results_string = []
+            for result in results:
+                results_string.append(" ".join(map(str, result)))
+            await utils.list_message(ctx, results_string, which)
 
     @commands.command(name="test-log",
                       help="Tests to make sure that that logging feature works.",
@@ -134,8 +134,7 @@ class HealthCog(commands.Cog, name="Health"):
         """
         await utils.admin_log(self.bot, "TESTING LOG: True", True)
         await utils.admin_log(self.bot, 'TESTING LOG: False', False)
-        embed = await utils.make_embed(ctx, color="28b463", title="Test Complete")
-        await ctx.send(embed=embed)
+        await utils.make_embed(ctx, color="28b463", title="Test Complete")
 
     @commands.Cog.listener()
     async def on_guild_role_update(self, before: discord.Role, after: discord.Role):
@@ -150,8 +149,15 @@ class HealthCog(commands.Cog, name="Health"):
             before {discord.Role} -- The discord role before it was edited.
             after {discord.Role} -- The discord role after it was edited.
         """
-        self.log.info("Old role {} now new role {}".format(before, after))
-        await utils.update("schools", "school", before.name, after.name)
+        managed, _ = await self.managed_role_check(before)
+        if managed:
+            await utils.update("schools", "school", before.name, after.name)
+            self.log.warning("Role \"{}\" was updated. It is now {}".format(before.name,
+                                                                            after.name))
+        else:
+            self.log.info("Old role {} now new role {}".format(before, after))
+
+        await utils.admin_log(self.bot, "Old role {} now new role {}".format(before, after), True)
 
     @commands.Cog.listener()
     async def on_guild_role_delete(self, role: discord.Role):
@@ -165,14 +171,27 @@ class HealthCog(commands.Cog, name="Health"):
         ---
             role {discord.Role} -- The role that was deleted.
         """
-        managed = False
-        for table in ["schools", "regions"]:
-            if await utils.select(table, "id", "id", role.id):
-                await utils.delete("schools", "id", role.id)
-                self.log.warning("Role \"{}\" was deleted. It was in {}".format(role.name, table))
-                managed = True
-
-        if not managed:
+        managed, table = await self.managed_role_check(role)
+        if managed:
+            await utils.delete("schools", "id", role.id)
+            self.log.warning("Role \"{}\" was deleted. It was in {}".format(role.name, table))
+        else:
             self.log.info("Role \"{}\" was deleted. It was not a managed role".format(role.name))
 
         await utils.admin_log(self.bot, "Role: {} was deleted".format(role.name), True)
+
+    async def managed_role_check(self, role: discord.Role):
+        """managed_role_check
+        ---
+
+        Checks to see if the updated one was one that the bot cares about.
+
+        Arguments:
+            role {discord.Role} -- [description]
+
+        Returns:
+            bool -- returns True if the role was cared about or does not return.
+        """
+        for table in ["schools", "regions"]:
+            if await utils.select(table, "id", "id", role.id):
+                return True, table

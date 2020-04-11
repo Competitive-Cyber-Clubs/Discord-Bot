@@ -88,24 +88,24 @@ def format_step(table: str):
     """
     if table == "schools":
         query_str = ("INSERT INTO schools"
-                     "(school, region, color, id, added_by, added_by_id)"
-                     "(VALUES (%s, %s, %s, %s, %s, %s);")
+                     "(school, region, color, id, added_by, added_by_id) "
+                     "VALUES (%s, %s, %s, %s, %s, %s);")
     elif table == "errors":
         query_str = ("INSERT INTO errors"
-                     "(id, command, message, error, time)"
+                     "(id, command, message, error, time) "
                      "VALUES (%s, %s, %s, %s, %s);")
     elif table == "reports":
         query_str = ("INSERT INTO reports"
-                     "(id, name, name_id, message, time)"
+                     "(id, name, name_id, message, time) "
                      "VALUES (%s, %s, %s, %s, %s);")
     elif table == "admin_channels":
-        query_str = ("INSERT INTO admin_channels (name, id, log)"
+        query_str = ("INSERT INTO admin_channels (name, id, log) "
                      "VALUES (%s, %s, %s) ON CONFLICT DO NOTHING;")
     elif table == "bot_admins":
-        query_str = ("INSERT INTO bot_admins"
+        query_str = ("INSERT INTO bot_admins "
                      "(name, id) VALUES (%s, %s) ON CONFLICT DO NOTHING;")
     elif table == "regions":
-        query_str = ("INSERT INTO regions"
+        query_str = ("INSERT INTO regions "
                      "(name, id) VALUES (%s, %s)")
     else:
         log.error("Table not found.")
@@ -162,6 +162,7 @@ def insert(table: str, data: list):
     format_str = format_step(table)
     if format_str == "error":
         return "error"
+    log.debug(format_str, *data)
     try:
         # Tables with 6 values
         if table == "schools":
@@ -184,7 +185,6 @@ def insert(table: str, data: list):
         elif table in ["bot_admins", "regions"]:
             cursor.execute(format_str,
                            (data[0], data[1]))
-        log.debug(format_str, *data)
         connection.commit()
         return None
     except psycopg2.Error as pge:

@@ -81,8 +81,6 @@ async def on_command_error(ctx, error):
     """Reports errors to users"""
     if isinstance(error, (commands.errors.MissingRole, commands.errors.CheckFailure)):
         error_msg = "You do not have the correct role for this command."
-        embed = await utils.make_embed(ctx, "FF0000", title="Error:",
-                                       description=error_msg)
     elif isinstance(error, commands.errors.CommandNotFound):
         error_msg = "{} is not valid.\nPlease use `$help` to find valid commands.".format(
             ctx.message.content)
@@ -121,8 +119,7 @@ async def on_command_error(ctx, error):
         log.error("There was the following error: {}".format(error))
         await utils.insert("errors", error_info)
 
-    embed = await utils.make_embed(ctx, "FF0000", title="Error:",
-                                   description=error_msg)
-    await ctx.send(embed=embed)
+    await utils.make_embed(ctx, "FF0000", title="Error:",
+                           description=error_msg)
 
 bot.run(TOKEN, reconnect=True)

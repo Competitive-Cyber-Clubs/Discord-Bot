@@ -36,8 +36,7 @@ class SearchCog(commands.Cog, name="Search"):
             ctx {discord.ext.commands.Context} -- Context of the command.
             school {str} -- Name of the school the user wants to validate.
         """
-        embed = await utils.make_embed(ctx, title=str(await utils.school_check(school)))
-        await ctx.send(embed=embed)
+        await utils.make_embed(ctx, title=str(await utils.school_check(school)))
 
     @commands.command(
         name="search-school",
@@ -57,20 +56,14 @@ class SearchCog(commands.Cog, name="Search"):
             ctx {discord.ext.commands.Context} -- Context of the command.
             school {str} -- Part of the name the user wants to search for.
         """
-        rules = [school.lower() == "college",
-                 school.lower() == "university",
-                 school.lower() == "community"
-                 ]
-        if any(rules):
-            embed = await utils.make_embed(ctx, title="Search error",
-                                           description="Please refine your search as \"{}\" returns a lot of results ".format(school),  # noqa: E501 pylint: disable=line-too-long
-                                           color="FF0000"
-                                           )
-            await ctx.send(embed=embed)
-            return
+        blocked_words = ["college", "university", "community", "arts"]
+        if school.lower in blocked_words:
+            return await utils.make_embed(ctx, title="Search error", color="FF0000",
+                                          description="Please refine your search as \"{}\" returns a lot of results ".format(school),  # noqa: E501 pylint: disable=line-too-long
+                                          )
         results = await utils.school_search(school)
         if len(results) == 0:
-            await ctx.send("No results found.")
+            await utils.make_embed(ctx, color="FF0000", title="No results found.")
         else:
             await utils.list_message(ctx, results, "Search Results:\n")
 
@@ -88,7 +81,7 @@ class SearchCog(commands.Cog, name="Search"):
         """
         schools = await utils.state_list(state)
         if len(schools) == 0:
-            await ctx.send("No results found.")
+            await utils.make_embed(ctx, color="FF0000", title="No results found.")
         else:
             title = "Schools in State '{}'".format(state.title())
             await utils.list_message(ctx, schools, title)

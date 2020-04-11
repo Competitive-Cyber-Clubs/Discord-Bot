@@ -6,6 +6,7 @@
 
 [LATEST]
 ---
+
 ### Added
 
 ### Changed
@@ -13,7 +14,21 @@
 ### Removed
 -->
 
-[LATEST]
+[v0.1-beta]
+---
+
+### Added
+
+- A managed role check function in [cogs/health.py](cogs/health.py) to reduce duplicate code
+
+### Changed
+
+- Fixed utils.messages.list_message to send all results.
+  - Fixed Cyb3r-Jak3/ccc-bot#15
+- Made it so utils.messages.make_embed will send the embed by default.
+- Change deploying in [.gitlab-ci.yml](.gitlab-ci.yml) to Heroku.
+
+[Commit: ae5d1b8c]
 ---
 
 ### Added

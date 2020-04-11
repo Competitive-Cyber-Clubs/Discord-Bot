@@ -39,9 +39,8 @@ class RankCog(commands.Cog, name="Rank"):
         ranks = ["student", "professor", "alumni"]
         checked = [i for i in user.roles if i.name.lower() in ranks]
         if len(checked) > 0:
-            embed = await make_embed(ctx, "FF0000", title="Error: You already have a rank.")
+            await make_embed(ctx, "FF0000", title="Error: You already have a rank.")
         else:
             await user.add_roles(discord.utils.get(ctx.guild.roles, name=rank))
-            embed = await make_embed(ctx, color="28b463", title="Success",
-                                     description="Rank assigned successfully")
-        await ctx.send(embed=embed)
+            await make_embed(ctx, color="28b463", title="Success",
+                             description="Rank assigned successfully")

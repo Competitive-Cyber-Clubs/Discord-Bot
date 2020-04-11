@@ -27,38 +27,37 @@ async def list_message(ctx, message: list, title: str):
     """
     joined_message = len("".join(message))
     list_of_embeds = []
-    if joined_message >= 1500:
-        # If the message needs to be split.
-        part = 1
-        item = 0
-        amount_of_embeds = len(range(0, joined_message, 6000))
-        for _ in range(amount_of_embeds):
-            # Each embed can only be 6000 chararcter so if the length is over that more are created
-            embed = await make_embed(ctx, title=title)
-            for _ in range(0, joined_message, 6000):
-                temp_msg = ""
-                while len(temp_msg) < 980:
-                    # Each field can only be 1024 character so prevent overflow it cuts off at 980
-                    try:
-                        temp_msg += "- {}\n".format(message[item])
-                        item += 1
-                    except IndexError:
-                        # Error happens when there the length of temp_msg is still under 1000 but
-                        # no items left.
+    part = 1
+    item = 0
+    amount_of_embeds = len(range(0, joined_message, 1500))
+    for _ in range(amount_of_embeds):
+        # Each embed can only be 6000 chararcter so if the length is over that more are created
+        embed = await make_embed(ctx, title=title, send=False)
+        for _ in range(2):
+            temp_msg = ""
+            while len(temp_msg) < 1024:
+                # Each field can only be 1024 characters
+                try:
+                    if len(temp_msg + "- {}\n".format(message[item])) > 1024:
+                        # If the new item is going to make it over the 1024 limit then skip it.
                         break
+                    temp_msg += "- {}\n".format(message[item])
+                    item += 1
+                except IndexError:
+                    # Error happens when there the length of temp_msg is still under 1000 but
+                    # no items left.
+                    break
+            if len(temp_msg) > 0:
+                # Blank messages can occur and this filters them out
                 embed.add_field(name="Part: {}".format(part), value=temp_msg, inline=True)
                 part += 1
-            list_of_embeds.append(embed)
-    else:
-        msg = ""
-        for item in message:
-            msg += "- {}\n".format(item)
-        embed = await make_embed(ctx, title=title.capitalize(),
-                                 description=msg)
         list_of_embeds.append(embed)
 
     for item in list_of_embeds:
-        await ctx.send(embed=item)
+        if len(item.fields) > 0:
+            await ctx.send(embed=item)
+        else:
+            log.warning("Empty embed")
 
 
 async def admin_log(bot, message: str, log_status: bool = True):
@@ -84,12 +83,12 @@ async def admin_log(bot, message: str, log_status: bool = True):
         if to_send is None:
             log.warning('No channel found for id {}'.format(channel))
         else:
-            embed = discord.Embed(title="Errors:", description=message,
+            embed = discord.Embed(title="Log Update:", description=message,
                                   color=discord.Color(int("FF0000", 16)))
             await to_send.send(embed=embed)
 
 
-async def make_embed(ctx, color: str = None, **kwargs):
+async def make_embed(ctx, color: str = None, send: bool = True, **kwargs):
     """make_embed
     ---
 
@@ -100,6 +99,9 @@ async def make_embed(ctx, color: str = None, **kwargs):
     Arguments:
     ---
         ctx {discord.ext.commands.Context} -- Context of the command.
+        color {str} -- Hex code for color. If empty random one will be added (default: {None})
+        send {bool} -- If make_embed sends the embed. Only false is the function adds items to the
+                        embed such as fields.
     """
     if not color:
         kwargs["color"] = int("0x%06x" % random.randint(0, 0xFFFFFF), 16)  # nosec
@@ -107,4 +109,7 @@ async def make_embed(ctx, color: str = None, **kwargs):
         kwargs["color"] = discord.Color(int(color, 16))
     embed = discord.Embed(timestamp=ctx.message.created_at,
                           **kwargs)
-    return embed
+    if send:
+        await ctx.send(embed=embed)
+    else:
+        return embed

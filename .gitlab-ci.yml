@@ -34,7 +34,7 @@ python-3.8:
   image: python:3.8
 
 
-staging:
+Heroku:
   stage: test
   image: ruby:latest
   before_script:

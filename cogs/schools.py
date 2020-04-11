@@ -47,10 +47,10 @@ class SchoolCog(commands.Cog, name="Schools"):
         """
         fetched = sorted(await utils.fetch("schools", "school"), key=str.lower)
         if len(fetched) == 0:
-            await ctx.send("There are no schools to join.")
-            return
+            return await utils.make_embed(ctx, color="FF0000",
+                                          title="There are no schools to join.")
         schools = ""
-        embed = await utils.make_embed(ctx, title="Available schools to join:",
+        embed = await utils.make_embed(ctx, title="Available schools to join:", send=False,
                                        description="Use `$join-school` to join")
         for item in fetched:
             schools += "- {} \n".format(item)
@@ -74,25 +74,22 @@ class SchoolCog(commands.Cog, name="Schools"):
         """
         srole = discord.utils.get(ctx.guild.roles, name=school_name)
         if srole.name in await utils.fetch("schools", "school"):
-            embed = await utils.make_embed(ctx, "FF0000", title="That school already exists.")
-            await ctx.send(embed=embed)
+            await utils.make_embed(ctx, "FF0000", title="That school already exists.")
         else:
             await ctx.send("Please enter the region for the school.")
             try:
                 region = self.bot.wait_for('message', timeout=60.0)
             except asyncio.TimeoutError:
-                await ctx.send("Took too long.")
-                return
+                return await utils.make_embed(ctx, "FF0000", title="Timed out")
             new_school = [school_name, region.content, srole.color,  # pylint: disable=no-member
                           "Imported", "Imported"]
             status = await utils.insert("schools", new_school)
             if status == "error":
-                embed = await utils.make_embed(ctx, color="FF0000",
-                                               title="There was an error importing the school.")
+                utils.make_embed(ctx, color="FF0000",
+                                 title="There was an error importing the school.")
             else:
-                embed = await utils.make_embed(ctx, color="28b463",
-                                               title="Region has been created")
-            await ctx.send(embed=embed)
+                utils.make_embed(ctx, color="28b463",
+                                 title="Region has been created")
 
     @commands.command(name="join-school",
                       help="Joins a schools.")
@@ -116,22 +113,19 @@ class SchoolCog(commands.Cog, name="Schools"):
         try:
             entries = [x for x in db_entry if x[0] == school_name][0]
         except IndexError:
-            error_embed = await utils.make_embed(ctx, "FF0000", title="Error:",
-                                                 description="School could not be found.")
-            await ctx.send(embed=error_embed)
-            return
+            return await utils.make_embed(
+                ctx, "FF0000", title="Error:", description="School could not be found.")
+
         else:
             to_add = []
             for item in (*entries, "verified"):
                 to_add.append(discord.utils.get(ctx.guild.roles, name=item))
             if None in to_add:
                 title = "The school you select does not have valid role."
-                embed = await utils.make_embed(ctx, "FF0000",
-                                               title=title)
-                await ctx.send(embed=embed)
-                self.log.warning("{} tried to join {}. Only roles found: {}".format(ctx.author.name,
-                                                                                    school_name,
-                                                                                    to_add))
+                await utils.make_embed(ctx, "FF0000",
+                                       title=title)
+                self.log.warning("{} tried to join {}. Only roles found: {}".format(
+                    ctx.author.name, school_name, to_add))
             else:
                 await user.add_roles(
                     *to_add,
@@ -141,9 +135,11 @@ class SchoolCog(commands.Cog, name="Schools"):
                     discord.utils.get(ctx.guild.roles, name="new"),
                     reason="{u} joined {s}".format(u=user.name, s=entries[0])
                 )
-                msg = "School assigned: {}".format(entries[0])
-                await ctx.author.send(embed=await utils.make_embed(ctx, "28b463",
-                                                                   title=msg))
+                await ctx.author.send(embed=await utils.make_embed(
+                    ctx, "28b463", send=False,
+                    title="School assigned: {}".format(entries[0])
+                    )
+                                     )
 
     @commands.command(name="add-school",
                       help="Adds a new school and makes a role for it .",
@@ -166,9 +162,9 @@ class SchoolCog(commands.Cog, name="Schools"):
             utils.FailedReactionCheck: Expection is raised if the reaction check does not validate.
         """
         if not await utils.school_check(school_name):
-            await ctx.send(embed=await utils.make_embed(
-                ctx, "FF0000", title="Error: School name not valid."))
-            return
+            return await utils.make_embed(
+                ctx, "FF0000", title="Error: School name not valid.")
+
         r_regions = await utils.fetch("regions", "name")
         region = await utils.region_select(school_name)
         if region not in r_regions:
@@ -176,24 +172,24 @@ class SchoolCog(commands.Cog, name="Schools"):
             self.log.error("There is no region map for {}, region: {}, {}".format(school_name,
                                                                                   region,
                                                                                   r_regions))
-            await ctx.send(embed=await utils.make_embed(
-                ctx, "FF0000", title="Error: There is no region mapped"))
-            return
-        prompt_embed = await utils.make_embed(
+            return await utils.make_embed(
+                ctx, "FF0000", title="Error: There is no region mapped")
+
+        await utils.make_embed(
             ctx, title="You are about to create a new school: {}.".format(school_name),
             description="React  👍  to confirm.")
-        await ctx.send(embed=prompt_embed)
         # Gives the user 30 seconds to add the reaction '👍' to the message.
         try:
             reactions, user = await self.bot.wait_for("reaction_add", timeout=30)
             if not await utils.check_react(ctx, user, reactions, "👍"):
                 raise utils.FailedReactionCheck
         except asyncio.TimeoutError:
-            await ctx.send(embed=await utils.make_embed(ctx, "FF0000", title="Error:",
-                                                        description="Timed out."))
+            await utils.make_embed(ctx, "FF0000", title="Error:",
+                                   description="Timed out.")
         except utils.FailedReactionCheck:
-            await ctx.send(embed=await utils.make_embed(ctx, "FF0000", title="Error:",
-                                                        description="Most likely the wrong react was added or by the wrong user."))  # noqa: E501 pylint: disable=line-too-long
+            await utils.make_embed(
+                ctx, "FF0000", title="Error:",
+                description="Most likely the wrong react was added or by the wrong user.")
         else:
             color = int("0x%06x" % random.randint(0, 0xFFFFFF), 16)  # nosec
             added_school = await ctx.guild.create_role(
@@ -210,15 +206,14 @@ class SchoolCog(commands.Cog, name="Schools"):
                     ctx.author.id]
             status = await utils.insert("schools", data)
             if status == "error":
-                embed = await utils.make_embed(
+                await utils.make_embed(
                     ctx, "FF0000", title="Error",
                     description="There was an error with creating the role.")
                 rrole = discord.utils.get(ctx.guild.roles, name=school_name)
                 await rrole.delete(reason="Error in creation")
                 self.log.warning("due to error with School Role creation.")
             else:
-                success_msg = "School \"{}\" has been created in {} with color of 0x{}"\
-                              .format(school_name, region, color)
-                embed = await utils.make_embed(ctx, color=color, title="Success",
-                                               description=success_msg)
-            await ctx.send(embed=embed)
+                success_msg = ("School \"{}\" has been created in {} with color of 0x{}"
+                               .format(school_name, region, color))
+                await utils.make_embed(ctx, color=color, title="Success",
+                                       description=success_msg)

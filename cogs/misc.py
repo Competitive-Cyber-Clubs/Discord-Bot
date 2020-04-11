@@ -41,9 +41,10 @@ class MiscCog(commands.Cog, name="Misc"):
         """
         self.log.debug("{} has sent ping.".format(ctx.author.name))
         await ctx.message.delete()
-        embed = await utils.make_embed(ctx, title="PONG")
+        embed = await utils.make_embed(ctx, send=False, title="PONG")
         url = "https://peterfrezzini.com/content/images/2016/12/pong_logo.jpg"
-        embed.set_thumbnail(url=url)
+        embed.set_image(url=url)
+        embed.set_footer(text="Image from https://peterfrezzini.com/pong-game-cover/s")
         await ctx.author.send(embed=embed)
 
     @commands.command(name="report",
@@ -77,12 +78,11 @@ class MiscCog(commands.Cog, name="Misc"):
             to_send = self.bot.get_channel(channel)
             if to_send is None:
                 self.log.warning('No channel found for id {}'.format(channel))
-            embed = await utils.make_embed(ctx, title="New Report",
-                                           description="{} submitted the report:\n> {}"
-                                           .format(ctx.author.name, message))
-            await to_send.send(embed=embed)
+            await utils.make_embed(ctx, title="New Report",
+                                   description="{} submitted the report:\n> {}"
+                                   .format(ctx.author.name, message))
+
         respone_msg = ("The admins have received your report.\n"
                        "They will investigation and may reach out")
-        response_embed = await utils.make_embed(ctx, title="Report Received",
-                                                description=respone_msg)
-        await ctx.send(embed=response_embed)
+        await utils.make_embed(ctx, title="Report Received",
+                               description=respone_msg)

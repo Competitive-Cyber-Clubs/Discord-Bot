@@ -32,6 +32,7 @@ class EventsCog(commands.Cog, name="Events"):
 
         Event is triggered when a new member joins. The member recives a welcome PM.
         The message content is pulled from the messages table and it needs a name of "welcome".
+        Doesn't use utils.make_embed due to not having context.
 
         Arguments:
         ---
@@ -56,6 +57,7 @@ class EventsCog(commands.Cog, name="Events"):
 
         Event is triggered when a members leaves the server.
         There is a message that they left that is sent to all admin_logging channels.
+        Doesn't use utils.make_embed due to not having context.
 
         Arguments:
         ---

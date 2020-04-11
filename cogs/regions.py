@@ -59,12 +59,10 @@ class RegionCog(commands.Cog, name="Regions"):
         else:
             status = "error"
         if status == "error":
-            embed = await utils.make_embed(ctx, color="FF0000",
-                                           title="There was an error creating the region.")
+            await utils.make_embed(ctx, color="FF0000",
+                                   title="There was an error creating the region.")
         else:
-            embed = await utils.make_embed(ctx, color="28b463", title="Region has been created.")
-
-        await ctx.send(embed=embed)
+            await utils.make_embed(ctx, color="28b463", title="Region has been created.")
 
     @commands.command(name="list-regions",
                       help="Lists available regions.")
@@ -82,5 +80,4 @@ class RegionCog(commands.Cog, name="Regions"):
         formatted = ""
         for region in regions:
             formatted += " - {} \n".format(region)
-        embed = await utils.make_embed(ctx, title="Available Regions:", description=formatted)
-        await ctx.send(embed=embed)
+        await utils.make_embed(ctx, title="Available Regions:", description=formatted)
