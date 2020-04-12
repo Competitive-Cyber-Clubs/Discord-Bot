@@ -40,3 +40,8 @@ class TaskCog(commands.Cog, name="Tasks"):
             for error in error_record:
                 errors += "- {}; {}\n".format(*error)
         await utils.admin_log(self.bot, errors, True)
+
+
+def setup(bot):
+    """Needed for extension loading"""
+    bot.add_cog(TaskCog(bot))

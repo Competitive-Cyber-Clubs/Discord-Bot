@@ -47,6 +47,28 @@ class MiscCog(commands.Cog, name="Misc"):
         embed.set_footer(text="Image from https://peterfrezzini.com/pong-game-cover/s")
         await ctx.author.send(embed=embed)
 
+    @commands.command(name="uptime",
+                      help="Gets uptime of bot")
+    async def uptime(self, ctx):
+        """uptime
+        ---
+
+        Arguments:
+        ---
+            ctx {discord.ext.commands.Context} -- Context of the command.
+        """
+        current_time = datetime.utcnow()
+
+        uptime = current_time - self.bot.uptime
+        uptime = "Days: {}, Hours: {}, Minutes: {}, Seconds: {}".format(uptime.days,
+                                                                        uptime.seconds // 3600,
+                                                                        uptime.seconds // 60,
+                                                                        uptime.seconds % 60)
+        start_time = self.bot.uptime.strftime("%Y-%m-%d %H:%M")
+        description = "Bot has been online since {} UTC".format(start_time)
+        await utils.make_embed(ctx, title=uptime,
+                               description=description)
+
     @commands.command(name="report",
                       aliases=["contact-admin"],
                       help="Reporting feature.\n"
@@ -86,3 +108,8 @@ class MiscCog(commands.Cog, name="Misc"):
                        "They will investigation and may reach out")
         await utils.make_embed(ctx, title="Report Received",
                                description=respone_msg)
+
+
+def setup(bot):
+    """Needed for extension loading"""
+    bot.add_cog(MiscCog(bot))

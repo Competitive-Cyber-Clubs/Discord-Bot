@@ -195,3 +195,8 @@ class HealthCog(commands.Cog, name="Health"):
         for table in ["schools", "regions"]:
             if await utils.select(table, "id", "id", role.id):
                 return True, table
+
+
+def setup(bot):
+    """Needed for extension loading"""
+    bot.add_cog(HealthCog(bot))

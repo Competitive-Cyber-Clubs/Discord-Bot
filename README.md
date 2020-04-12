@@ -12,9 +12,9 @@
 
 ## About
 
-This is a bot for the CCC Discord. It is made specifically for it, so it has
+This is a bot for the Competitive Cyber Club Discord. It is made specifically for it, so it has
     been highly tailored to meet the unique requirements of it.
-As such it is not recommended for most other discord server, however it is
+As such it is not recommended for other discord servers, however it is
     something that you should be able to learn from to create your own.
 
 Written for Python 3.5+
