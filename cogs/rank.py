@@ -44,3 +44,8 @@ class RankCog(commands.Cog, name="Rank"):
             await user.add_roles(discord.utils.get(ctx.guild.roles, name=rank))
             await make_embed(ctx, color="28b463", title="Success",
                              description="Rank assigned successfully")
+
+
+def setup(bot):
+    """Needed for extension loading"""
+    bot.add_cog(RankCog(bot))

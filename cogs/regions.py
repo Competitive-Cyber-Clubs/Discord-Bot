@@ -81,3 +81,8 @@ class RegionCog(commands.Cog, name="Regions"):
         for region in regions:
             formatted += " - {} \n".format(region)
         await utils.make_embed(ctx, title="Available Regions:", description=formatted)
+
+
+def setup(bot):
+    """Needed for extension loading"""
+    bot.add_cog(RegionCog(bot))

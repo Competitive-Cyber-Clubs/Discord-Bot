@@ -85,3 +85,8 @@ class SearchCog(commands.Cog, name="Search"):
         else:
             title = "Schools in State '{}'".format(state.title())
             await utils.list_message(ctx, schools, title)
+
+
+def setup(bot):
+    """Needed for extension loading"""
+    bot.add_cog(SearchCog(bot))

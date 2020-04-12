@@ -70,3 +70,8 @@ class EventsCog(commands.Cog, name="Events"):
         for channel in channels:
             to_send = self.bot.get_channel(channel)
             await to_send.send(embed=embed)
+
+
+def setup(bot):
+    """Needed for extension loading"""
+    bot.add_cog(EventsCog(bot))

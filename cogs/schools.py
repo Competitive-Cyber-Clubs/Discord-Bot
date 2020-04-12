@@ -217,3 +217,8 @@ class SchoolCog(commands.Cog, name="Schools"):
                                .format(school_name, region, color))
                 await utils.make_embed(ctx, color=color, title="Success",
                                        description=success_msg)
+
+
+def setup(bot):
+    """Needed for extension loading"""
+    bot.add_cog(SchoolCog(bot))

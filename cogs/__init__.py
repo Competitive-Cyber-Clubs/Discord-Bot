@@ -22,6 +22,7 @@
     * :ref:`TaskCog` task: report_errors
 """
 from .admin import AdminCog
+from .errors import ErrorsCog
 from .events import EventsCog
 from .health import HealthCog
 from .misc import MiscCog
@@ -31,11 +32,12 @@ from .schools import SchoolCog
 from .search import SearchCog
 from .tasks import TaskCog
 __all__ = ["AdminCog",
-           "RegionCog",
-           "RankCog",
-           "MiscCog",
+           "ErrorsCog",
            "EventsCog",
-           "SchoolCog",
            "HealthCog",
+           "MiscCog",
+           "RankCog",
+           "RegionCog",
+           "SchoolCog",
            "SearchCog",
            "TaskCog"]

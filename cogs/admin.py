@@ -107,3 +107,23 @@ class AdminCog(commands.Cog, name="Admin"):
         await utils.make_embed(
             ctx, color="28b463", title="Admin Channel Success",
             description="Channel has been added with log status: {}".format(log_status))
+
+    @commands.command(name="reload-extension",
+                      help="reloads <extension>")
+    async def reload_extension(self, ctx, extension):
+        """reload_extension
+        ---
+
+        Command that reloads an extestion.
+
+        Arguments:
+            ctx {discord.ext.commands.Context} -- Context of the command.
+            extension {str} -- extension to reload
+        """
+        self.bot.reload_extension(extension)
+        await utils.make_embed(ctx, color="28b463", title="Reloaded")
+
+
+def setup(bot):
+    """Needed for extension loading"""
+    bot.add_cog(AdminCog(bot))
