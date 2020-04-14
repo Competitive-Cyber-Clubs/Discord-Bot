@@ -1,5 +1,9 @@
 ### What does this MR accomplish
 
+#### New Feature Submission
+
+* A New Feature
+
 ### Related issues
 
 ### Tests
@@ -20,6 +24,7 @@
 
 * [ ] Tables test
 
-### Changelog
+### Update File
 
 * [ ] Changelog updated
+* [ ] Version number updated

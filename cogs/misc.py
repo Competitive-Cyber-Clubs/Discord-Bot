@@ -62,12 +62,13 @@ class MiscCog(commands.Cog, name="Misc"):
         uptime = current_time - self.bot.uptime
         uptime = "Days: {}, Hours: {}, Minutes: {}, Seconds: {}".format(uptime.days,
                                                                         uptime.seconds // 3600,
-                                                                        uptime.seconds // 60,
+                                                                        (uptime.seconds // 60) % 60,
                                                                         uptime.seconds % 60)
         start_time = self.bot.uptime.strftime("%Y-%m-%d %H:%M")
         description = "Bot has been online since {} UTC".format(start_time)
         await utils.make_embed(ctx, title=uptime,
-                               description=description)
+                               description=description,
+                               footer=self.bot.__version__)
 
     @commands.command(name="report",
                       aliases=["contact-admin"],

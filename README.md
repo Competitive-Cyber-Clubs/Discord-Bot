@@ -4,11 +4,9 @@
 
 ### This bot is still in beta stages
 
-[![GitLab pipeline](https://img.shields.io/gitlab/pipeline/Cyb3r-Jak3/ccc-bot?style=flat-square)](https://gitlab.com/Cyb3r-Jak3/ccc-bot/builds)
+[![GitLab pipeline](https://img.shields.io/gitlab/pipeline/Cyb3r-Jak3/Discord-Bot)](https://gitlab.com/Cyb3r-Jak3/Discord-Bot/builds)
 
-[![Maintainability](https://api.codeclimate.com/v1/badges/027b6135ce0965aa69c1/maintainability)](https://codeclimate.com/github/Cyb3r-Jak3/CCC-Bot/maintainability) [![Code Climate issues](https://img.shields.io/codeclimate/issues/Cyb3r-Jak3/CCC-Bot?style=flat-square)](https://codeclimate.com/github/Cyb3r-Jak3/CCC-Bot/issues)
-
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Cyb3r-Jak3/CCC-Bot/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Cyb3r-Jak3/CCC-Bot/?branch=master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Competitive-Cyber-Clubs/Discord-Bot/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Competitive-Cyber-Clubs/Discord-Bot/?branch=master)
 
 ## About
 
@@ -21,6 +19,6 @@ Written for Python 3.5+
 
 ### To add
 
-Please visit this [link](https://discordapp.com/api/oauth2/authorize?client_id=643200662045458444&permissions=268960950&scope=bot)
+Please visit this [link](https://discordapp.com/api/oauth2/authorize?client_id=643200662045458444&permissions=268978336&scope=bot)
 
-[![DeepSource](https://static.deepsource.io/deepsource-badge-light-mini.svg)](https://deepsource.io/gl/Cyb3r-Jak3/CCC-Bot/?ref=repository-badge)
+[![DeepSource](https://static.deepsource.io/deepsource-badge-light-mini.svg)](https://deepsource.io/gh/Competitive-Cyber-Clubs/Discord-Bot/?ref=repository-badge)

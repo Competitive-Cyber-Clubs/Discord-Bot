@@ -42,7 +42,7 @@ class SearchCog(commands.Cog, name="Search"):
         name="search-school",
         help="Search all schools for <school>.\n"
              "College, University, Community are blocked as they return a lot of results.\n"
-             "The full list is at https://github.com/Cyb3r-Jak3/CCC-Bot/blob/master/utils/schools.csv"   # noqa: E501 pylint: disable=line-too-long
+             "The full list is at https://github.com/Competitive-Cyber-Clubs/Discord-Bot/blob/master/utils/schools.csv"   # noqa: E501 pylint: disable=line-too-long
         )
     async def search_school(self, ctx, *, school: str):
         """search-school
@@ -56,8 +56,9 @@ class SearchCog(commands.Cog, name="Search"):
             ctx {discord.ext.commands.Context} -- Context of the command.
             school {str} -- Part of the name the user wants to search for.
         """
-        blocked_words = ["college", "university", "community", "arts"]
-        if school.lower in blocked_words:
+        blocked_words = ["college", "university", "community",
+                         "arts", "technology", "institute"]
+        if school.lower() in blocked_words:
             return await utils.make_embed(ctx, title="Search error", color="FF0000",
                                           description="Please refine your search as \"{}\" returns a lot of results ".format(school),  # noqa: E501 pylint: disable=line-too-long
                                           )
