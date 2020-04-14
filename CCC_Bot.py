@@ -52,7 +52,7 @@ initial_extensions = [
     'cogs.tasks']
 
 description = ("The Discord bot that assists with the Competitive Cyber Club Discord\n"
-               "If you experience any issues then please use the `$report` command.")
+               "If you experience any issues then please use the $report feature.")
 
 
 class CCC_Bot(commands.Bot):  # pylint: disable=missing-class-docstring
@@ -62,6 +62,7 @@ class CCC_Bot(commands.Bot):  # pylint: disable=missing-class-docstring
                          description=description)
 
         self.uptime = datetime.utcnow()
+        self.__version__ = "v0.1.2-beta"
 
     async def on_ready(self):
         "Startup which shows servers it has conencted to"

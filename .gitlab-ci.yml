@@ -8,7 +8,6 @@ include:
   - template: License-Scanning.gitlab-ci.yml
 
 
-
 .check:
   stage: Code_Check
   script:
@@ -32,15 +31,3 @@ python-3.7:
 python-3.8:
   extends: ".check"
   image: python:3.8
-
-
-Heroku:
-  stage: test
-  image: ruby:latest
-  before_script:
-  - gem install dpl
-  script:
-  - dpl --provider=heroku --app=ccc-discord-bot-staging --api-key=$HEROKU_API
-  only:
-    refs:
-      - master

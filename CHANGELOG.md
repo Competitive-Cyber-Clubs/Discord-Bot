@@ -14,7 +14,28 @@
 ### Removed
 -->
 
-[v0.2-beta]
+[v0.1.2-beta]
+---
+
+### Added
+
+- Version number to the bot.
+- More blacklisted words.
+- GitHub issue and pull request templates.
+- Footer ability to [utils.messages.list_message()](utils/messages.py)
+
+### Changed
+
+- Updated description.
+- Fixed the math in [cogs.misc.uptime](cogs/misc.py).
+
+### Removed
+
+- Heroku deployment through GitLab CI.
+- Removed GitLab issue and pull request templates.
+- Code Climate analyzing.
+
+[v0.1.1-beta]
 ---
 
 ### Added
