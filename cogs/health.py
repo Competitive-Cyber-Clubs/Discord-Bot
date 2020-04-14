@@ -195,7 +195,7 @@ class HealthCog(commands.Cog, name="Health"):
         for table in ["schools", "regions"]:
             if await utils.select(table, "id", "id", role.id):
                 return True, table
-        return False, table
+        return False, "error"
 
 
 def setup(bot):
