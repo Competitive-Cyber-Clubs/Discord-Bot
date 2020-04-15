@@ -40,6 +40,7 @@ class SearchCog(commands.Cog, name="Search"):
 
     @commands.command(
         name="search-school",
+        aliases=["search-schools"],
         help="Search all schools for <school>.\n"
              "College, University, Community are blocked as they return a lot of results.\n"
              "The full list is at https://github.com/Competitive-Cyber-Clubs/Discord-Bot/blob/master/utils/schools.csv"   # noqa: E501 pylint: disable=line-too-long
