@@ -88,7 +88,7 @@ async def admin_log(bot, message: str, log_status: bool = True):
             await to_send.send(embed=embed)
 
 
-async def make_embed(ctx, color: str = None, send: bool = True, **kwargs):
+async def make_embed(ctx, color: str = None, send: bool = True, **kwargs: dict):
     """make_embed
     ---
 
@@ -110,7 +110,7 @@ async def make_embed(ctx, color: str = None, send: bool = True, **kwargs):
 
     embed = discord.Embed(timestamp=ctx.message.created_at,
                           **kwargs)
-    if kwargs["footer"]:
+    if "footer" in kwargs:
         embed.set_footer(text=kwargs["footer"])
 
     if send:

@@ -23,6 +23,7 @@
 - More blacklisted words.
 - GitHub issue and pull request templates.
 - Footer ability to [utils.messages.list_message()](utils/messages.py)
+- Alias for search-school
 
 ### Changed
 
