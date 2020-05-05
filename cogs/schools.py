@@ -49,11 +49,9 @@ class SchoolCog(commands.Cog, name="Schools"):
         if len(fetched) == 0:
             return await utils.make_embed(ctx, color="FF0000",
                                           title="There are no schools to join.")
-        await utils.list_message(ctx, fetched, title="Available schools to join:")
-        await utils.make_embed(
-            ctx,
-            title="Use `$join-school` to join",
-            description="If your school is not in the list, use `$help add-school`")
+        await utils.list_message(ctx, fetched,
+                                 title="Available schools to join:",
+                                 footer="If your school is not in the list, use `$help add-school`")
 
     @commands.command(name="import-school",
                       help="Admin Only Feature")

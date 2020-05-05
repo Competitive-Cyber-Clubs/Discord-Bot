@@ -4,7 +4,7 @@ logging-format-style=new
 
 [MESSAGES CONTROL]
 
-disable=invalid-name, logging-too-many-args, duplicate-code, logging-format-interpolation
+disable=invalid-name, logging-too-many-args, duplicate-code, logging-format-interpolation, invalid-overridden-method
 
 [FORMAT]
 

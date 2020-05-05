@@ -14,6 +14,19 @@
 ### Removed
 -->
 
+[v.0.1.0]
+---
+
+### Added
+
+- kwargs to [utils.messages.list_message()](utils/messages.py) that gets passed to make embed.
+
+### Changed
+
+### Removed
+
+- Support for Python 3.5
+
 [v0.1.2-beta]
 ---
 

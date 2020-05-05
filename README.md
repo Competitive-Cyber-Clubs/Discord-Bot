@@ -15,7 +15,7 @@ This is a bot for the Competitive Cyber Club Discord. It is made specifically fo
 As such it is not recommended for other discord servers, however it is
     something that you should be able to learn from to create your own.
 
-Written for Python 3.5+
+Written for Python 3.6+
 
 ## Adding
 
