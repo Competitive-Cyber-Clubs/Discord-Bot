@@ -16,7 +16,7 @@ connection = psycopg2.connect(os.getenv('DATABASE_URL'), sslmode='require')
 cursor = connection.cursor()
 
 
-def table_create():
+def table_create() -> None:
     """table_create
 
     Creates tables if they do not exist at startup
@@ -71,7 +71,7 @@ def table_create():
         cursor.execute(table)
 
 
-def format_step(table: str):
+def format_step(table: str) -> str:
     """format_step
     ---
 
@@ -113,7 +113,7 @@ def format_step(table: str):
     return query_str
 
 
-def result_parser(column: str, fetched: list):
+def result_parser(column: str, fetched: list) -> list:
     """result_parser
     ---
 
@@ -138,7 +138,7 @@ def result_parser(column: str, fetched: list):
 
 
 @asyncio.coroutine
-def insert(table: str, data: list):
+def insert(table: str, data: list) -> str:
     """insert
     ---
 
@@ -194,7 +194,7 @@ def insert(table: str, data: list):
 
 
 @asyncio.coroutine
-async def fetch(table: str, column: str):
+async def fetch(table: str, column: str) -> list:
     """fetch
     ---
 
@@ -227,7 +227,8 @@ async def fetch(table: str, column: str):
 
 
 @asyncio.coroutine
-async def select(table: str, column: str, where_column: str, where_value: str, symbol: str = "="):
+async def select(table: str, column: str,
+                 where_column: str, where_value: str, symbol: str = "=") -> list:
     """select
     ---
 
@@ -270,7 +271,7 @@ async def select(table: str, column: str, where_column: str, where_value: str, s
 
 
 @asyncio.coroutine
-async def update(table: str, column: str, where_value: str, new_value: str):
+async def update(table: str, column: str, where_value: str, new_value: str) -> None:
     """Update
     ---
 
@@ -304,7 +305,7 @@ async def update(table: str, column: str, where_value: str, new_value: str):
 
 
 @asyncio.coroutine
-async def delete(table: str, column: str, value: str):
+async def delete(table: str, column: str, value: str) -> None:
     """Delete
     ---
     Asynchronous Function

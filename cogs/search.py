@@ -60,9 +60,9 @@ class SearchCog(commands.Cog, name="Search"):
         blocked_words = ["college", "university", "community",
                          "arts", "technology", "institute"]
         if school.lower() in blocked_words:
-            return await utils.make_embed(ctx, title="Search error", color="FF0000",
-                                          description="Please refine your search as \"{}\" returns a lot of results ".format(school),  # noqa: E501 pylint: disable=line-too-long
-                                          )
+            return await utils.make_embed(
+                ctx, title="Search error", color="FF0000",
+                description=f"Please refine your search as \"{school}\" returns a lot of results.")
         results = await utils.school_search(school)
         if len(results) == 0:
             await utils.make_embed(ctx, color="FF0000", title="No results found.")

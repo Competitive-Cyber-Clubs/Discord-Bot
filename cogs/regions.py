@@ -76,7 +76,7 @@ class RegionCog(commands.Cog, name="Regions"):
         ---
             ctx {discord.ext.commands.Context} -- Context of the command.
         """
-        regions = await utils.fetch("regions", "name")
+        regions = sorted(await utils.fetch("regions", "name"))
         formatted = ""
         for region in regions:
             formatted += " - {} \n".format(region)

@@ -7,7 +7,7 @@ from .datahandler import select
 log = logging.getLogger("bot")
 
 
-async def list_message(ctx, message: list, title: str):
+async def list_message(ctx, message: list, title: str, **kwargs: dict):
     """list_message
     ---
     Asynchronous Function
@@ -32,7 +32,7 @@ async def list_message(ctx, message: list, title: str):
     amount_of_embeds = len(range(0, joined_message, 1500))
     for _ in range(amount_of_embeds):
         # Each embed can only be 6000 chararcter so if the length is over that more are created
-        embed = await make_embed(ctx, title=title, send=False)
+        embed = await make_embed(ctx, title=title, send=False, **kwargs)
         for _ in range(2):
             temp_msg = ""
             while len(temp_msg) < 1024:
