@@ -17,7 +17,9 @@ As such it is not recommended for other discord servers, however it is
 
 Written for Python 3.5+
 
-### To add
+## Adding
+
+### To join
 
 Please visit this [link](https://discordapp.com/api/oauth2/authorize?client_id=643200662045458444&permissions=268978336&scope=bot)
 

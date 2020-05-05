@@ -49,19 +49,16 @@ class SchoolCog(commands.Cog, name="Schools"):
         if len(fetched) == 0:
             return await utils.make_embed(ctx, color="FF0000",
                                           title="There are no schools to join.")
-        schools = ""
-        embed = await utils.make_embed(ctx, title="Available schools to join:", send=False,
-                                       description="Use `$join-school` to join")
-        for item in fetched:
-            schools += "- {} \n".format(item)
-        embed.add_field(name="Schools", value=schools, inline=False)
-        embed.set_footer(text="If your school is not in the list, use `$help add-school`")
-        await ctx.send(embed=embed)
+        await utils.list_message(ctx, fetched, title="Available schools to join:")
+        await utils.make_embed(
+            ctx,
+            title="Use `$join-school` to join",
+            description="If your school is not in the list, use `$help add-school`")
 
     @commands.command(name="import-school",
                       help="Admin Only Feature")
     @commands.check(utils.check_admin)
-    async def import_school(self, ctx, *, school_name: str):
+    async def import_school(self, ctx, school_name: str, region: str):
         """import-school
         ---
 
@@ -76,20 +73,15 @@ class SchoolCog(commands.Cog, name="Schools"):
         if srole.name in await utils.fetch("schools", "school"):
             await utils.make_embed(ctx, "FF0000", title="That school already exists.")
         else:
-            await ctx.send("Please enter the region for the school.")
-            try:
-                region = self.bot.wait_for('message', timeout=60.0)
-            except asyncio.TimeoutError:
-                return await utils.make_embed(ctx, "FF0000", title="Timed out")
-            new_school = [school_name, region.content, srole.color,  # pylint: disable=no-member
-                          "Imported", "Imported"]
+            new_school = [school_name, region, srole.color.value, srole.id,  # noqa: E501 pylint: disable=no-member
+                          "Imported", self.bot.owner_id]
             status = await utils.insert("schools", new_school)
             if status == "error":
-                utils.make_embed(ctx, color="FF0000",
-                                 title="There was an error importing the school.")
+                await utils.make_embed(ctx, color=srole.color.value,
+                                       title="There was an error importing the school.")
             else:
-                utils.make_embed(ctx, color="28b463",
-                                 title="Region has been created")
+                await utils.make_embed(ctx, color="28b463",
+                                       title="School has been imported")
 
     @commands.command(name="join-school",
                       help="Joins a schools.")
@@ -142,7 +134,9 @@ class SchoolCog(commands.Cog, name="Schools"):
                                      )
 
     @commands.command(name="add-school",
-                      help="Adds a new school and makes a role for it .",
+                      help="Adds a new school and makes a role for it.\n"
+                           "Only schools on the list are allowed to join.\n"
+                           "List: https://github.com/Competitive-Cyber-Clubs/Discord-Bot/blob/master/utils/schools.csv",  # noqa: E501 pylint: disable=line-too-long
                       description="Creates a new school")
     @commands.has_role("new")
     async def add_school(self, ctx, *, school_name: str):  # noqa: E501 pylint: disable=too-many-branches,line-too-long

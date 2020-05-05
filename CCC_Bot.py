@@ -51,18 +51,18 @@ initial_extensions = [
     'cogs.search',
     'cogs.tasks']
 
-description = ("The Discord bot that assists with the Competitive Cyber Club Discord\n"
-               "If you experience any issues then please use the $report feature.")
-
 
 class CCC_Bot(commands.Bot):  # pylint: disable=missing-class-docstring
     def __init__(self):
         super().__init__(command_prefix="$",
-                         owner_id=OWNER_ID,
-                         description=description)
+                         owner_id=OWNER_ID)
 
         self.uptime = datetime.utcnow()
-        self.__version__ = "beta"
+        self.__version__ = "v0.1.0"
+        self.description = (
+            "This Discord bot that assists with the Competitive Cyber Club Discord\n"
+            "If you experience any issues then please use the $report feature.\n"
+            f"Version: {self.__version__}")
 
     async def on_ready(self):
         "Startup which shows servers it has conencted to"
