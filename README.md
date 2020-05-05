@@ -2,10 +2,7 @@
 
 # CCC-Bot
 
-### This bot is still in beta stages
-
 [![GitLab pipeline](https://img.shields.io/gitlab/pipeline/Cyb3r-Jak3/Discord-Bot)](https://gitlab.com/Cyb3r-Jak3/Discord-Bot/builds)
-
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Competitive-Cyber-Clubs/Discord-Bot/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Competitive-Cyber-Clubs/Discord-Bot/?branch=master)
 
 ## About
