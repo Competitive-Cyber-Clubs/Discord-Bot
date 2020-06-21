@@ -45,7 +45,8 @@
             message {text}: Text of the report
             time {timestampz}: Time of the report
 """
-tables = ["""
+tables = [
+    """
 CREATE TABLE IF NOT EXISTS schools(
 school text UNIQUE NOT NULL DEFAULT '',
 region text NOT NULL DEFAULT '',
@@ -54,26 +55,30 @@ id bigint NOT NULL DEFAULT '0',
 added_by text NOT NULL DEFAULT '',
 added_by_id bigint NOT NULL DEFAULT '0',
 PRIMARY KEY (school)
-);""", """
+);""",
+    """
 CREATE TABLE IF NOT EXISTS bot_admins(
 id bigint UNIQUE NOT NULL DEFAULT '0',
 name text NOT NULL DEFAULT '',
 PRIMARY KEY (name)
 );
-""", """
+""",
+    """
 CREATE TABLE IF NOT EXISTS admin_channels(
 name text NOT NULL DEFAULT '',
 id bigint NOT NULL DEFAULT '0',
 log bool DEFAULT False,
 PRIMARY KEY (name)
 );
-""", """
+""",
+    """
 CREATE TABLE IF NOT EXISTS regions(
 name text NOT NULL DEFAULT '',
 id bigint NOT NULL DEFAULT '0',
 PRIMARY KEY (name)
 );
-""", """
+""",
+    """
 CREATE TABLE IF NOT EXISTS errors(
 id smallint NOT NULL DEFAULT '0',
 command text NOT NULL DEFAULT '',
@@ -81,17 +86,20 @@ message text NOT NULL DEFAULT '',
 error text NOT NULL DEFAULT '',
 time timestamptz NOT NULL,
 PRIMARY KEY (id)
-);""", """
+);""",
+    """
 CREATE TABLE IF NOT EXISTS keys(
 key text NOT NULL DEFAULT '',
 value text NOT NULL DEFAULT '',
 PRIMARY KEY (key)
-);""", """
+);""",
+    """
 CREATE TABLE IF NOT EXISTS messages(
 name text NOT NULL DEFAULT '',
 message text NOT NULL DEFAULT '',
 PRIMARY KEY (name)
-);""", """
+);""",
+    """
 CREATE TABLE IF NOT EXISTS reports(
 id int NOT NULL DEFAULT '0',
 name text NOT NULL DEFAULT '',
@@ -99,4 +107,5 @@ name_id bigint NOT NULL DEFAULT '0',
 message text NOT NULL DEFAULT '',
 time timestamptz NOT NULL,
 PRIMARY KEY(id)
-);"""]
+);""",
+]

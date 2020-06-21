@@ -19,6 +19,7 @@ class TaskCog(commands.Cog, name="Tasks"):
     ---
         bot {discord.commands.Bot} -- The bot
     """
+
     def __init__(self, bot):
         self.bot = bot
         self.log = logging.getLogger("bot")
@@ -31,8 +32,9 @@ class TaskCog(commands.Cog, name="Tasks"):
         Every 24 hours, all errors for the current day are send to the admin channels.
         """
         date = datetime.utcnow().strftime("%Y-%m-%d")
-        error_record = await utils.select("errors", "message, error",
-                                          "date_trunc('day', time)", date)
+        error_record = await utils.select(
+            "errors", "message, error", "date_trunc('day', time)", date
+        )
         if not error_record:
             errors = "No errors found for {}".format(date)
         else:

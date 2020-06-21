@@ -19,14 +19,15 @@ class SearchCog(commands.Cog, name="Search"):
     ---
         bot {discord.commands.Bot} -- The bot
     """
+
     def __init__(self, bot):
         self.bot = bot
 
     @commands.command(
         name="check-school",
-        help="Checks to see if <school> exists in the csv.\n"
-             "Only returns True or False")
-    async def validate_school(self, ctx, *, school: str):
+        help="Checks to see if <school> exists in the csv.\n" "Only returns True or False",
+    )
+    async def validate_school(self, ctx: commands.Context, *, school: str):
         """validate_school
         ---
 
@@ -36,16 +37,18 @@ class SearchCog(commands.Cog, name="Search"):
             ctx {discord.ext.commands.Context} -- Context of the command.
             school {str} -- Name of the school the user wants to validate.
         """
-        await utils.make_embed(ctx, title=str(await utils.school_check(school)))
+        await utils.make_embed(
+            ctx, title=str(await utils.school_check(self.bot.school_list, school))
+        )
 
     @commands.command(
         name="search-school",
         aliases=["search-schools"],
         help="Search all schools for <school>.\n"
-             "College, University, Community are blocked as they return a lot of results.\n"
-             "The full list is at https://github.com/Competitive-Cyber-Clubs/Discord-Bot/blob/master/utils/schools.csv"   # noqa: E501 pylint: disable=line-too-long
-        )
-    async def search_school(self, ctx, *, school: str):
+        "College, University, Community are blocked as they return a lot of results.\n"
+        "The full list is at https://github.com/Competitive-Cyber-Clubs/Discord-Bot/blob/master/utils/schools.csv",  # noqa: E501 pylint: disable=line-too-long
+    )
+    async def search_school(self, ctx: commands.Context, *, school: str):
         """search-school
         ---
 
@@ -57,20 +60,36 @@ class SearchCog(commands.Cog, name="Search"):
             ctx {discord.ext.commands.Context} -- Context of the command.
             school {str} -- Part of the name the user wants to search for.
         """
-        blocked_words = ["college", "university", "community",
-                         "arts", "technology", "institute"]
+        blocked_words = [
+            "college",
+            "university",
+            "community",
+            "arts",
+            "technology",
+            "institute",
+        ]
         if school.lower() in blocked_words:
             return await utils.make_embed(
-                ctx, title="Search error", color="FF0000",
-                description=f"Please refine your search as \"{school}\" returns a lot of results.")
-        results = await utils.school_search(school)
+                ctx,
+                title="Search error",
+                color="FF0000",
+                description=f'Please refine your search as "{school}" returns a lot of results.',
+            )
+        results = await utils.school_search(self.bot.school_list, school)
         if len(results) == 0:
             await utils.make_embed(ctx, color="FF0000", title="No results found.")
         else:
+            for place, results_name in enumerate(results):
+                results[place] = "{} :: Role created: {}".format(
+                    results_name,
+                    await utils.TF_emoji(
+                        await utils.school_check(self.bot.school_list, results_name)
+                    ),
+                )
             await utils.list_message(ctx, results, "Search Results:\n")
 
     @commands.command(name="search-state")
-    async def search_state(self, ctx, *, state: str):
+    async def search_state(self, ctx: commands.Context, *, state: str):
         """search_state
         ---
 
@@ -81,7 +100,7 @@ class SearchCog(commands.Cog, name="Search"):
             ctx {discord.ext.commands.Context} -- Context of the command.
             state {str} -- Name of the state that the user wants to get schools from.
         """
-        schools = await utils.state_list(state)
+        schools = await utils.state_list(self.bot.school_list, state)
         if len(schools) == 0:
             await utils.make_embed(ctx, color="FF0000", title="No results found.")
         else:

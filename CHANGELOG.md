@@ -14,7 +14,29 @@
 ### Removed
 -->
 
-[v.0.1.0]
+[v0.1.1]
+---
+
+### Added
+
+- User join log.
+- Added bandit testing in .gitlab-ci.yml
+- School search function now lists if a role has been created for a school.
+- Added "?" as a command prefix.
+- Added Python black for code scanning
+- Added Secret Scanning
+
+### Changed
+
+- Fix issue where message on user leaving would not work make a log.
+- Lots of formatting changes to use python black
+
+### Removed
+
+- Error message for no command found.
+- Dotenv dependency
+
+[v0.1.0]
 ---
 
 ### Added

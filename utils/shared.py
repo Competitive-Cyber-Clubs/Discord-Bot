@@ -9,7 +9,7 @@ class FailedReactionCheck(Exception):
     """
 
 
-async def check_admin(ctx):
+async def check_admin(ctx) -> bool:
     """check_admin
     ---
     Checks to see if message author is in bot_admins
@@ -22,11 +22,32 @@ async def check_admin(ctx):
     ---
         bool -- Returns 'TRUE' if the message author is in bot_admins.
     """
-    returned = [int(id) for id in await fetch("bot_admins", "id")]
+    returned = [int(user_id) for user_id in await fetch("bot_admins", "id")]
     return ctx.message.author.id in returned
 
 
-async def check_react(ctx, user, reaction, expected_react):
+async def TF_emoji(status: bool) -> str:
+    """TF_emoji
+
+    Returns string for emoji for true false.
+
+    Arguments:
+    ---
+        status {bool} -- If the value is true
+    Returns
+    ---
+        str -- String value of emoji
+
+
+    Returns:
+        str -- either a check mark or x emoji
+    """
+    if status:
+        return ":white_check_mark:"
+    return ":x:"
+
+
+async def check_react(ctx, user, reaction, expected_react: str):
     """check_reach
     ---
     Checks if the reaction on a message is correct and send by the same user that it was needed

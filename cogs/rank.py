@@ -18,13 +18,13 @@ class RankCog(commands.Cog, name="Rank"):
     ---
         bot {discord.commands.Bot} -- The bot
     """
+
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="add-rank",
-                      help="Assigns student, alumni or professor role.")
+    @commands.command(name="add-rank", help="Assigns student, alumni or professor role.")
     @commands.has_role("verified")
-    async def add_rank(self, ctx, *, rank: str):
+    async def add_rank(self, ctx: commands.Context, *, rank: str):
         """Add_Rank
         ---
 
@@ -42,8 +42,9 @@ class RankCog(commands.Cog, name="Rank"):
             await make_embed(ctx, "FF0000", title="Error: You already have a rank.")
         else:
             await user.add_roles(discord.utils.get(ctx.guild.roles, name=rank))
-            await make_embed(ctx, color="28b463", title="Success",
-                             description="Rank assigned successfully")
+            await make_embed(
+                ctx, color="28b463", title="Success", description="Rank assigned successfully",
+            )
 
 
 def setup(bot):

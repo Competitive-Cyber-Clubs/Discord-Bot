@@ -31,13 +31,16 @@ from .regions import RegionCog
 from .schools import SchoolCog
 from .search import SearchCog
 from .tasks import TaskCog
-__all__ = ["AdminCog",
-           "ErrorsCog",
-           "EventsCog",
-           "HealthCog",
-           "MiscCog",
-           "RankCog",
-           "RegionCog",
-           "SchoolCog",
-           "SearchCog",
-           "TaskCog"]
+
+__all__ = [
+    "AdminCog",
+    "ErrorsCog",
+    "EventsCog",
+    "HealthCog",
+    "MiscCog",
+    "RankCog",
+    "RegionCog",
+    "SchoolCog",
+    "SearchCog",
+    "TaskCog",
+]

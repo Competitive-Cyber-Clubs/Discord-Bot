@@ -1,70 +1,22 @@
 """Handles all postgresql data and tables"""
 import os
-import asyncio
 import psycopg2
 from psycopg2.extensions import AsIs
-from dotenv import load_dotenv
 from .tables import tables
 from .logger import make_logger
 
-load_dotenv()
 # Imports the main logger
-log = make_logger("database", "DEBUG")
+log = make_logger("database", os.getenv("LOG_LEVEL"))
 
 # Creates the connection to the database
-connection = psycopg2.connect(os.getenv('DATABASE_URL'), sslmode='require')
+connection = psycopg2.connect(os.getenv("DATABASE_URL"), sslmode="require")
 cursor = connection.cursor()
 
 
 def table_create() -> None:
     """table_create
 
-    Creates tables if they do not exist at startup
-
-    Tables:
-    ---
-        schools: Table for school roles.
-            school {text}: name of the school
-            region {text}: name of the region where the school is
-            color {int}: hex code of the color **
-            id {bigint}: Discord ID of the role
-            added_by {text}: Username who created the school **
-            added_by_id {bigint}: Discord ID of the user who created the school
-
-        bot_admins: Table for users that are bot admins.
-            id {bigint}: Discord ID of admin
-            name {text}: username of the admin
-
-        admin_channels: Table for discord channels that are for admin.
-            name {text}: Name of the channel
-            id {bigint}: Discord ID of the channel
-            log {bool}: If the channel is a logging channel or not
-
-        regions: Table for region roles
-            name {text}: Name of the region
-            id {bigint}: Discord ID of the role
-
-        errors: Table of information about errors
-            id {smallint}: ID for the error. Each number is random.
-            message {text}: The message that was sent causing the error.
-            command {text}: The command that was triggered to run
-            error {text}: The error that occurred
-            time {timestampz}: The time when the error occurred.
-
-        keys: Table for misc information stored.
-            key {text}: Name of the value
-            value {text}: The value
-
-        messages: Table for storing messages
-            name {text}: Name of the messssage
-            message {text}: Content of the message
-
-        reports: Table for reports
-            id {int}: ID of the report
-            name {text}: Discord user name of reporter
-            name_id {bigint}: Discord user ID reporter
-            message {text}: Text of the report
-            time {timestampz}: Time of the report
+    Creates tables if they do not exist at startup. All tables are pulled from tables.py
 
     """
     for table in tables:
@@ -87,26 +39,32 @@ def format_step(table: str) -> str:
         str -- Returns a string that will be used for cursor execution
     """
     if table == "schools":
-        query_str = ("INSERT INTO schools"
-                     "(school, region, color, id, added_by, added_by_id) "
-                     "VALUES (%s, %s, %s, %s, %s, %s);")
+        query_str = (
+            "INSERT INTO schools"
+            "(school, region, color, id, added_by, added_by_id) "
+            "VALUES (%s, %s, %s, %s, %s, %s);"
+        )
     elif table == "errors":
-        query_str = ("INSERT INTO errors"
-                     "(id, command, message, error, time) "
-                     "VALUES (%s, %s, %s, %s, %s);")
+        query_str = (
+            "INSERT INTO errors"
+            "(id, command, message, error, time) "
+            "VALUES (%s, %s, %s, %s, %s);"
+        )
     elif table == "reports":
-        query_str = ("INSERT INTO reports"
-                     "(id, name, name_id, message, time) "
-                     "VALUES (%s, %s, %s, %s, %s);")
+        query_str = (
+            "INSERT INTO reports"
+            "(id, name, name_id, message, time) "
+            "VALUES (%s, %s, %s, %s, %s);"
+        )
     elif table == "admin_channels":
-        query_str = ("INSERT INTO admin_channels (name, id, log) "
-                     "VALUES (%s, %s, %s) ON CONFLICT DO NOTHING;")
+        query_str = (
+            "INSERT INTO admin_channels (name, id, log) "
+            "VALUES (%s, %s, %s) ON CONFLICT DO NOTHING;"
+        )
     elif table == "bot_admins":
-        query_str = ("INSERT INTO bot_admins "
-                     "(name, id) VALUES (%s, %s) ON CONFLICT DO NOTHING;")
+        query_str = "INSERT INTO bot_admins (name, id) VALUES (%s, %s) ON CONFLICT DO NOTHING;"
     elif table == "regions":
-        query_str = ("INSERT INTO regions "
-                     "(name, id) VALUES (%s, %s)")
+        query_str = "INSERT INTO regions (name, id) VALUES (%s, %s)"
     else:
         log.error("Table not found.")
         return "error"
@@ -126,7 +84,7 @@ def result_parser(column: str, fetched: list) -> list:
     ---
         list -- A normal list or a list of tuples.
     """
-    # To made it not break up the tuples.
+    # fetched is a list so it does not need breaking up
     if column == "*" or column.find(",") != -1:
         result = fetched
     # Breaks up the tuples to a standard list.
@@ -137,8 +95,7 @@ def result_parser(column: str, fetched: list) -> list:
     return result
 
 
-@asyncio.coroutine
-def insert(table: str, data: list) -> str:
+async def insert(table: str, data: list) -> [None, str]:
     """insert
     ---
 
@@ -155,7 +112,7 @@ def insert(table: str, data: list) -> str:
     ---
         str -- In the event of an error inserting into the table the string 'error' will be
             returned. If there is no error then 'None' will be returned.
-    Postgresql Equivalent:
+    PostgreSQL Equivalent:
     ---
     INSERT into :ref:`table` VALUE (:ref:`*data`);
     """
@@ -166,25 +123,16 @@ def insert(table: str, data: list) -> str:
     try:
         # Tables with 6 values
         if table == "schools":
-            cursor.execute(format_str,
-                           (data[0], data[1],
-                            data[2], data[3],
-                            data[4], data[5]))
+            cursor.execute(format_str, (data[0], data[1], data[2], data[3], data[4], data[5]))
         # Tables with 5 values
         elif table in ["errors", "reports"]:
-            cursor.execute(format_str,
-                           (data[0], data[1],
-                            data[2], data[3],
-                            data[4]))
+            cursor.execute(format_str, (data[0], data[1], data[2], data[3], data[4]))
         # Tables with 3 values
         elif table == "admin_channels":
-            cursor.execute(format_str,
-                           (data[0], data[1],
-                            data[2]))
+            cursor.execute(format_str, (data[0], data[1], data[2]))
         # Tables with 2 values
         elif table in ["bot_admins", "regions"]:
-            cursor.execute(format_str,
-                           (data[0], data[1]))
+            cursor.execute(format_str, (data[0], data[1]))
         connection.commit()
         return None
     except psycopg2.Error as pge:
@@ -193,20 +141,19 @@ def insert(table: str, data: list) -> str:
         return "error"
 
 
-@asyncio.coroutine
 async def fetch(table: str, column: str) -> list:
     """fetch
     ---
 
     Asynchronous Function
 
-    Retrives values from the :ref:`column` from the :ref:`table`.
+    Retrieves values from the :ref:`column` from the :ref:`table`.
 
     Arguments:
     ---
         table {str} -- Name of the table that data is being fetched from.
         column {str} -- The column(s) that is being fetched. Multiple columns need to comma
-            seperated, if all columns are wanted then use '*'.
+            separated, if all columns are wanted then use '*'.
 
     Returns:
     ---
@@ -218,17 +165,16 @@ async def fetch(table: str, column: str) -> list:
     """
     try:
         format_str = "SELECT %s FROM %s;"
-        cursor.execute(format_str, (AsIs(column),
-                                    AsIs(table)))
+        cursor.execute(format_str, (AsIs(column), AsIs(table)))
         fetched = cursor.fetchall()
         return result_parser(column, fetched)
     except psycopg2.Error as pge:
         log.error(pge)
 
 
-@asyncio.coroutine
-async def select(table: str, column: str,
-                 where_column: str, where_value: str, symbol: str = "=") -> list:
+async def select(
+    table: str, column: str, where_column: str, where_value: str, symbol: str = "="
+) -> list:
     """select
     ---
 
@@ -241,7 +187,7 @@ async def select(table: str, column: str,
     ---
         table {str} -- Name of the table that data is being fetched from.
         column {str} -- The column(s) that is being fetched. Multiple columns need to comma
-            seperated, if all columns are wanted then use '*'.
+            separated, if all columns are wanted then use '*'.
         where_column {str} -- The column that is going have the value of :ref:`where_value`.
         where_value {str} -- The value that you are matching.
         symbol {str} -- [description] (default: {"="})
@@ -256,13 +202,9 @@ async def select(table: str, column: str,
     """
     try:
         format_str = "SELECT %s FROM %s WHERE %s %s %s;"
-        cursor.execute(format_str, (
-            AsIs(column),
-            AsIs(table),
-            AsIs(where_column),
-            AsIs(symbol),
-            where_value
-        ))
+        cursor.execute(
+            format_str, (AsIs(column), AsIs(table), AsIs(where_column), AsIs(symbol), where_value),
+        )
         fetched = cursor.fetchall()
         return result_parser(column, fetched)
     except psycopg2.Error as pge:
@@ -270,7 +212,6 @@ async def select(table: str, column: str,
         cursor.execute("ROLLBACK")
 
 
-@asyncio.coroutine
 async def update(table: str, column: str, where_value: str, new_value: str) -> None:
     """Update
     ---
@@ -291,20 +232,15 @@ async def update(table: str, column: str, where_value: str, new_value: str) -> N
     """
     try:
         format_str = "UPDATE %s SET %s = %s where %s = %s"
-        cursor.execute(format_str, (
-            AsIs(table),
-            AsIs(column),
-            new_value,
-            AsIs(column),
-            where_value
-        ))
+        cursor.execute(
+            format_str, (AsIs(table), AsIs(column), new_value, AsIs(column), where_value),
+        )
         connection.commit()
     except psycopg2.Error as pge:
         log.error(pge)
         cursor.execute("ROLLBACK")
 
 
-@asyncio.coroutine
 async def delete(table: str, column: str, value: str) -> None:
     """Delete
     ---
@@ -315,7 +251,9 @@ async def delete(table: str, column: str, value: str) -> None:
     Arguments:
     ---
         table {str} -- Name of the table that the data is being deleted from.
+
         column {str} -- The column to which the :ref:`value` is going to match.
+
         value {str} -- The value in the row which is going to match to a value in :ref:`column`
 
     Postgresql Equivalent:
@@ -324,11 +262,7 @@ async def delete(table: str, column: str, value: str) -> None:
     """
     try:
         format_str = "DELETE FROM %s WHERE %s = %s"
-        cursor.execute(format_str, (
-            AsIs(table),
-            AsIs(column),
-            value
-        ))
+        cursor.execute(format_str, (AsIs(table), AsIs(column), value))
         connection.commit()
     except psycopg2.Error as pge:
         log.error(pge)
