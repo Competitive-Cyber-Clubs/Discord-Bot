@@ -70,22 +70,24 @@ class SchoolCog(commands.Cog, name="Schools"):
             ctx {discord.ext.commands.Context} -- Context of the command.
             school_name {str} -- Name of the school role to import.
         """
-        srole = discord.utils.get(ctx.guild.roles, name=school_name)
-        if srole.name in await utils.fetch("schools", "school"):
+        school_role = discord.utils.get(ctx.guild.roles, name=school_name)
+        if school_role.name in await utils.fetch("schools", "school"):
             await utils.make_embed(ctx, "FF0000", title="That school already exists.")
         else:
             new_school = [
                 school_name,
                 region,
-                srole.color.value,
-                srole.id,  # noqa: E501 pylint: disable=no-member
+                school_role.color.value,
+                school_role.id,  # noqa: E501 pylint: disable=no-member
                 "Imported",
                 self.bot.owner_id,
             ]
             status = await utils.insert("schools", new_school)
             if status == "error":
                 await utils.make_embed(
-                    ctx, color=srole.color.value, title="There was an error importing the school.",
+                    ctx,
+                    color=school_role.color.value,
+                    title="There was an error importing the school.",
                 )
             else:
                 await utils.make_embed(ctx, color="28b463", title="School has been imported")
@@ -129,7 +131,6 @@ class SchoolCog(commands.Cog, name="Schools"):
                 )
             else:
                 self.log.debug("Adding roles: {} to {}".format(to_add, user))
-                utils.admin_log(self.bot, "Adding roles: {} to {}".format(to_add, user))
                 await user.add_roles(
                     *to_add, reason="{u} joined {s}".format(u=user.name, s=entries[0])
                 )
@@ -147,7 +148,7 @@ class SchoolCog(commands.Cog, name="Schools"):
         name="add-school",
         help="Adds a new school and makes a role for it.\n"
         "Only schools on the list are allowed to join.\n"
-        "List: https://github.com/Competitive-Cyber-Clubs/Discord-Bot/blob/master/utils/schools.csv",  # noqa: E501 pylint: disable=line-too-long
+        "List: https://github.com/Competitive-Cyber-Clubs/School-List/blob/master/school_list.csv",
         description="Creates a new school",
     )
     @commands.has_role("new")
@@ -232,6 +233,7 @@ class SchoolCog(commands.Cog, name="Schools"):
                     school_name, region, color
                 )
                 await utils.make_embed(ctx, color=color, title="Success", description=success_msg)
+                await self.join_school(ctx=ctx, school_name=school_name)
 
 
 def setup(bot):

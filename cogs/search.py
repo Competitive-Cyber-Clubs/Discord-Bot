@@ -76,15 +76,13 @@ class SearchCog(commands.Cog, name="Search"):
                 description=f'Please refine your search as "{school}" returns a lot of results.',
             )
         results = await utils.school_search(self.bot.school_list, school)
+        created_roles = await utils.fetch("schools", "school")
         if len(results) == 0:
             await utils.make_embed(ctx, color="FF0000", title="No results found.")
         else:
             for place, results_name in enumerate(results):
                 results[place] = "{} :: Role created: {}".format(
-                    results_name,
-                    await utils.TF_emoji(
-                        await utils.school_check(self.bot.school_list, results_name)
-                    ),
+                    results_name, await utils.TF_emoji(results_name in created_roles),
                 )
             await utils.list_message(ctx, results, "Search Results:\n")
 

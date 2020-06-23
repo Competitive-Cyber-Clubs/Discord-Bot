@@ -14,7 +14,7 @@ To get started fork the repo and make a branch with an accurate name for the cha
 
 ---
 
-All of the cog, functions, etc should be documented in a way that allows for people with an understanding of python to get how the information flows through the bot. We are using numpy's style guide. If you would like easier understanding, then I recommend checking out the project on [sourcegraph](https://sourcegraph.com/gitlab.com/Cyb3r-Jak3/ccc-bot).
+All of the cog, functions, etc should be documented in a way that allows for people with an understanding of python to get how the information flows through the bot. We are using numpy's style guide. If you would like easier understanding, then I recommend checking out the project on [sourcegraph](https://sourcegraph.com/github.com/Competitive-Cyber-Clubs/Discord-Bot).
 
 ## Commands
 
