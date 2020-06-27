@@ -8,22 +8,10 @@ include:
   - template: License-Scanning.gitlab-ci.yml
   - template: Secret-Detection.gitlab-ci.yml
 
-
-dependency_scanning:
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "master"'
-      when: always
-    - if: '$CI_COMMIT_TAG != null'
-      when: always
-
 license_scanning:
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
       when: always
-    - if: '$CI_COMMIT_TAG != null'
-      when: always
-
-
 
 
 

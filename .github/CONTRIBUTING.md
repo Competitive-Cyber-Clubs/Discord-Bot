@@ -6,7 +6,7 @@
 
 ---
 
-Thanks for reading this because we am always looking to collaborate with other people to see their ideas.
+Thanks for reading this because we are always looking to collaborate with other people to see their ideas.
 
 To get started fork the repo and make a branch with an accurate name for the changes you are making. Once you have made the changes to your liking open a pull request and we will look it over.
 
