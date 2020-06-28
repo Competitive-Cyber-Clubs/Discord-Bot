@@ -98,7 +98,7 @@ class SchoolCog(commands.Cog, name="Schools"):
         """join-school
         ---
 
-        Enables users to join a school role. school_name arguments is not to be quote seperated.
+        Enables users to join a school role. school_name arguments is not to be quote separated.
         Users are required to have the role "new". Users will be assigned the school role, region
         role and "verified" role. They will lose their "new" role.
 

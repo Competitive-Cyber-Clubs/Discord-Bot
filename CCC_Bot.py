@@ -21,9 +21,9 @@ import discord
 import utils
 
 
-TOKEN = os.getenv("DISCORD_TOKEN")
-OWNER_NAME = os.getenv("OWNER_NAME")
-OWNER_ID = os.getenv("OWNER_ID")
+TOKEN = os.environ["DISCORD_TOKEN"]
+OWNER_NAME = os.environ["OWNER_NAME"]
+OWNER_ID = os.environ["OWNER_ID"]
 log_level = os.getenv("LOG_LEVEL")
 if not log_level:
     log_level = "INFO"
@@ -62,7 +62,7 @@ class CCC_Bot(commands.Bot):  # pylint: disable=missing-class-docstring
         self.__version__ = "v0.1.1"
         self.description = (
             "This Discord bot that assists with the Competitive Cyber Club Discord\n"
-            "If you experience any issues then please use the $report feature.\n"
+            "If you experience any issues then please use the ?report feature.\n"
             f"Version: {self.__version__}"
         )
 

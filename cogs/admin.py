@@ -1,4 +1,6 @@
 """Cog that has the admin features"""
+
+from datetime import datetime
 import discord.utils
 from discord.ext import commands
 import utils
@@ -133,6 +135,7 @@ class AdminCog(commands.Cog, name="Admin"):
             ctx {discord.ext.commands.Context} -- Context of the command.
         """
         await utils.update_list(self)
+        self.bot.list_updated = datetime.utcnow()
         await ctx.send("List updated")
 
 

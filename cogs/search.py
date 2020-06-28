@@ -46,7 +46,7 @@ class SearchCog(commands.Cog, name="Search"):
         aliases=["search-schools"],
         help="Search all schools for <school>.\n"
         "College, University, Community are blocked as they return a lot of results.\n"
-        "The full list is at https://github.com/Competitive-Cyber-Clubs/Discord-Bot/blob/master/utils/schools.csv",  # noqa: E501 pylint: disable=line-too-long
+        "The full list is at https://github.com/Competitive-Cyber-Clubs/School-List/blob/master/school_list.csv",  # noqa: E501 pylint: disable=line-too-long
     )
     async def search_school(self, ctx: commands.Context, *, school: str):
         """search-school

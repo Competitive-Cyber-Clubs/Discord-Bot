@@ -14,7 +14,7 @@
 ### Removed
 -->
 
-[v0.1.1]
+[v0.1.1] - 06/28/2020
 ---
 
 ### Added
@@ -33,6 +33,7 @@
 - Fix issue where message on member leaving would not work make a log.
 - Lots of formatting changes to use python black.
 - School list has been moved to a separate repo for easy of updating.
+- Switched to environ for environment variables.
 
 ### Removed
 
