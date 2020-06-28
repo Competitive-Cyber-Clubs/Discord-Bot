@@ -14,7 +14,33 @@
 ### Removed
 -->
 
-[v.0.1.0]
+[v0.1.1] - 06/28/2020
+---
+
+### Added
+
+- Member join log.
+- Members join schools they create.
+- Added bandit testing in .gitlab-ci.yml.
+- School search function now lists if a role has been created for a school.
+- Added "?" as a command prefix.
+- Added Python black for code scanning.
+- Added Secret Scanning.
+- Dependabot dependency checking
+
+### Changed
+
+- Fix issue where message on member leaving would not work make a log.
+- Lots of formatting changes to use python black.
+- School list has been moved to a separate repo for easy of updating.
+- Switched to environ for environment variables.
+
+### Removed
+
+- Error message for no command found.
+- Dotenv dependency.
+
+[v0.1.0] - 05/05/2020
 ---
 
 ### Added

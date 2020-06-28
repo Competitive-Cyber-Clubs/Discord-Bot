@@ -6,15 +6,24 @@ include:
   - template: SAST.gitlab-ci.yml
   - template: Dependency-Scanning.gitlab-ci.yml
   - template: License-Scanning.gitlab-ci.yml
+  - template: Secret-Detection.gitlab-ci.yml
+
+license_scanning:
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: always
+
 
 
 .check:
   stage: Code_Check
   before_script:
-    - pip install pylint flake8 -r requirements.txt --quiet
+    - pip install -U pylint flake8 bandit black -r requirements.txt --quiet
   script:
-    - pylint --ignored-classes=_socketobject CCC_Bot.py ./utils/ ./cogs/
+    - pylint --rcfile tox.ini CCC_Bot.py ./utils/ ./cogs/
     - flake8 CCC_Bot.py ./utils/ ./cogs/ --statistics --show-source
+    - bandit -r ./CCC_Bot.py ./cogs/ ./utils/
+    - black --check --line-length 100 .
 
 python-3.6:
   extends: ".check"

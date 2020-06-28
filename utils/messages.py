@@ -16,7 +16,7 @@ async def list_message(ctx, message: list, title: str, **kwargs: dict):
     multiple commands.
 
 
-    I'm sorry for everyong dealing with this function. It is not clean and I have commented to
+    I'm sorry for everyone dealing with this function. It is not clean and I have commented to
     the best that I can.
 
     Arguments:
@@ -31,7 +31,7 @@ async def list_message(ctx, message: list, title: str, **kwargs: dict):
     item = 0
     amount_of_embeds = len(range(0, joined_message, 1500))
     for _ in range(amount_of_embeds):
-        # Each embed can only be 6000 chararcter so if the length is over that more are created
+        # Each embed can only be 6000 characters so if the length is over that more are created
         embed = await make_embed(ctx, title=title, send=False, **kwargs)
         for _ in range(2):
             temp_msg = ""
@@ -70,25 +70,27 @@ async def admin_log(bot, message: str, log_status: bool = True):
     Arguments:
     ---
         bot {discord.commands.Bot} -- The bot
-        log_status {[type]} -- [description]
+        log_status {boot} -- If the log will be sent to logging channels or non logging channels
     """
     if len(message) > 2000:
         message = "Log message length too long, it will not be sent. Length: {}".format(
-            len(message))
+            len(message)
+        )
         log.warning(message)
 
     channels = await select("admin_channels", "id", "log", log_status)
     for channel in channels:
         to_send = bot.get_channel(channel)
         if to_send is None:
-            log.warning('No channel found for id {}'.format(channel))
+            log.warning("No channel found for id {}".format(channel))
         else:
-            embed = discord.Embed(title="Log Update:", description=message,
-                                  color=discord.Color(int("FF0000", 16)))
+            embed = discord.Embed(
+                title="Log Update:", description=message, color=discord.Color(int("FF0000", 16)),
+            )
             await to_send.send(embed=embed)
 
 
-async def make_embed(ctx, color: str = None, send: bool = True, **kwargs: dict):
+async def make_embed(ctx, color: [str, int] = None, send: bool = True, **kwargs) -> discord.Embed():
     """make_embed
     ---
 
@@ -108,11 +110,10 @@ async def make_embed(ctx, color: str = None, send: bool = True, **kwargs: dict):
     elif isinstance(color, str):
         kwargs["color"] = discord.Color(int(color, 16))
 
-    embed = discord.Embed(timestamp=ctx.message.created_at,
-                          **kwargs)
+    embed = discord.Embed(timestamp=ctx.message.created_at, **kwargs)
+
     if "footer" in kwargs:
         embed.set_footer(text=kwargs["footer"])
-
     if send:
         await ctx.send(embed=embed)
     else:

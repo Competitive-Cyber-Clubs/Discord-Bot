@@ -6,18 +6,15 @@
 
 ---
 
-Thanks for reading this because I am always looking to collaborate with other people to see their ideas.
+Thanks for reading this because we are always looking to collaborate with other people to see their ideas.
 
-Currently all development is done on [GitLab](https://gitlab.com/Cyb3r-Jak3/ccc-bot) and mirror to other repositories. I recommend checking to project out there because it has all the issues and requests.
-If you are looking to submit a pull request then please do so on [GitLab](https://gitlab.com/Cyb3r-Jak3/ccc-bot). Any pull request that is opened on GitHub will be closed and I mirror it on GitLab.  
-
-Please open issues on [GitLab](https://gitlab.com/Cyb3r-Jak3/ccc-bot/issues). if you do not have a GitLab account, send then please email service desk([incoming+cyb3r-jak3-ccc-bot-15469862-issue-@incoming.gitlab.com](mailto:incoming+cyb3r-jak3-ccc-bot-15469862-issue-@incoming.gitlab.com)).
+To get started fork the repo and make a branch with an accurate name for the changes you are making. Once you have made the changes to your liking open a pull request and we will look it over.
 
 ## Documentation
 
 ---
 
-All of the cog, functions, etc should be documented in a way that allows for people with an understanding of python to get how the information flows through the bot. If you would like easier understanding, then I recommend checking out the project on [sourcegraph](https://sourcegraph.com/gitlab.com/Cyb3r-Jak3/ccc-bot).
+All of the cog, functions, etc should be documented in a way that allows for people with an understanding of python to get how the information flows through the bot. We are using numpy's style guide. If you would like easier understanding, then I recommend checking out the project on [sourcegraph](https://sourcegraph.com/github.com/Competitive-Cyber-Clubs/Discord-Bot).
 
 ## Commands
 
@@ -33,7 +30,8 @@ When adding a new cog make sure that it is added to [cogs/__init__.py](cogs/\_\_
 
 ---
 
-There no current methodology for writing tests for discord.py, thus all tests have to be run manually when the bot is online.
+There no current methodology for writing tests for discord.py, thus all tests have to be run manually when the development bot is online.
+All commits to branches are inspected by [GitLab CI](https://gitlab.com/Cyb3r-Jak3/Discord-Bot) using pylint, flake8, bandit and black. Tox implementation in on the road map.
 
 ### Cogs/Commands
 

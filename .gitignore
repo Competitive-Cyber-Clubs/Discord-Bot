@@ -131,3 +131,6 @@ dmypy.json
 *.log
 .vscode/
 *.png
+*.bak
+
+.idea/

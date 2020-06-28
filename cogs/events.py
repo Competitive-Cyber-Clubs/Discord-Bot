@@ -22,6 +22,7 @@ class EventsCog(commands.Cog, name="Events"):
     ---
         bot {discord.commands.Bot} -- The bot
     """
+
     def __init__(self, bot):
         self.bot = bot
 
@@ -39,16 +40,26 @@ class EventsCog(commands.Cog, name="Events"):
             member {discord.Member} -- The member that joined
         """
         new_role = discord.utils.get(member.guild.roles, name="new")
-        await member.add_roles(
-            new_role,
-            reason="{} joined the server".format(member.name))
+        await member.add_roles(new_role, reason="{} joined the server".format(member.name))
         welcome_message = await utils.select("messages", "message", "name", "welcome")
         if welcome_message:
             welcome_message = welcome_message[0].replace(r"\n", "\n")
-            embed = discord.Embed(title="Welcome to the server!",
-                                  description=welcome_message,
-                                  timestamp=member.joined_at)
+            embed = discord.Embed(
+                title="Welcome to the server!",
+                description=welcome_message,
+                timestamp=member.joined_at,
+            )
             await member.send(embed=embed)
+
+        channels = await utils.select("admin_channels", "id", "log", True)
+        embed = discord.Embed(
+            title="User Joined",
+            color=discord.Color(int("FF0000", 16)),
+            description="{} joined the server".format(member.name),
+        )
+        for channel in channels:
+            to_send = self.bot.get_channel(channel)
+            await to_send.send(embed=embed)
 
     @commands.Cog.listener()
     async def on_member_remove(self, member: discord.Member):
@@ -63,10 +74,12 @@ class EventsCog(commands.Cog, name="Events"):
         ---
             member {discord.Member} -- The member that left
         """
-        channels = await utils.select("admin_channels", "id", "log", "t")
-        embed = await discord.Embed(title="User left",
-                                    color=discord.Color(int("FF0000", 16)),
-                                    description="{} user left".format(member.name))
+        channels = await utils.select("admin_channels", "id", "log", True)
+        embed = discord.Embed(
+            title="User left",
+            color=discord.Color(int("FF0000", 16)),
+            description="{} user left".format(member.name),
+        )
         for channel in channels:
             to_send = self.bot.get_channel(channel)
             await to_send.send(embed=embed)

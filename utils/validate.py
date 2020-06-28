@@ -1,18 +1,33 @@
 """School name validation"""
 import os
-import asyncio
+from datetime import datetime
+import aiohttp
 import pandas as pd
 
-school_list = pd.read_csv(os.path.join(os.path.dirname(__file__), 'schools.csv'))
+
+async def update_list(bot):
+    """update_list
+    ---
+    Updates the school_list
+    """
+    os.replace("school_list.csv", "school_list.csv.bak")
+    csv_url = "https://raw.githubusercontent.com/Competitive-Cyber-Clubs/School-List/master/school_list.csv"  # noqa: E501 pylint: disable=line-too-long
+    new_list = open("school_list.csv", mode="w", encoding="utf-8")
+    async with aiohttp.ClientSession() as session:
+        async with session.get(csv_url) as resp:
+            new_file = await resp.text(encoding="utf-8")
+    new_list.write(new_file)
+    new_list.close()
+    bot.list_updated = datetime.utcnow()
+    bot.school_list = pd.read_csv("school_list.csv", encoding="utf-8")
 
 
-@asyncio.coroutine
-async def school_check(name: str):
+async def school_check(school_list, name: str) -> bool:
     """school_check
     ---
     Asynchronous Function
 
-    Checks to see if the name is in schools.csv
+    Checks to see if the name is in school_list.csv
 
     Arguments:
     ---
@@ -20,13 +35,12 @@ async def school_check(name: str):
 
     Returns:
     ---
-        bool -- Returns true if :ref:`name` is in :ref:`schools.csv`
+        bool -- Returns true if :ref:`name` is in :ref:`school_list.csv`
     """
     return name in school_list.Institution_Name.values
 
 
-@asyncio.coroutine
-async def region_select(name: str):
+async def region_select(school_list, name: str) -> str:
     """region_select
     ---
     Asynchronous Function
@@ -45,14 +59,13 @@ async def region_select(name: str):
     return school_list.Regions.values[school_list.Institution_Name == name][0]
 
 
-@asyncio.coroutine
-async def school_search(name: str):
+async def school_search(school_list: pd.DataFrame, name: str) -> list:
     """school_search
     ---
     Asynchronous Function
 
-    Searchs for part of a school name in the 'Institution_Name' column in schools.csv.
-    Turns the 'Instituion_Name' into a series then gets all names using pandas.Series.str.contains.
+    Searches for part of a school name in the 'Institution_Name' column in school_list.csv.
+    Turns the 'Institution_Name' into a series then gets all names using pandas.Series.str.contains.
 
     Arguments:
     ---
@@ -62,13 +75,12 @@ async def school_search(name: str):
     ---
         list -- Schools which had :ref:`name` in them.
     """
-
     return school_list.Institution_Name.values[
-                school_list["Institution_Name"].str.contains(name, case=False)]
+        school_list["Institution_Name"].str.contains(name, case=False)
+    ]
 
 
-@asyncio.coroutine
-async def state_list(state: str):
+async def state_list(school_list, state: str) -> list:
     """state_list
     ---
     Asynchronous Function

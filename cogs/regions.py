@@ -19,10 +19,11 @@ class RegionCog(commands.Cog, name="Regions"):
     ---
         bot {discord.commands.Bot} -- The bot
     """
+
     def __init__(self, bot):
         self.bot = bot
 
-    async def cog_check(self, ctx):
+    async def cog_check(self, ctx: commands.Context):
         """cog_check
         ---
 
@@ -37,9 +38,8 @@ class RegionCog(commands.Cog, name="Regions"):
         """
         return await utils.check_admin(ctx)
 
-    @commands.command(name="add-region",
-                      help="Adds regions")
-    async def add_region(self, ctx, *, region: str):
+    @commands.command(name="add-region", help="Adds regions")
+    async def add_region(self, ctx: commands.Context, *, region: str):
         """Add_region
         ---
 
@@ -52,21 +52,21 @@ class RegionCog(commands.Cog, name="Regions"):
         """
         is_role = discord.utils.get(ctx.guild.roles, name=region)
         if not is_role:
-            added_region = await ctx.guild.create_role(name=region,
-                                                       mentionable=True,
-                                                       reason="Added by {}".format(ctx.author.name))
+            added_region = await ctx.guild.create_role(
+                name=region, mentionable=True, reason="Added by {}".format(ctx.author.name),
+            )
             status = await utils.insert("regions", [region, added_region.id])
         else:
             status = "error"
         if status == "error":
-            await utils.make_embed(ctx, color="FF0000",
-                                   title="There was an error creating the region.")
+            await utils.make_embed(
+                ctx, color="FF0000", title="There was an error creating the region."
+            )
         else:
             await utils.make_embed(ctx, color="28b463", title="Region has been created.")
 
-    @commands.command(name="list-regions",
-                      help="Lists available regions.")
-    async def list_region(self, ctx):
+    @commands.command(name="list-regions", help="Lists available regions.")
+    async def list_region(self, ctx: commands.Context):
         """list-regions
         ---
 

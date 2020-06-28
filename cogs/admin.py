@@ -1,4 +1,6 @@
 """Cog that has the admin features"""
+
+from datetime import datetime
 import discord.utils
 from discord.ext import commands
 import utils
@@ -16,18 +18,20 @@ class AdminCog(commands.Cog, name="Admin"):
         `am-admin`: Returns true of false depending on if the user is in the bot_admins table.
         `add-admin`: Add a user to the bot admin table.
         `add-admin-channel`: Add the channel that it was called in to the admin_channel table.
+        `reload-extension`: Reloads the extensions names.
 
     Arguments:
     ---
         bot {discord.commands.Bot} -- The bot
     """
+
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="list-admins",
-                      aliases=["ladmins", "ladmin"],
-                      help="List users that are bot admins")
-    async def list_admins(self, ctx):
+    @commands.command(
+        name="list-admins", aliases=["ladmins", "ladmin"], help="List users that are bot admins",
+    )
+    async def list_admins(self, ctx: commands.Context):
         """List-admins
         ---
         Command that returns a list of the users that are in the bot_admin table.
@@ -44,10 +48,10 @@ class AdminCog(commands.Cog, name="Admin"):
         embed.add_field(name="Admins", value=admins, inline=False)
         await ctx.send(embed=embed)
 
-    @commands.command(name="check-admin",
-                      aliases=["cadmin", "am-admin"],
-                      help="Tells you if you are a bot admin")
-    async def check_admin(self, ctx):
+    @commands.command(
+        name="check-admin", aliases=["cadmin", "am-admin"], help="Tells you if you are a bot admin",
+    )
+    async def check_admin(self, ctx: commands.Context):
         """Check Admin
         ---
 
@@ -59,10 +63,9 @@ class AdminCog(commands.Cog, name="Admin"):
         """
         await utils.make_embed(ctx, title=await utils.check_admin(ctx))
 
-    @commands.command(name="add-admin",
-                      help="Adds <user> to the bot admins table.")
+    @commands.command(name="add-admin", help="Adds <user> to the bot admins table.")
     @commands.check(utils.check_admin)
-    async def add_admin(self, ctx, *, user):
+    async def add_admin(self, ctx: commands.Context, *, user: str):
         """Add-Admin
         ---
 
@@ -75,16 +78,17 @@ class AdminCog(commands.Cog, name="Admin"):
         """
         new_admin = discord.utils.get(ctx.guild.members, name=user)
         if new_admin:
-            await utils.insert("bot_admins", (new_admin.name, new_admin.id))
-            await utils.make_embed(ctx, color="28b463",
-                                   title="User: {} is now an admin.".format(new_admin))
+            await utils.insert("bot_admins", [new_admin.name, new_admin.id])
+            await utils.make_embed(
+                ctx, color="28b463", title="User: {} is now an admin.".format(new_admin)
+            )
         else:
             await utils.make_embed(ctx, color="FF0000", title="Error: User not found.")
 
     @commands.command(name="add-admin-channel", help="Marks the channel as an admin channel")
     @commands.guild_only()
     @commands.check(utils.check_admin)
-    async def add_admin_channel(self, ctx, log_status=False):
+    async def add_admin_channel(self, ctx: commands.Context, log_status=False):
         """add-admin-channel
         ---
 
@@ -100,21 +104,20 @@ class AdminCog(commands.Cog, name="Admin"):
             log_status {bool} -- [If the channel is for logging all users] (default: {False})
         """
         log_status = bool(log_status)
-        await utils.insert("admin_channels", [
-            ctx.channel.name,
-            ctx.channel.id,
-            log_status])
+        await utils.insert("admin_channels", [ctx.channel.name, ctx.channel.id, log_status])
         await utils.make_embed(
-            ctx, color="28b463", title="Admin Channel Success",
-            description="Channel has been added with log status: {}".format(log_status))
+            ctx,
+            color="28b463",
+            title="Admin Channel Success",
+            description="Channel has been added with log status: {}".format(log_status),
+        )
 
-    @commands.command(name="reload-extension",
-                      help="reloads <extension>")
-    async def reload_extension(self, ctx, extension):
+    @commands.command(name="reload-extension", help="reloads <extension>")
+    async def reload_extension(self, ctx: commands.Context, extension: str):
         """reload_extension
         ---
 
-        Command that reloads an extestion.
+        Command that reloads an extension.
 
         Arguments:
             ctx {discord.ext.commands.Context} -- Context of the command.
@@ -122,6 +125,18 @@ class AdminCog(commands.Cog, name="Admin"):
         """
         self.bot.reload_extension(extension)
         await utils.make_embed(ctx, color="28b463", title="Reloaded")
+
+    @commands.command(name="update-list", help="Updates the school_list.csv")
+    async def refresh_list(self, ctx):
+        """refresh_list
+        ---
+
+        Arguments:
+            ctx {discord.ext.commands.Context} -- Context of the command.
+        """
+        await utils.update_list(self)
+        self.bot.list_updated = datetime.utcnow()
+        await ctx.send("List updated")
 
 
 def setup(bot):
