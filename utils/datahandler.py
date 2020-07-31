@@ -173,7 +173,7 @@ async def fetch(table: str, column: str) -> list:
 
 
 async def select(
-    table: str, column: str, where_column: str, where_value: str, symbol: str = "="
+    table: str, column: str, where_column: str, where_value: str, symbol: [str, bool] = "="
 ) -> list:
     """select
     ---

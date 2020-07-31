@@ -28,6 +28,21 @@ class AdminCog(commands.Cog, name="Admin"):
     def __init__(self, bot):
         self.bot = bot
 
+    async def cog_check(self, ctx: commands.Context):
+        """cog_check
+        ---
+
+        cog_check is set for the whole cog. Which makes all the commands in health admin only.
+
+        Arguments:
+        ---
+            ctx {discord.ext.commands.Context} -- Context of the command.
+
+        Returns:
+            bool -- True if the user in the bot admins
+        """
+        return await utils.check_admin(ctx)
+
     @commands.command(
         name="list-admins", aliases=["ladmins", "ladmin"], help="List users that are bot admins",
     )
