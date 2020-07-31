@@ -14,6 +14,17 @@
 ### Removed
 -->
 
+[LATEST] - 07/30/2020
+---
+
+### Added
+
+- Admin check for admin cog
+
+### Changed
+
+- Made requirements == instead of >=
+
 [v0.1.1] - 06/28/2020
 ---
 
