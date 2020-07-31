@@ -9,6 +9,7 @@ include:
   - template: Secret-Detection.gitlab-ci.yml
 
 license_scanning:
+  stage: test
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
       when: always
