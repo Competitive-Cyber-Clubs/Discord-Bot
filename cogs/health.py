@@ -128,7 +128,10 @@ class HealthCog(commands.Cog, name="Health"):
         results = await utils.select(which, columns, "date_trunc('day', time)", date)
         if not results:
             await utils.make_embed(
-                ctx, "28b463", title="Success", description="No {} for {}".format(which, date),
+                ctx,
+                "28b463",
+                title="Success",
+                description="No {} for {}".format(which, date),
             )
         else:
             results_string = []

@@ -114,7 +114,10 @@ class SchoolCog(commands.Cog, name="Schools"):
             entries = [x for x in db_entry if x[0] == school_name][0]
         except IndexError:
             return await utils.make_embed(
-                ctx, "FF0000", title="Missing School:", description="School could not be found.",
+                ctx,
+                "FF0000",
+                title="Missing School:",
+                description="School could not be found.",
             )
 
         else:
@@ -140,7 +143,10 @@ class SchoolCog(commands.Cog, name="Schools"):
                 )
                 await ctx.author.send(
                     embed=await utils.make_embed(
-                        ctx, "28b463", send=False, title="School assigned: {}".format(entries[0]),
+                        ctx,
+                        "28b463",
+                        send=False,
+                        title="School assigned: {}".format(entries[0]),
                     )
                 )
 
