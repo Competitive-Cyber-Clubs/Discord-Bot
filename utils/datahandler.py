@@ -203,7 +203,8 @@ async def select(
     try:
         format_str = "SELECT %s FROM %s WHERE %s %s %s;"
         cursor.execute(
-            format_str, (AsIs(column), AsIs(table), AsIs(where_column), AsIs(symbol), where_value),
+            format_str,
+            (AsIs(column), AsIs(table), AsIs(where_column), AsIs(symbol), where_value),
         )
         fetched = cursor.fetchall()
         return result_parser(column, fetched)
@@ -233,7 +234,8 @@ async def update(table: str, column: str, where_value: str, new_value: str) -> N
     try:
         format_str = "UPDATE %s SET %s = %s where %s = %s"
         cursor.execute(
-            format_str, (AsIs(table), AsIs(column), new_value, AsIs(column), where_value),
+            format_str,
+            (AsIs(table), AsIs(column), new_value, AsIs(column), where_value),
         )
         connection.commit()
     except psycopg2.Error as pge:

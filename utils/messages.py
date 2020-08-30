@@ -85,7 +85,9 @@ async def admin_log(bot, message: str, log_status: bool = True):
             log.warning("No channel found for id {}".format(channel))
         else:
             embed = discord.Embed(
-                title="Log Update:", description=message, color=discord.Color(int("FF0000", 16)),
+                title="Log Update:",
+                description=message,
+                color=discord.Color(int("FF0000", 16)),
             )
             await to_send.send(embed=embed)
 

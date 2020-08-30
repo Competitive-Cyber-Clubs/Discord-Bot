@@ -44,7 +44,9 @@ class AdminCog(commands.Cog, name="Admin"):
         return await utils.check_admin(ctx)
 
     @commands.command(
-        name="list-admins", aliases=["ladmins", "ladmin"], help="List users that are bot admins",
+        name="list-admins",
+        aliases=["ladmins", "ladmin"],
+        help="List users that are bot admins",
     )
     async def list_admins(self, ctx: commands.Context):
         """List-admins
@@ -64,7 +66,9 @@ class AdminCog(commands.Cog, name="Admin"):
         await ctx.send(embed=embed)
 
     @commands.command(
-        name="check-admin", aliases=["cadmin", "am-admin"], help="Tells you if you are a bot admin",
+        name="check-admin",
+        aliases=["cadmin", "am-admin"],
+        help="Tells you if you are a bot admin",
     )
     async def check_admin(self, ctx: commands.Context):
         """Check Admin

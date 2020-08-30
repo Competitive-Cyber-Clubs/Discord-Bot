@@ -53,7 +53,9 @@ class RegionCog(commands.Cog, name="Regions"):
         is_role = discord.utils.get(ctx.guild.roles, name=region)
         if not is_role:
             added_region = await ctx.guild.create_role(
-                name=region, mentionable=True, reason="Added by {}".format(ctx.author.name),
+                name=region,
+                mentionable=True,
+                reason="Added by {}".format(ctx.author.name),
             )
             status = await utils.insert("regions", [region, added_region.id])
         else:

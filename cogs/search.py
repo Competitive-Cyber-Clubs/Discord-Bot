@@ -82,7 +82,8 @@ class SearchCog(commands.Cog, name="Search"):
         else:
             for place, results_name in enumerate(results):
                 results[place] = "{} :: Role created: {}".format(
-                    results_name, await utils.TF_emoji(results_name in created_roles),
+                    results_name,
+                    await utils.TF_emoji(results_name in created_roles),
                 )
             await utils.list_message(ctx, results, "Search Results:\n")
 
