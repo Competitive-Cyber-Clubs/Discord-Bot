@@ -92,7 +92,9 @@ async def admin_log(bot, message: str, log_status: bool = True):
             await to_send.send(embed=embed)
 
 
-async def make_embed(ctx, color: [str, int] = None, send: bool = True, **kwargs) -> discord.Embed():
+async def make_embed(
+    ctx, color: [str, int] = None, send: (bool, str) = True, **kwargs
+) -> discord.Embed():
     """make_embed
     ---
 
