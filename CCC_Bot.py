@@ -38,6 +38,7 @@ log.debug(
     )
 )
 
+intents = discord.Intents.all()
 
 initial_extensions = [
     "cogs.admin",
@@ -55,7 +56,7 @@ initial_extensions = [
 
 class CCC_Bot(commands.Bot):  # pylint: disable=missing-class-docstring
     def __init__(self):
-        super().__init__(command_prefix=("$", "?"), owner_id=OWNER_ID)
+        super().__init__(command_prefix=("$", "?"), owner_id=OWNER_ID, intents=intents)
 
         self.uptime = datetime.utcnow()
         self.list_updated, self.school_list = "", ""
