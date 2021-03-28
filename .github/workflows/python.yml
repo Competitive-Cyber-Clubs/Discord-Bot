@@ -1,0 +1,27 @@
+name: Build & Check
+
+on: [push]
+
+
+jobs:
+
+  Python:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+
+    - uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        key: ${{ hashFiles('**/requirements.txt', '**/requirements-dev.txts') }}
+
+    - name: Install dependencies
+      run: pip install -r requirements-dev.txt
+
+    - name: Lint with Black, Pylint, Flake8, and Bandit
+      run: make lint
