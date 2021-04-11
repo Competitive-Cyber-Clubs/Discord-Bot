@@ -10,6 +10,12 @@ class ErrorsCog(commands.Cog, name="Errors"):
     """ErrorsCogs
     ---
 
+    The cog that handles all errors.
+
+    Commands:
+    ---
+    `ack-error`: Acknowledge an error by ID
+
     Arguments:
     ---
         bot {discord.commands.Bot} -- The bot

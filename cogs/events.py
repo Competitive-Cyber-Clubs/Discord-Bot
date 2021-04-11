@@ -16,7 +16,7 @@ class EventsCog(commands.Cog, name="Events"):
             The bot will send them a welcome PM.
 
         `on_member_remove`: Triggered when a member leaves.
-            A message will be send to the loggin admin channels.
+            A message will be send to the loggign admin channels.
 
     Arguments:
     ---

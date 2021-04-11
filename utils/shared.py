@@ -22,8 +22,7 @@ async def check_admin(ctx) -> bool:
     ---
         bool -- Returns 'TRUE' if the message author is in bot_admins.
     """
-    returned = [int(user_id) for user_id in await fetch("bot_admins", "id")]
-    return ctx.message.author.id in returned
+    return ctx.message.author.id in [int(user_id) for user_id in await fetch("bot_admins", "id")]
 
 
 async def TF_emoji(status: bool) -> str:
@@ -34,17 +33,11 @@ async def TF_emoji(status: bool) -> str:
     Arguments:
     ---
         status {bool} -- If the value is true
-    Returns
-    ---
-        str -- String value of emoji
-
 
     Returns:
         str -- either a check mark or x emoji
     """
-    if status:
-        return ":white_check_mark:"
-    return ":x:"
+    return ":white_check_mark:" if status else ":x:"
 
 
 async def check_react(ctx, user, reaction, expected_react: str):

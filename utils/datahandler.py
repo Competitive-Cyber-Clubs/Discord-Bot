@@ -23,8 +23,8 @@ def table_create() -> None:
         cursor.execute(table)
 
 
-def format_step(table: str) -> str:
-    """format_step
+def _format_step(table: str) -> str:
+    """_format_step
     ---
 
     Returns the format string to be used in insert. This was split from insert to make it less
@@ -71,8 +71,8 @@ def format_step(table: str) -> str:
     return query_str
 
 
-def result_parser(column: str, fetched: list) -> list:
-    """result_parser
+def _result_parser(column: str, fetched: list) -> list:
+    """_result_parser
     ---
 
     Arguments:
@@ -99,7 +99,7 @@ async def insert(table: str, data: list) -> [None, str]:
 
     Asynchronous Function
 
-    Inserts a new row to an existing table. Get the string to execute with from :ref:`format_step`.
+    Inserts a new row to an existing table. Get the string to execute with from :ref:`_format_step`.
 
     Arguments:
     ---
@@ -114,7 +114,7 @@ async def insert(table: str, data: list) -> [None, str]:
     ---
     INSERT into :ref:`table` VALUE (:ref:`*data`);
     """
-    format_str = format_step(table)
+    format_str = _format_step(table)
     if format_str == "error":
         return "error"
     log.debug(format_str, *data)
@@ -165,13 +165,13 @@ async def fetch(table: str, column: str) -> list:
         format_str = "SELECT %s FROM %s;"
         cursor.execute(format_str, (AsIs(column), AsIs(table)))
         fetched = cursor.fetchall()
-        return result_parser(column, fetched)
+        return _result_parser(column, fetched)
     except psycopg2.Error as pge:
         log.error(pge)
 
 
 async def select(
-    table: str, column: str, where_column: str, where_value: str, symbol: (str, bool) = "="
+    table: str, column: str, where_column: str, where_value: str, symbol: [str, bool] = "="
 ) -> list:
     """select
     ---
@@ -205,7 +205,7 @@ async def select(
             (AsIs(column), AsIs(table), AsIs(where_column), AsIs(symbol), where_value),
         )
         fetched = cursor.fetchall()
-        return result_parser(column, fetched)
+        return _result_parser(column, fetched)
     except psycopg2.Error as pge:
         log.error(pge)
         cursor.execute("ROLLBACK")
@@ -266,6 +266,7 @@ async def delete(table: str, column: str, value: str) -> None:
     DELETE FROM :ref:`table` WHERE :ref:`column` = :ref:`value`;
     """
     try:
+        log.info("Deleting {} where {} from {}".format(column, value, table))
         format_str = "DELETE FROM %s WHERE %s = %s"
         cursor.execute(format_str, (AsIs(table), AsIs(column), value))
         connection.commit()

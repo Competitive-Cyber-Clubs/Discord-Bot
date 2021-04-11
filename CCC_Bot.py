@@ -57,7 +57,7 @@ class CCC_Bot(commands.Bot):  # pylint: disable=missing-class-docstring
 
         self.uptime = datetime.utcnow()
         self.list_updated, self.school_list = "", ""
-        self.__version__ = "v0.1.1"
+        self.__version__ = "v0.1.2"
         self.description = (
             "This Discord bot that assists with the Competitive Cyber Club Discord\n"
             "If you experience any issues then please use the ?report feature.\n"

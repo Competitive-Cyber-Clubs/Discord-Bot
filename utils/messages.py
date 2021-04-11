@@ -70,7 +70,7 @@ async def admin_log(bot, message: str, log_status: bool = True):
     Arguments:
     ---
         bot {discord.commands.Bot} -- The bot
-        log_status {boot} -- If the log will be sent to logging channels or non logging channels
+        log_status {bool} -- If the log will be sent to logging channels or non logging channels
     """
     if len(message) > 2000:
         message = "Log message length too long, it will not be sent. Length: {}".format(

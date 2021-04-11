@@ -23,7 +23,7 @@ async def update_list(bot, download: bool = False):
             async with session.get(csv_url) as resp:
                 new_list.write(await resp.text(encoding="utf-8"))
         new_list.close()
-        bot.list_updated = datetime.utcnow()
+    bot.list_updated = datetime.utcnow()
     bot.school_list = pd.read_csv("school_list.csv", encoding="utf-8")
 
 

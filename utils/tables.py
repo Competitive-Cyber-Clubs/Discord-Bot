@@ -29,14 +29,14 @@
             command {text}: The command that was triggered to run
             error {text}: The error that occurred
             time {timestamp}: The time when the error occurred.
-            ack {bool}: If the error has been acknowledged
+            ack {bool}: Error has been acknowledged by an admin
 
         keys: Table for misc information stored.
             key {text}: Name of the value
             value {text}: The value
 
         messages: Table for storing messages
-            name {text}: Name of the messssage
+            name {text}: Name of the message
             message {text}: Content of the message
 
         reports: Table for reports
@@ -51,15 +51,15 @@ tables = [
 CREATE TABLE IF NOT EXISTS schools(
 school text UNIQUE NOT NULL DEFAULT '',
 region text NOT NULL DEFAULT '',
-color int NOT NULL DEFAULT '0',
-id bigint NOT NULL DEFAULT '0',
+color int NOT NULL DEFAULT 0,
+id bigint NOT NULL DEFAULT 0,
 added_by text NOT NULL DEFAULT '',
-added_by_id bigint NOT NULL DEFAULT '0',
+added_by_id bigint NOT NULL DEFAULT 0,
 PRIMARY KEY (school)
 );""",
     """
 CREATE TABLE IF NOT EXISTS bot_admins(
-id bigint UNIQUE NOT NULL DEFAULT '0',
+id bigint UNIQUE NOT NULL DEFAULT 0,
 name text NOT NULL DEFAULT '',
 PRIMARY KEY (name)
 );
@@ -67,7 +67,7 @@ PRIMARY KEY (name)
     """
 CREATE TABLE IF NOT EXISTS admin_channels(
 name text NOT NULL DEFAULT '',
-id bigint NOT NULL DEFAULT '0',
+id bigint NOT NULL DEFAULT 0,
 log bool DEFAULT False,
 PRIMARY KEY (name)
 );
@@ -75,13 +75,13 @@ PRIMARY KEY (name)
     """
 CREATE TABLE IF NOT EXISTS regions(
 name text NOT NULL DEFAULT '',
-id bigint NOT NULL DEFAULT '0',
+id bigint NOT NULL DEFAULT 0,
 PRIMARY KEY (name)
 );
 """,
     """
 CREATE TABLE IF NOT EXISTS errors(
-id smallint NOT NULL DEFAULT '0',
+id smallint NOT NULL DEFAULT 0,
 command text NOT NULL DEFAULT '',
 message text NOT NULL DEFAULT '',
 error text NOT NULL DEFAULT '',
@@ -103,9 +103,9 @@ PRIMARY KEY (name)
 );""",
     """
 CREATE TABLE IF NOT EXISTS reports(
-id int NOT NULL DEFAULT '0',
+id int NOT NULL DEFAULT 0,
 name text NOT NULL DEFAULT '',
-name_id bigint NOT NULL DEFAULT '0',
+name_id bigint NOT NULL DEFAULT 0,
 message text NOT NULL DEFAULT '',
 time timestamptz NOT NULL,
 PRIMARY KEY(id)
