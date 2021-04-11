@@ -146,14 +146,14 @@ class AdminCog(commands.Cog, name="Admin"):
         await utils.make_embed(ctx, color="28b463", title="Reloaded")
 
     @commands.command(name="update-list", help="Updates the school_list.csv")
-    async def refresh_list(self, ctx):
+    async def refresh_list(self, ctx: commands.Context):
         """refresh_list
         ---
 
         Arguments:
             ctx {discord.ext.commands.Context} -- Context of the command.
         """
-        await utils.update_list(self)
+        await utils.update_list(self, True)
         self.bot.list_updated = datetime.utcnow()
         await ctx.send("List updated")
 

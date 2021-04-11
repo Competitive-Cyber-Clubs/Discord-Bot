@@ -28,7 +28,8 @@
             message {text}: The message that was sent causing the error.
             command {text}: The command that was triggered to run
             error {text}: The error that occurred
-            time {timestampz}: The time when the error occurred.
+            time {timestamp}: The time when the error occurred.
+            ack {bool}: If the error has been acknowledged
 
         keys: Table for misc information stored.
             key {text}: Name of the value
@@ -43,7 +44,7 @@
             name {text}: Discord user name of reporter
             name_id {bigint}: Discord user ID reporter
             message {text}: Text of the report
-            time {timestampz}: Time of the report
+            time {timestamp}: Time of the report
 """
 tables = [
     """
@@ -85,6 +86,7 @@ command text NOT NULL DEFAULT '',
 message text NOT NULL DEFAULT '',
 error text NOT NULL DEFAULT '',
 time timestamptz NOT NULL,
+ack bool NOT NULL DEFAULT FALSE,
 PRIMARY KEY (id)
 );""",
     """

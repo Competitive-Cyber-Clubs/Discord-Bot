@@ -6,7 +6,7 @@ from .tables import tables
 from .logger import make_logger
 
 # Imports the main logger
-log = make_logger("database", os.getenv("LOG_LEVEL"))
+log = make_logger("database", os.getenv("LOG_LEVEL", "INFO"))
 
 # Creates the connection to the database
 connection = psycopg2.connect(os.getenv("DATABASE_URL"), sslmode="require")
@@ -66,7 +66,7 @@ def format_step(table: str) -> str:
     elif table == "regions":
         query_str = "INSERT INTO regions (name, id) VALUES (%s, %s)"
     else:
-        log.error("Table not found.")
+        log.error("Table {} not found.".format(table))
         return "error"
     return query_str
 
@@ -89,9 +89,7 @@ def result_parser(column: str, fetched: list) -> list:
         result = fetched
     # Breaks up the tuples to a standard list.
     else:
-        result = []
-        for _, x in enumerate(fetched):
-            result.append(x[0])
+        result = [x[0] for x in fetched]
     return result
 
 
@@ -122,10 +120,10 @@ async def insert(table: str, data: list) -> [None, str]:
     log.debug(format_str, *data)
     try:
         # Tables with 6 values
-        if table == "schools":
+        if table in ["schools", "errors"]:
             cursor.execute(format_str, (data[0], data[1], data[2], data[3], data[4], data[5]))
         # Tables with 5 values
-        elif table in ["errors", "reports"]:
+        elif table in ["reports"]:
             cursor.execute(format_str, (data[0], data[1], data[2], data[3], data[4]))
         # Tables with 3 values
         elif table == "admin_channels":
@@ -213,7 +211,9 @@ async def select(
         cursor.execute("ROLLBACK")
 
 
-async def update(table: str, column: str, where_value: str, new_value: str) -> None:
+async def update(
+    table: str, column: str, where_value: str, new_value: [str, bool], where_column: str = ""
+) -> None:
     """Update
     ---
 
@@ -224,18 +224,21 @@ async def update(table: str, column: str, where_value: str, new_value: str) -> N
     Arguments:
         table {str} -- Name of the table that the data is being updated on.
         column {str} -- The column that is being updated. Multiple columns are not supported.
-        where_value {str} -- The value that is going to be updated.
+        where_value {str, bool} -- The value that is going to be updated.
         new_value {str} -- The new value for :ref:`where_value`
 
     Postgresql Equivalent:
     ---
-    UPDATE :ref:`table` SET :ref:`column` = :ref:`new_value` WHERE :ref:`column` = :ref:`where_value`; # noqa: E501 pylint: disable=line-too-long
+    UPDATE :ref:`table` SET :ref:`column` = :ref:`new_value`
+    WHERE :ref:`check_column` = :ref:`where_value`;
     """
+    if not where_column:
+        where_column = column
     try:
         format_str = "UPDATE %s SET %s = %s where %s = %s"
         cursor.execute(
             format_str,
-            (AsIs(table), AsIs(column), new_value, AsIs(column), where_value),
+            (AsIs(table), AsIs(column), new_value, AsIs(where_column), where_value),
         )
         connection.commit()
     except psycopg2.Error as pge:
