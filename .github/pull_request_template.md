@@ -1,4 +1,4 @@
-### What does this MR accomplish
+### What does this PR accomplish
 
 #### New Feature Submission
 
