@@ -1,4 +1,4 @@
-PHONY: lint test
+PHONY: lint
 
 lint:
 	black --check --line-length 100 .

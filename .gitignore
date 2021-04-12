@@ -127,10 +127,8 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-
-*.log
 .vscode/
 *.png
 *.bak
-
+school_list.csv
 .idea/

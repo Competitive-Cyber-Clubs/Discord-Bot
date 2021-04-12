@@ -105,7 +105,7 @@ class HealthCog(commands.Cog, name="Health"):
         help="Gets all errors or reports for the day.",
         description="Admin Only Feature",
     )
-    async def get_status(self, ctx: commands.Context, which: str):
+    async def get_status(self, ctx: commands.Context, which: str, ack: bool = False):
         """get-status
         ---
 
@@ -117,7 +117,7 @@ class HealthCog(commands.Cog, name="Health"):
             which {str} --- which item to get, reports or errors.
         """
         if which == "errors":
-            columns = "id, message, command, error"
+            columns = "id, message, command, error, ack"
         elif which == "reports":
             columns = "name, message"
         else:
@@ -136,7 +136,8 @@ class HealthCog(commands.Cog, name="Health"):
         else:
             results_string = []
             for result in results:
-                results_string.append(" ".join(map(str, result)))
+                if result[-1] == ack and which == "errors":
+                    results_string.append(" ".join(map(str, result)))
             await utils.list_message(ctx, results_string, which)
 
     @commands.command(

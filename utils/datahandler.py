@@ -6,7 +6,7 @@ from .tables import tables
 from .logger import make_logger
 
 # Imports the main logger
-log = make_logger("database", os.getenv("LOG_LEVEL"))
+log = make_logger("database", os.getenv("LOG_LEVEL", "INFO"))
 
 # Creates the connection to the database
 connection = psycopg2.connect(os.getenv("DATABASE_URL"), sslmode="require")
@@ -14,7 +14,7 @@ cursor = connection.cursor()
 
 
 def table_create() -> None:
-    """table_create
+    """Table_create
 
     Creates tables if they do not exist at startup. All tables are pulled from tables.py
 
@@ -23,8 +23,8 @@ def table_create() -> None:
         cursor.execute(table)
 
 
-def format_step(table: str) -> str:
-    """format_step
+def _format_step(table: str) -> str:
+    """Format_step
     ---
 
     Returns the format string to be used in insert. This was split from insert to make it less
@@ -66,13 +66,13 @@ def format_step(table: str) -> str:
     elif table == "regions":
         query_str = "INSERT INTO regions (name, id) VALUES (%s, %s)"
     else:
-        log.error("Table not found.")
+        log.error("Table {} not found.".format(table))
         return "error"
     return query_str
 
 
-def result_parser(column: str, fetched: list) -> list:
-    """result_parser
+def _result_parser(column: str, fetched: list) -> list:
+    """Result_parser
     ---
 
     Arguments:
@@ -89,19 +89,17 @@ def result_parser(column: str, fetched: list) -> list:
         result = fetched
     # Breaks up the tuples to a standard list.
     else:
-        result = []
-        for _, x in enumerate(fetched):
-            result.append(x[0])
+        result = [x[0] for x in fetched]
     return result
 
 
 async def insert(table: str, data: list) -> [None, str]:
-    """insert
+    """Insert
     ---
 
     Asynchronous Function
 
-    Inserts a new row to an existing table. Get the string to execute with from :ref:`format_step`.
+    Inserts a new row to an existing table. Get the string to execute with from :ref:`_format_step`.
 
     Arguments:
     ---
@@ -116,16 +114,16 @@ async def insert(table: str, data: list) -> [None, str]:
     ---
     INSERT into :ref:`table` VALUE (:ref:`*data`);
     """
-    format_str = format_step(table)
+    format_str = _format_step(table)
     if format_str == "error":
         return "error"
     log.debug(format_str, *data)
     try:
         # Tables with 6 values
-        if table == "schools":
+        if table in ["schools", "errors"]:
             cursor.execute(format_str, (data[0], data[1], data[2], data[3], data[4], data[5]))
         # Tables with 5 values
-        elif table in ["errors", "reports"]:
+        elif table in ["reports"]:
             cursor.execute(format_str, (data[0], data[1], data[2], data[3], data[4]))
         # Tables with 3 values
         elif table == "admin_channels":
@@ -142,7 +140,7 @@ async def insert(table: str, data: list) -> [None, str]:
 
 
 async def fetch(table: str, column: str) -> list:
-    """fetch
+    """Fetch
     ---
 
     Asynchronous Function
@@ -167,15 +165,15 @@ async def fetch(table: str, column: str) -> list:
         format_str = "SELECT %s FROM %s;"
         cursor.execute(format_str, (AsIs(column), AsIs(table)))
         fetched = cursor.fetchall()
-        return result_parser(column, fetched)
+        return _result_parser(column, fetched)
     except psycopg2.Error as pge:
         log.error(pge)
 
 
 async def select(
-    table: str, column: str, where_column: str, where_value: str, symbol: (str, bool) = "="
+    table: str, column: str, where_column: str, where_value: str, symbol: [str, bool] = "="
 ) -> list:
-    """select
+    """Select
     ---
 
     Asynchronous Function
@@ -207,13 +205,15 @@ async def select(
             (AsIs(column), AsIs(table), AsIs(where_column), AsIs(symbol), where_value),
         )
         fetched = cursor.fetchall()
-        return result_parser(column, fetched)
+        return _result_parser(column, fetched)
     except psycopg2.Error as pge:
         log.error(pge)
         cursor.execute("ROLLBACK")
 
 
-async def update(table: str, column: str, where_value: str, new_value: str) -> None:
+async def update(
+    table: str, column: str, where_value: str, new_value: [str, bool], where_column: str = ""
+) -> None:
     """Update
     ---
 
@@ -224,18 +224,21 @@ async def update(table: str, column: str, where_value: str, new_value: str) -> N
     Arguments:
         table {str} -- Name of the table that the data is being updated on.
         column {str} -- The column that is being updated. Multiple columns are not supported.
-        where_value {str} -- The value that is going to be updated.
+        where_value {str, bool} -- The value that is going to be updated.
         new_value {str} -- The new value for :ref:`where_value`
 
     Postgresql Equivalent:
     ---
-    UPDATE :ref:`table` SET :ref:`column` = :ref:`new_value` WHERE :ref:`column` = :ref:`where_value`; # noqa: E501 pylint: disable=line-too-long
+    UPDATE :ref:`table` SET :ref:`column` = :ref:`new_value`
+    WHERE :ref:`check_column` = :ref:`where_value`;
     """
+    if not where_column:
+        where_column = column
     try:
         format_str = "UPDATE %s SET %s = %s where %s = %s"
         cursor.execute(
             format_str,
-            (AsIs(table), AsIs(column), new_value, AsIs(column), where_value),
+            (AsIs(table), AsIs(column), new_value, AsIs(where_column), where_value),
         )
         connection.commit()
     except psycopg2.Error as pge:
@@ -263,6 +266,7 @@ async def delete(table: str, column: str, value: str) -> None:
     DELETE FROM :ref:`table` WHERE :ref:`column` = :ref:`value`;
     """
     try:
+        log.info("Deleting {} where {} from {}".format(column, value, table))
         format_str = "DELETE FROM %s WHERE %s = %s"
         cursor.execute(format_str, (AsIs(table), AsIs(column), value))
         connection.commit()

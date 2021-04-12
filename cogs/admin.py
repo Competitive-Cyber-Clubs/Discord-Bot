@@ -19,6 +19,7 @@ class AdminCog(commands.Cog, name="Admin"):
         `add-admin`: Add a user to the bot admin table.
         `add-admin-channel`: Add the channel that it was called in to the admin_channel table.
         `reload-extension`: Reloads the extensions names.
+        `update-list`: Updates the list of schools
 
     Arguments:
     ---
@@ -143,17 +144,17 @@ class AdminCog(commands.Cog, name="Admin"):
             extension {str} -- extension to reload
         """
         self.bot.reload_extension(extension)
-        await utils.make_embed(ctx, color="28b463", title="Reloaded")
+        await utils.make_embed(ctx, color="28b463", title="Reloaded", description=extension)
 
     @commands.command(name="update-list", help="Updates the school_list.csv")
-    async def refresh_list(self, ctx):
+    async def refresh_list(self, ctx: commands.Context):
         """refresh_list
         ---
 
         Arguments:
             ctx {discord.ext.commands.Context} -- Context of the command.
         """
-        await utils.update_list(self)
+        await utils.update_list(self.bot, True)
         self.bot.list_updated = datetime.utcnow()
         await ctx.send("List updated")
 

@@ -20,7 +20,7 @@ class SearchCog(commands.Cog, name="Search"):
         bot {discord.commands.Bot} -- The bot
     """
 
-    def __init__(self, bot):
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     @commands.command(
@@ -77,7 +77,7 @@ class SearchCog(commands.Cog, name="Search"):
             )
         results = await utils.school_search(self.bot.school_list, school)
         created_roles = await utils.fetch("schools", "school")
-        if len(results) == 0:
+        if not results:
             await utils.make_embed(ctx, color="FF0000", title="No results found.")
         else:
             for place, results_name in enumerate(results):
@@ -100,7 +100,7 @@ class SearchCog(commands.Cog, name="Search"):
             state {str} -- Name of the state that the user wants to get schools from.
         """
         schools = await utils.state_list(self.bot.school_list, state)
-        if len(schools) == 0:
+        if not schools:
             await utils.make_embed(ctx, color="FF0000", title="No results found.")
         else:
             title = "Schools in State '{}'".format(state.title())

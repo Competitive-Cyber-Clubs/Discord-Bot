@@ -24,21 +24,16 @@ import utils
 TOKEN = os.environ["DISCORD_TOKEN"]
 OWNER_NAME = os.environ["OWNER_NAME"]
 OWNER_ID = os.environ["OWNER_ID"]
-log_level = os.getenv("LOG_LEVEL")
-if not log_level:
-    log_level = "INFO"
 
 
 utils.table_create()
-log = utils.make_logger("bot", log_level)
+log = utils.make_logger("bot", os.getenv("LOG_LEVEL", "INFO"))
 log.info("Starting up")
 log.debug(
     "Using discord.py version: {} and Python version {}".format(
         discord.__version__, sys.version[0:5]
     )
 )
-
-intents = discord.Intents.all()
 
 initial_extensions = [
     "cogs.admin",
@@ -56,11 +51,13 @@ initial_extensions = [
 
 class CCC_Bot(commands.Bot):  # pylint: disable=missing-class-docstring
     def __init__(self):
-        super().__init__(command_prefix=("$", "?"), owner_id=OWNER_ID, intents=intents)
+        super().__init__(
+            command_prefix=("$", "?"), owner_id=OWNER_ID, intents=discord.Intents.all()
+        )
 
         self.uptime = datetime.utcnow()
         self.list_updated, self.school_list = "", ""
-        self.__version__ = "v0.1.1"
+        self.__version__ = "v0.1.2"
         self.description = (
             "This Discord bot that assists with the Competitive Cyber Club Discord\n"
             "If you experience any issues then please use the ?report feature.\n"
@@ -69,7 +66,7 @@ class CCC_Bot(commands.Bot):  # pylint: disable=missing-class-docstring
 
     async def on_ready(self):
         """Startup which shows servers it has connected to"""
-        await utils.update_list(self)
+        await utils.update_list(self, not os.path.exists("school_list.csv"))
         log.info("{} is connected to the following guilds: " "{}".format(self.user, self.guilds))
         await utils.insert("bot_admins", [OWNER_NAME, int(OWNER_ID)])
         admin_roles = await utils.select("keys", "value", "key", "admin_role")

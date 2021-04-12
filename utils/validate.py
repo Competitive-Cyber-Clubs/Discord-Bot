@@ -1,23 +1,26 @@
 """School name validation"""
 import os
+import logging
 from datetime import datetime
 import aiohttp
 import pandas as pd
 
+log = logging.getLogger("bot")
 
-async def update_list(bot):
+
+async def update_list(bot, download: bool = False):
     """update_list
     ---
     Updates the school_list
     """
-    os.replace("school_list.csv", "school_list.csv.bak")
-    csv_url = "https://raw.githubusercontent.com/Competitive-Cyber-Clubs/School-List/master/school_list.csv"  # noqa: E501 pylint: disable=line-too-long
-    new_list = open("school_list.csv", mode="w", encoding="utf-8")
-    async with aiohttp.ClientSession() as session:
-        async with session.get(csv_url) as resp:
-            new_file = await resp.text(encoding="utf-8")
-    new_list.write(new_file)
-    new_list.close()
+    if download:
+        log.info("Downloading new list")
+        os.replace("school_list.csv", "school_list.csv.bak")
+        csv_url = "https://raw.githubusercontent.com/Competitive-Cyber-Clubs/School-List/master/school_list.csv"  # noqa: E501 pylint: disable=line-too-long
+        new_list = open("school_list.csv", mode="w", encoding="utf-8")
+        async with aiohttp.ClientSession() as session, session.get(csv_url) as resp:
+            new_list.write(await resp.text(encoding="utf-8"))
+        new_list.close()
     bot.list_updated = datetime.utcnow()
     bot.school_list = pd.read_csv("school_list.csv", encoding="utf-8")
 

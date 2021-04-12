@@ -14,16 +14,18 @@
 ### Removed
 -->
 
-[LATEST] - 07/30/2020
+[v0.1.2] - 04/11/2021
 ---
 
 ### Added
 
 - Admin check for admin cog
+- Error acknowledgement
 
 ### Changed
 
 - Made requirements == instead of >=
+- Fixed issue where updating the school list wouldn't be reflected
 
 [v0.1.1] - 06/28/2020
 ---

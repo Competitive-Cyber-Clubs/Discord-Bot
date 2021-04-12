@@ -191,7 +191,7 @@ class SchoolCog(commands.Cog, name="Schools"):
         await utils.make_embed(
             ctx,
             title="You are about to create a new school: {}.".format(school_name),
-            description="React  👍  to confirm.",
+            description="React 👍 to this message confirm.",
         )
         # Gives the user 30 seconds to add the reaction '👍' to the message.
         try:
@@ -233,7 +233,7 @@ class SchoolCog(commands.Cog, name="Schools"):
                     description="There was an error with creating the role.",
                 )
                 await added_school.delete(reason="Error in creation")
-                self.log.warning("due to error with School Role creation.")
+                self.log.warning("Error with School Role creation.")
             else:
                 success_msg = 'School "{}" has been created in {} with color of 0x{}'.format(
                     school_name, region, color
