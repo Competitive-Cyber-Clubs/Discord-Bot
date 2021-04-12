@@ -14,7 +14,7 @@ cursor = connection.cursor()
 
 
 def table_create() -> None:
-    """table_create
+    """Table_create
 
     Creates tables if they do not exist at startup. All tables are pulled from tables.py
 
@@ -24,7 +24,7 @@ def table_create() -> None:
 
 
 def _format_step(table: str) -> str:
-    """_format_step
+    """Format_step
     ---
 
     Returns the format string to be used in insert. This was split from insert to make it less
@@ -72,7 +72,7 @@ def _format_step(table: str) -> str:
 
 
 def _result_parser(column: str, fetched: list) -> list:
-    """_result_parser
+    """Result_parser
     ---
 
     Arguments:
@@ -94,7 +94,7 @@ def _result_parser(column: str, fetched: list) -> list:
 
 
 async def insert(table: str, data: list) -> [None, str]:
-    """insert
+    """Insert
     ---
 
     Asynchronous Function
@@ -140,7 +140,7 @@ async def insert(table: str, data: list) -> [None, str]:
 
 
 async def fetch(table: str, column: str) -> list:
-    """fetch
+    """Fetch
     ---
 
     Asynchronous Function
@@ -173,7 +173,7 @@ async def fetch(table: str, column: str) -> list:
 async def select(
     table: str, column: str, where_column: str, where_value: str, symbol: [str, bool] = "="
 ) -> list:
-    """select
+    """Select
     ---
 
     Asynchronous Function

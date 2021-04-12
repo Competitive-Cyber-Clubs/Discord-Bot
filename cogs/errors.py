@@ -43,7 +43,7 @@ class ErrorsCog(commands.Cog, name="Errors"):
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx: commands.Context, error):
-        """Reports errors to users"""
+        """Report errors to users"""
         if isinstance(error, (commands.errors.MissingRole, commands.errors.CheckFailure)):
             error_msg = "You do not have the correct role for this command."
         elif isinstance(error, commands.errors.CommandNotFound):
