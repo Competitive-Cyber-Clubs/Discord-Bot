@@ -15,7 +15,10 @@ async def update_list(bot, download: bool = False):
     """
     if download:
         log.info("Downloading new list")
-        os.replace("school_list.csv", "school_list.csv.bak")
+        try:
+            os.replace("school_list.csv", "school_list.csv.bak")
+        except OSError:
+            log.debug("School list did not exist")
         csv_url = "https://raw.githubusercontent.com/Competitive-Cyber-Clubs/School-List/master/school_list.csv"  # noqa: E501 pylint: disable=line-too-long
         new_list = open("school_list.csv", mode="w", encoding="utf-8")
         async with aiohttp.ClientSession() as session, session.get(csv_url) as resp:
