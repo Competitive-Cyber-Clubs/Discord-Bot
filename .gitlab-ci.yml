@@ -8,8 +8,7 @@ include:
   - template: Secret-Detection.gitlab-ci.yml
 
 variables:
-    DS_DEFAULT_ANALYZERS: "gemnasium"
-    CI_DEBUG_TRACE: "true"
+  CI_DEBUG_TRACE: "true"
 
 license_scanning:
   stage: test
