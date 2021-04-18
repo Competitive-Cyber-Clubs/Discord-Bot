@@ -8,6 +8,11 @@ include:
   - template: License-Scanning.gitlab-ci.yml
   - template: Secret-Detection.gitlab-ci.yml
 
+gemnasium-python:
+  variables:
+      DS_DEFAULT_ANALYZERS: "bundler-audit,gemnasium"
+      CI_DEBUG_TRACE: "true"
+
 license_scanning:
   stage: test
   rules:
