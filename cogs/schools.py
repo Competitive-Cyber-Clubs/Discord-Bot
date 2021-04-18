@@ -162,6 +162,14 @@ class SchoolCog(commands.Cog, name="Schools"):
         if not await utils.school_check(self.bot.school_list, school_name):
             return await utils.make_embed(ctx, "FF0000", title="Error: School name not valid.")
 
+        if await utils.select("schools", "school", "school", school_name):
+            self.log.info(
+                "{} attempted to create a duplicate role for {}".format(
+                    ctx.author.name, school_name
+                )
+            )
+            return await utils.error_message(ctx, f"School role for {school_name} already exists.")
+
         regions = await utils.fetch("regions", "name")
         region = await utils.region_select(self.bot.school_list, school_name)
         if region not in regions:
@@ -206,10 +214,6 @@ class SchoolCog(commands.Cog, name="Schools"):
             ]
             status = await utils.insert("schools", data)
             if status == "error":
-                await utils.error_message(ctx, "There was an error with creating the role.")
-                await added_school.delete(reason="Error in creation")
-                self.log.warning("Error with School Role creation.")
-            elif status == "duplicate":
                 await utils.error_message(ctx, "There was an error with creating the role.")
                 await added_school.delete(reason="Error in creation")
                 self.log.warning("Error with School Role creation.")
