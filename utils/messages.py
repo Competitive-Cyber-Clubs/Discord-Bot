@@ -7,7 +7,7 @@ from .datahandler import select
 log = logging.getLogger("bot")
 
 
-async def list_message(ctx, message: list, title: str, **kwargs: dict):
+async def list_message(ctx, message: list, title: str, **kwargs):
     """list_message
     ---
     Asynchronous Function
@@ -90,6 +90,19 @@ async def admin_log(bot, message: str, log_status: bool = True):
                 color=discord.Color(int("FF0000", 16)),
             )
             await to_send.send(embed=embed)
+
+
+async def error_message(ctx, message: str, title: str = "Error:", **kwargs):
+    """
+    Generate an error embed
+
+    Args:
+        title: Title of the embed
+        ctx: Discord context
+        message: The message to send
+
+    """
+    await make_embed(ctx, "FF0000", True, description=message, title=title, **kwargs)
 
 
 async def make_embed(

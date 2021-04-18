@@ -49,7 +49,7 @@ class ErrorsCog(commands.Cog, name="Errors"):
         elif isinstance(error, commands.errors.CommandNotFound):
             return
         elif isinstance(error, commands.MissingRequiredArgument):
-            error_msg = "`{}` has missing required arguments".format(ctx.message.content)
+            error_msg = f"`{ctx.message.content}` has missing required arguments"
         else:
             errors = await utils.fetch("errors", "id")
             error_id = random.randint(1, 32767)  # nosec
@@ -67,7 +67,7 @@ class ErrorsCog(commands.Cog, name="Errors"):
             error_info = [
                 error_id,
                 ctx.message.content,
-                "COG: {} COMMAND: {}".format(ctx.command.cog.qualified_name, ctx.command.name),
+                f"COG: {ctx.command.cog.qualified_name} COMMAND: {ctx.command.name}",
                 str(error),
                 datetime.utcnow(),
                 False,

@@ -136,6 +136,8 @@ async def insert(table: str, data: list) -> [None, str]:
     except psycopg2.Error as pge:
         log.error(pge)
         cursor.execute("ROLLBACK")
+        if pge.pgcode == psycopg2.errors.UniqueViolation:
+            return "duplicate"
         return "error"
 
 
