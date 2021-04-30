@@ -48,7 +48,7 @@ class MiscCog(commands.Cog, name="Misc"):
         await ctx.author.send(embed=embed)
 
     @commands.command(name="uptime", help="Gets uptime of bot")
-    async def uptime(self, ctx: commands.Context):
+    async def Uptime(self, ctx: commands.Context):
         """uptime
         ---
 
