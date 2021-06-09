@@ -48,7 +48,7 @@ class MiscCog(commands.Cog, name="Misc"):
         await ctx.author.send(embed=embed)
 
     @commands.command(name="uptime", help="Gets uptime of bot")
-    async def uptime(self, ctx: commands.Context):
+    async def Uptime(self, ctx: commands.Context):
         """uptime
         ---
 
@@ -92,14 +92,14 @@ class MiscCog(commands.Cog, name="Misc"):
             ctx {discord.ext.commands.Context} -- Context of the command.
         """
         reports = await utils.fetch("reports", "id")
-        reportID = random.randint(1, 32767)  # nosec
-        while reportID in reports:
-            self.log.debug("reportID had to be regenerated")
-            reportID = random.randint(1, 32767)  # nosec
+        report_id = random.randint(1, 32767)  # nosec
+        while report_id in reports:
+            self.log.debug("report_id had to be regenerated")
+            report_id = random.randint(1, 32767)  # nosec
         await utils.insert(
             "reports",
             [
-                reportID,
+                report_id,
                 (ctx.author.name + ctx.author.discriminator),
                 ctx.author.id,
                 message,
@@ -117,10 +117,10 @@ class MiscCog(commands.Cog, name="Misc"):
                 description="{} submitted the report:\n> {}".format(ctx.author.name, message),
             )
 
-        respone_msg = (
+        response_msg = (
             "The admins have received your report.\nThey will investigation and may reach out"
         )
-        await utils.make_embed(ctx, title="Report Received", description=respone_msg)
+        await utils.make_embed(ctx, title="Report Received", description=response_msg)
 
 
 def setup(bot):

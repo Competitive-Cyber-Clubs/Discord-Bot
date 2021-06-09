@@ -52,7 +52,7 @@ from .validate import (
     region_select,
     update_list,
 )
-from .messages import list_message, admin_log, make_embed
+from .messages import list_message, admin_log, make_embed, error_message
 
 __all__ = [
     "table_create",
@@ -74,4 +74,5 @@ __all__ = [
     "list_message",
     "admin_log",
     "make_embed",
+    "error_message",
 ]

@@ -1,7 +1,7 @@
 """Rank features cog for CCC Bot"""
 import discord.utils
 from discord.ext import commands
-from utils import make_embed
+from utils import make_embed, error_message
 
 
 class RankCog(commands.Cog, name="Rank"):
@@ -39,7 +39,7 @@ class RankCog(commands.Cog, name="Rank"):
         ranks = ["student", "professor", "alumni"]
         checked = [i for i in user.roles if i.name.lower() in ranks]
         if len(checked) > 0:
-            await make_embed(ctx, "FF0000", title="Error: You already have a rank.")
+            await error_message(ctx, "You already have a rank.")
         else:
             await user.add_roles(discord.utils.get(ctx.guild.roles, name=rank))
             await make_embed(

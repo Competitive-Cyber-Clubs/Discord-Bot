@@ -103,7 +103,7 @@ class AdminCog(commands.Cog, name="Admin"):
                 ctx, color="28b463", title="User: {} is now an admin.".format(new_admin)
             )
         else:
-            await utils.make_embed(ctx, color="FF0000", title="Error: User not found.")
+            await utils.error_message(ctx, "User not found.")
 
     @commands.command(name="add-admin-channel", help="Marks the channel as an admin channel")
     @commands.guild_only()

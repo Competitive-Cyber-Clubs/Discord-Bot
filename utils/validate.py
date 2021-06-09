@@ -20,10 +20,9 @@ async def update_list(bot, download: bool = False):
         except OSError:
             log.debug("School list did not exist")
         csv_url = "https://raw.githubusercontent.com/Competitive-Cyber-Clubs/School-List/master/school_list.csv"  # noqa: E501 pylint: disable=line-too-long
-        new_list = open("school_list.csv", mode="w", encoding="utf-8")
-        async with aiohttp.ClientSession() as session, session.get(csv_url) as resp:
-            new_list.write(await resp.text(encoding="utf-8"))
-        new_list.close()
+        with open("school_list.csv", mode="w", encoding="utf-8") as new_list:
+            async with aiohttp.ClientSession() as session, session.get(csv_url) as resp:
+                new_list.write(await resp.text(encoding="utf-8"))
     bot.list_updated = datetime.utcnow()
     bot.school_list = pd.read_csv("school_list.csv", encoding="utf-8")
 

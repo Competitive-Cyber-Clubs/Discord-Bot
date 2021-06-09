@@ -121,17 +121,12 @@ class HealthCog(commands.Cog, name="Health"):
         elif which == "reports":
             columns = "name, message"
         else:
-            return await utils.make_embed(
-                ctx, "FF0000", title="Error", description="Please pick a valid option."
-            )
+            return await utils.error_message(ctx, "Please pick a valid option.")
         date = datetime.utcnow().strftime("%Y-%m-%d")
         results = await utils.select(which, columns, "date_trunc('day', time)", date)
         if not results:
             await utils.make_embed(
-                ctx,
-                "28b463",
-                title="Success",
-                description="No {} for {}".format(which, date),
+                ctx, "28b463", title="Success", description=f"No {which} for {date}"
             )
         else:
             results_string = []

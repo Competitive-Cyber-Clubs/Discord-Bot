@@ -55,15 +55,13 @@ class RegionCog(commands.Cog, name="Regions"):
             added_region = await ctx.guild.create_role(
                 name=region,
                 mentionable=True,
-                reason="Added by {}".format(ctx.author.name),
+                reason=f"Added by {ctx.author.name}",
             )
             status = await utils.insert("regions", [region, added_region.id])
         else:
             status = "error"
         if status == "error":
-            await utils.make_embed(
-                ctx, color="FF0000", title="There was an error creating the region."
-            )
+            await utils.error_message(ctx, "Error creating the region.")
         else:
             await utils.make_embed(ctx, color="28b463", title="Region has been created.")
 

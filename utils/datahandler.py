@@ -1,6 +1,7 @@
 """Handles all postgresql data and tables"""
 import os
 import psycopg2
+import psycopg2.errors
 from psycopg2.extensions import AsIs
 from .tables import tables
 from .logger import make_logger
@@ -11,6 +12,8 @@ log = make_logger("database", os.getenv("LOG_LEVEL", "INFO"))
 # Creates the connection to the database
 connection = psycopg2.connect(os.getenv("DATABASE_URL"), sslmode="require")
 cursor = connection.cursor()
+
+DuplicateError = psycopg2.errors.lookup("23505")
 
 
 def table_create() -> None:
@@ -135,7 +138,9 @@ async def insert(table: str, data: list) -> [None, str]:
         return None
     except psycopg2.Error as pge:
         log.error(pge)
-        cursor.execute("ROLLBACK")
+        cursor.rollback()
+        if isinstance(pge, DuplicateError):
+            return "duplicate"
         return "error"
 
 

@@ -69,16 +69,15 @@ class SearchCog(commands.Cog, name="Search"):
             "institute",
         ]
         if school.lower() in blocked_words:
-            return await utils.make_embed(
+            return utils.error_message(
                 ctx,
-                title="Search error",
-                color="FF0000",
-                description=f'Please refine your search as "{school}" returns a lot of results.',
+                f"Please refine your search as '{school}' returns a lot of results.",
+                title="Search Error",
             )
         results = await utils.school_search(self.bot.school_list, school)
         created_roles = await utils.fetch("schools", "school")
         if not results:
-            await utils.make_embed(ctx, color="FF0000", title="No results found.")
+            await utils.error_message(ctx, "No results found")
         else:
             for place, results_name in enumerate(results):
                 results[place] = "{} :: Role created: {}".format(
@@ -103,7 +102,7 @@ class SearchCog(commands.Cog, name="Search"):
         if not schools:
             await utils.make_embed(ctx, color="FF0000", title="No results found.")
         else:
-            title = "Schools in State '{}'".format(state.title())
+            title = f"Schools in State '{state.title()}'"
             await utils.list_message(ctx, schools, title)
 
 
