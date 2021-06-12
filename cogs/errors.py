@@ -2,8 +2,12 @@
 import logging
 import random
 from datetime import datetime
+
+import discord
 from discord.ext import commands
 import utils
+
+log = logging.getLogger("bot")
 
 
 class ErrorsCog(commands.Cog, name="Errors"):
@@ -23,7 +27,6 @@ class ErrorsCog(commands.Cog, name="Errors"):
 
     def __init__(self, bot):
         self.bot = bot
-        self.log = logging.getLogger("bot")
 
     @commands.command(name="ack-error", help="Acknowledge an error to stop it from appearing")
     @commands.check(utils.check_admin)
@@ -41,9 +44,50 @@ class ErrorsCog(commands.Cog, name="Errors"):
         )
         await ctx.send(f"Error {error_id} has been acknowledged")
 
+    @commands.command(name="ack-all", help="Acknowledge all errors")
+    @commands.check(utils.check_admin)
+    async def ack_all(self, ctx: commands.Context):
+        """Acknowledge all currently unacknowledged errors"""
+        errors = await utils.select(
+            table="errors", column="id", where_column="ack", where_value=False
+        )
+        if not errors:
+            return await ctx.send("No errors need acknowledging")
+        error_count = 0
+        for error in errors:
+            await utils.update(
+                table="errors",
+                where_column="id",
+                where_value=error,
+                column="ack",
+                new_value=True,
+            )
+            log.debug(
+                "Acknowledged error {} as part of bulk acknowledgement by {}".format(
+                    error, ctx.author.display_name
+                )
+            )
+            error_count += 1
+        await ctx.send(
+            (
+                "All errors have been acknowledged."
+                f"Total: {str(error_count)}\nError Numbers: {', '.join(map(str, errors))}"
+            )
+        )
+
     @commands.Cog.listener()
     async def on_command_error(self, ctx: commands.Context, error):
         """Report errors to users"""
+
+        if isinstance(error, commands.DisabledCommand):
+            await utils.error_message(ctx, message=f"{ctx.command} has been disabled.")
+
+        elif isinstance(error, commands.NoPrivateMessage):
+            try:
+                await ctx.author.send(f"{ctx.command} can not be used in Private Messages.")
+            except discord.HTTPException:
+                pass
+
         if isinstance(error, (commands.errors.MissingRole, commands.errors.CheckFailure)):
             error_msg = "You do not have the correct role for this command."
         elif isinstance(error, commands.errors.CommandNotFound):
@@ -54,16 +98,17 @@ class ErrorsCog(commands.Cog, name="Errors"):
             errors = await utils.fetch("errors", "id")
             error_id = random.randint(1, 32767)  # nosec
             while error_id in errors:
-                self.log.warning("Error ID had to be regenerated")
+                log.warning("Error ID had to be regenerated")
                 error_id = random.randint(1, 32767)  # nosec
 
-            self.log.error((error_id, error))
+            log.error((error_id, error))
+            log.exception(error, exc_info=True)
             error_msg = (
                 "There was an unknown error.\n"
                 "Please report it for investigation.\n"
                 "Error #{}".format(error_id)
             )
-            self.log.error("There was the following error: {}".format(error))
+            log.error("There was the following error: {}".format(error))
             error_info = [
                 error_id,
                 ctx.message.content,

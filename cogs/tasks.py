@@ -4,6 +4,8 @@ from datetime import datetime
 from discord.ext import commands, tasks
 import utils
 
+log = logging.getLogger("bot")
+
 
 class TaskCog(commands.Cog, name="Tasks"):
     """TaskCog
@@ -22,7 +24,6 @@ class TaskCog(commands.Cog, name="Tasks"):
 
     def __init__(self, bot):
         self.bot = bot
-        self.log = logging.getLogger("bot")
         self.report_errors.start()  # pylint: disable=no-member
 
     @tasks.loop(hours=24.0)

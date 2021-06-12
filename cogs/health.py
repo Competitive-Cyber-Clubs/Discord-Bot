@@ -6,6 +6,9 @@ import discord
 import utils
 
 
+log = logging.getLogger("bot")
+
+
 async def managed_role_check(role: discord.Role):
     """managed_role_check
     ---
@@ -49,7 +52,6 @@ class HealthCog(commands.Cog, name="Health"):
 
     def __init__(self, bot):
         self.bot = bot
-        self.log = logging.getLogger("bot")
 
     async def cog_check(self, ctx: commands.Context):
         """cog_check
@@ -94,7 +96,7 @@ class HealthCog(commands.Cog, name="Health"):
                         else:
                             fail.append((role_name, role))
                     except AttributeError:
-                        self.log.error("Attribute error with role {}".format(role))
+                        log.error("Attribute error with role {}".format(role))
                         fail.append((role, None))
 
         message = "There were {} successes and {} failures".format(len(success), len(fail))
@@ -168,13 +170,13 @@ class HealthCog(commands.Cog, name="Health"):
             after {discord.Role} -- The discord role after it was edited.
         """
         managed, _ = await managed_role_check(before)
-        self.log.debug("Role: {} Managed: {}".format(before.name, managed))
+        log.debug("Role: {} Managed: {}".format(before.name, managed))
         if managed:
             await utils.update("schools", "school", before.name, after.name)
-            self.log.warning('Role "{}" was updated. It is now {}'.format(before.name, after.name))
+            log.warning('Role "{}" was updated. It is now {}'.format(before.name, after.name))
             await utils.admin_log(self.bot, "Old role {} now new role {}".format(before, after))
         else:
-            self.log.info("Old role {} now new role {}".format(before, after))
+            log.info("Old role {} now new role {}".format(before, after))
 
     @commands.Cog.listener()
     async def on_guild_role_delete(self, role: discord.Role):
@@ -191,9 +193,9 @@ class HealthCog(commands.Cog, name="Health"):
         managed, table = await managed_role_check(role)
         if managed:
             await utils.delete("schools", "id", role.id)
-            self.log.warning('Role "{}" was deleted. It was in {}'.format(role.name, table))
+            log.warning('Role "{}" was deleted. It was in {}'.format(role.name, table))
         else:
-            self.log.info('Role "{}" was deleted. It was not a managed role'.format(role.name))
+            log.info('Role "{}" was deleted. It was not a managed role'.format(role.name))
 
         await utils.admin_log(self.bot, "Role: {} was deleted".format(role.name), True)
 

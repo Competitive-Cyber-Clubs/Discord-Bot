@@ -6,6 +6,8 @@ import discord
 from discord.ext import commands
 import utils
 
+log = logging.getLogger("bot")
+
 
 class SchoolCog(commands.Cog, name="Schools"):
     """SchoolCog
@@ -31,7 +33,6 @@ class SchoolCog(commands.Cog, name="Schools"):
 
     def __init__(self, bot):
         self.bot = bot
-        self.log = logging.getLogger("bot")
 
     @commands.command(name="list-schools", help="Gets list of current schools")
     async def list_schools(self, ctx):
@@ -112,13 +113,13 @@ class SchoolCog(commands.Cog, name="Schools"):
         to_add = [discord.utils.get(ctx.guild.roles, name=x) for x in (school_name, "verified")]
         if None in to_add:
             await utils.error_message(ctx, "The school you select does not have valid role.")
-            self.log.warning(
+            log.warning(
                 "{} tried to join {}. Only roles found: {}".format(
                     ctx.author.name, school_name, to_add
                 )
             )
         else:
-            self.log.debug("Adding roles: {} to {}".format(to_add, user))
+            log.debug("Adding roles: {} to {}".format(to_add, user))
             await user.add_roles(*to_add, reason=f"{user.name} joined {school_name}")
             await user.remove_roles(
                 discord.utils.get(ctx.guild.roles, name="new"),
@@ -160,10 +161,10 @@ class SchoolCog(commands.Cog, name="Schools"):
             utils.FailedReactionCheck: Exception is raised if the reaction check does not validate.
         """
         if not await utils.school_check(self.bot.school_list, school_name):
-            return await utils.make_embed(ctx, "FF0000", title="Error: School name not valid.")
+            return await utils.error_message(ctx, message="School name not valid.")
 
         if await utils.select("schools", "school", "school", school_name):
-            self.log.info(
+            log.info(
                 "{} attempted to create a duplicate role for {}".format(
                     ctx.author.name, school_name
                 )
@@ -174,7 +175,7 @@ class SchoolCog(commands.Cog, name="Schools"):
         region = await utils.region_select(self.bot.school_list, school_name)
         if region not in regions:
             # No region map error
-            self.log.error(
+            log.error(
                 "There is no region map for {}, region: {}, {}".format(school_name, region, regions)
             )
             return await utils.error_message(ctx, f"No region defined for {school_name}")
@@ -182,11 +183,11 @@ class SchoolCog(commands.Cog, name="Schools"):
         await utils.make_embed(
             ctx,
             title=f"You are about to create a new school: {school_name}.",
-            description="React 👍 to this message confirm.",
+            description="React 👍 to this message in 60 seconds to confirm.",
         )
-        # Gives the user 30 seconds to add the reaction '👍' to the message.
+        # Gives the user 60 seconds to add the reaction '👍' to the message.
         try:
-            reactions, user = await self.bot.wait_for("reaction_add", timeout=30)
+            reactions, user = await self.bot.wait_for("reaction_add", timeout=60)
             if not await utils.check_react(ctx, user, reactions, "👍"):
                 raise utils.FailedReactionCheck
         except asyncio.TimeoutError:
@@ -216,7 +217,7 @@ class SchoolCog(commands.Cog, name="Schools"):
             if status == "error":
                 await utils.error_message(ctx, "There was an error with creating the role.")
                 await added_school.delete(reason="Error in creation")
-                self.log.warning("Error with School Role creation.")
+                log.warning("Error with School Role creation.")
             else:
                 success_msg = 'School "{}" has been created in {} with color of 0x{}'.format(
                     school_name, region, color

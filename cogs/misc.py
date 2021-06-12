@@ -5,6 +5,8 @@ import logging
 from discord.ext import commands
 import utils
 
+log = logging.getLogger("bot")
+
 
 class MiscCog(commands.Cog, name="Misc"):
     """MiscCog
@@ -26,7 +28,6 @@ class MiscCog(commands.Cog, name="Misc"):
 
     def __init__(self, bot):
         self.bot = bot
-        self.log = logging.getLogger("bot")
 
     @commands.command(name="ping", help="Testing command that returns pong", hidden=True)
     async def ping(self, ctx: commands.Context):
@@ -39,7 +40,7 @@ class MiscCog(commands.Cog, name="Misc"):
         ---
             ctx {discord.ext.commands.Context} -- Context of the command.
         """
-        self.log.debug("{} has sent ping.".format(ctx.author.name))
+        log.debug("{} has sent ping.".format(ctx.author.name))
         await ctx.message.delete()
         embed = await utils.make_embed(ctx, send=False, title="PONG")
         url = "https://peterfrezzini.com/content/images/2016/12/pong_logo.jpg"
@@ -94,7 +95,7 @@ class MiscCog(commands.Cog, name="Misc"):
         reports = await utils.fetch("reports", "id")
         report_id = random.randint(1, 32767)  # nosec
         while report_id in reports:
-            self.log.debug("report_id had to be regenerated")
+            log.warning("report_id had to be regenerated")
             report_id = random.randint(1, 32767)  # nosec
         await utils.insert(
             "reports",
@@ -110,7 +111,7 @@ class MiscCog(commands.Cog, name="Misc"):
         for channel in channels:
             to_send = self.bot.get_channel(channel)
             if to_send is None:
-                self.log.warning("No channel found for id {}".format(channel))
+                log.warning("No channel found for id {}".format(channel))
             await utils.make_embed(
                 ctx,
                 title="New Report",

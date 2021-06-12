@@ -1,9 +1,12 @@
 """Cog that has the admin features"""
-
+import logging
 from datetime import datetime
 import discord.utils
 from discord.ext import commands
 import utils
+
+
+log = logging.getLogger("bot")
 
 
 class AdminCog(commands.Cog, name="Admin"):
@@ -85,7 +88,7 @@ class AdminCog(commands.Cog, name="Admin"):
 
     @commands.command(name="add-admin", help="Adds <user> to the bot admins table.")
     @commands.check(utils.check_admin)
-    async def add_admin(self, ctx: commands.Context, *, user: str):
+    async def add_admin(self, ctx: commands.Context, *, user: discord.Member):
         """Add-Admin
         ---
 
@@ -98,6 +101,7 @@ class AdminCog(commands.Cog, name="Admin"):
         """
         new_admin = discord.utils.get(ctx.guild.members, name=user)
         if new_admin:
+            log.info("{} added new admin {}".format(ctx.author.display_name, user.display_name))
             await utils.insert("bot_admins", [new_admin.name, new_admin.id])
             await utils.make_embed(
                 ctx, color="28b463", title="User: {} is now an admin.".format(new_admin)

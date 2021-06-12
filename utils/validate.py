@@ -22,7 +22,7 @@ async def update_list(bot, download: bool = False):
         csv_url = "https://raw.githubusercontent.com/Competitive-Cyber-Clubs/School-List/master/school_list.csv"  # noqa: E501 pylint: disable=line-too-long
         with open("school_list.csv", mode="w", encoding="utf-8") as new_list:
             async with aiohttp.ClientSession() as session, session.get(csv_url) as resp:
-                new_list.write(await resp.text(encoding="utf-8"))
+                new_list.write("\n".join((await resp.text(encoding="utf-8")).splitlines()))
     bot.list_updated = datetime.utcnow()
     bot.school_list = pd.read_csv("school_list.csv", encoding="utf-8")
 
@@ -85,7 +85,7 @@ async def school_search(school_list: pd.DataFrame, name: str) -> list:
     ]
 
 
-async def state_list(school_list, state: str) -> list:
+async def state_list(school_list: pd.DataFrame, state: str) -> list:
     """state_list
     ---
     Asynchronous Function

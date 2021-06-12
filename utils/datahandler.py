@@ -50,8 +50,8 @@ def _format_step(table: str) -> str:
     elif table == "errors":
         query_str = (
             "INSERT INTO errors"
-            "(id, command, message, error, time) "
-            "VALUES (%s, %s, %s, %s, %s);"
+            "(id, command, message, error, time, ack) "
+            "VALUES (%s, %s, %s, %s, %s, %s);"
         )
     elif table == "reports":
         query_str = (
@@ -120,7 +120,7 @@ async def insert(table: str, data: list) -> [None, str]:
     format_str = _format_step(table)
     if format_str == "error":
         return "error"
-    log.debug(format_str, *data)
+    log.debug("String: {} Data {}".format(format_str, " ".join(map(str, data))))
     try:
         # Tables with 6 values
         if table in ["schools", "errors"]:
@@ -176,7 +176,11 @@ async def fetch(table: str, column: str) -> list:
 
 
 async def select(
-    table: str, column: str, where_column: str, where_value: str, symbol: [str, bool] = "="
+    table: str,
+    column: str,
+    where_column: str,
+    where_value: [str, bool, int],
+    symbol: [str, bool] = "=",
 ) -> list:
     """Select
     ---

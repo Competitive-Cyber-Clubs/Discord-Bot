@@ -98,12 +98,11 @@ class SearchCog(commands.Cog, name="Search"):
             ctx {discord.ext.commands.Context} -- Context of the command.
             state {str} -- Name of the state that the user wants to get schools from.
         """
+        state = state.strip("\"'")
         schools = await utils.state_list(self.bot.school_list, state)
-        if not schools:
-            await utils.make_embed(ctx, color="FF0000", title="No results found.")
-        else:
-            title = f"Schools in State '{state.title()}'"
-            await utils.list_message(ctx, schools, title)
+        if not any(schools):
+            return await utils.error_message(ctx, message="No results found.")
+        return await utils.list_message(ctx, schools, f"Schools in State '{state.title()}'")
 
 
 def setup(bot):
