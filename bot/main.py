@@ -18,7 +18,7 @@ import sys
 from datetime import datetime
 from discord.ext import commands
 import discord
-import utils
+from bot import utils
 
 
 TOKEN = os.environ["DISCORD_TOKEN"]

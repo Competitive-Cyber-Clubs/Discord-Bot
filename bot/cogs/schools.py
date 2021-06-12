@@ -141,7 +141,7 @@ class SchoolCog(commands.Cog, name="Schools"):
         "List: https://github.com/Competitive-Cyber-Clubs/School-List/blob/master/school_list.csv",
         description="Creates a new school",
     )
-    @commands.check_any(commands.has_role("new"), utils.check_admin)
+    @commands.has_role("new")
     async def add_school(
         self, ctx: commands.Context, *, school_name: str
     ):  # pylint: disable=too-many-branches
