@@ -14,6 +14,19 @@
 ### Removed
 -->
 
+[v0.1.3]
+---
+
+### Added
+
+- Ack all error command
+### Changed
+
+- Fixed issue when searching by state
+
+### Removed
+
+
 [v0.1.2] - 04/11/2021
 ---
 
@@ -58,7 +71,7 @@
 
 ### Added
 
-- kwargs to [utils.messages.list_message()](utils/messages.py) that gets passed to make embed.
+- kwargs to [utils.messages.list_message()](bot/utils/messages.py) that gets passed to make embed.
 
 ### Changed
 
@@ -74,13 +87,13 @@
 - Version number to the bot.
 - More blacklisted words.
 - GitHub issue and pull request templates.
-- Footer ability to [utils.messages.list_message()](utils/messages.py)
+- Footer ability to [utils.messages.list_message()](bot/utils/messages.py)
 - Alias for search-school
 
 ### Changed
 
 - Updated description.
-- Fixed the math in [cogs.misc.uptime](cogs/misc.py).
+- Fixed the math in [cogs.misc.uptime](bot/cogs/misc.py).
 
 ### Removed
 
@@ -93,9 +106,9 @@
 
 ### Added
 
-- `reload-extension` command in [cogs.admin](cogs/admin.py) to allow for extension reloading.
-- `uptime` command in [cogs.misc](cogs/misc.py) that reports how long the bot has been up.
-- [cogs.errors](cogs/errors.py) for all error handling.
+- `reload-extension` command in [cogs.admin](bot/cogs/admin.py) to allow for extension reloading.
+- `uptime` command in [cogs.misc](bot/cogs/misc.py) that reports how long the bot has been up.
+- [cogs.errors](bot/cogs/errors.py) for all error handling.
 
 ### Changed
 
@@ -108,7 +121,7 @@
 
 ### Added
 
-- A managed role check function in [cogs.health](cogs/health.py) to reduce duplicate code
+- A managed role check function in [cogs.health](bot/cogs/health.py) to reduce duplicate code
 
 ### Changed
 
@@ -126,9 +139,9 @@
 
 ### Changed
 
-- Big rework of the list_message function in [utils.messages](utils/messages.py) to change to using embed field to make it cleaner.
+- Big rework of the list_message function in [utils.messages](bot/utils/messages.py) to change to using embed field to make it cleaner.
   - Related to #11 & #12
-- Worked on cleaning up [cogs.join_school](cogs/schools.py) for readability and complexity.
+- Worked on cleaning up [cogs.join_school](bot/cogs/schools.py) for readability and complexity.
 
 ### Removed
 
@@ -137,17 +150,17 @@
 
 ### Added
 
-- [utils.messages.make_embed](utils/messages.py) to make a centralized embed location.
+- [utils.messages.make_embed](bot/utils/messages.py) to make a centralized embed location.
 - Made all commands use embeds return in embeds.
 - Add more help and documentation for commands.
-- [utils.datahandler](utils/datahandler.py) makes its own logger file.
+- [utils.datahandler](bot/utils/datahandler.py) makes its own logger file.
 
 ### Changed
 
 - Changed how schools were being searched. Using pandas searching rather then list searching.
-- Made it so all returns in [utils.validate](utils/validate.py) are one line.
+- Made it so all returns in [utils.validate](bot/utils/validate.py) are one line.
 - Changed error reporting to make an embed and only one ctx send.
-- Add cog_checks to [cogs.health](cogs/health.py) and [cog.admin](cogs/admin.py).
+- Add cog_checks to [cogs.health](bot/cogs/health.py) and [cog.admin](bot/cogs/admin.py).
 - Changed the strings for query_str to remove the \\.
 - Changed order of the errors table.
 - Fixed bug where errorID would not be set.
@@ -157,14 +170,14 @@
 
 ### Added
 
-- `admin_log` function in [utils.messages](utils/messages.py) a function that will centralize log reporting.
-- `test-log` command in [utils.health](cogs/health.py) that will test to make sure that `admin_log` is working.
+- `admin_log` function in [utils.messages](bot/utils/messages.py) a function that will centralize log reporting.
+- `test-log` command in [utils.health](bot/cogs/health.py) that will test to make sure that `admin_log` is working.
 
 ### Changed
 
 - Format of [Contributing.md](CONTRIBUTING.md).
 - Date format for [Contributing.md](CONTRIBUTING.md).
-- Change description for bot argument in [cogs](cogs/)
+- Change description for bot argument in [cogs](bot/cogs/)
 
 ### Removed
 
@@ -175,19 +188,19 @@
 
 ### Added
 
-- `list_message` function in [utils.messages](utils/messages.py) to remove duplicate list message sending.
-- [utils.tables](utils/tables.py) Adds tables for datahandler as separate script for easier reading.
-- `get-x` function in[cogs.health](cogs/health.py) which is a combined `get-errors` and `get-reports`.
+- `list_message` function in [utils.messages](bot/utils/messages.py) to remove duplicate list message sending.
+- [utils.tables](bot/utils/tables.py) Adds tables for datahandler as separate script for easier reading.
+- `get-x` function in[cogs.health](bot/cogs/health.py) which is a combined `get-errors` and `get-reports`.
 - Added changelog requirement to the [merge request template](.gitlab/merge_request_templates/default.md).
 
 ### Changed
 
-- Swapped `school-search` and `region-select` in [utils.validate](utils/validate.py) to bring similar functions together.
-- Fixed `state-search` in [utils.validate](utils/validate.py) to work with `list_message`.
+- Swapped `school-search` and `region-select` in [utils.validate](bot/utils/validate.py) to bring similar functions together.
+- Fixed `state-search` in [utils.validate](bot/utils/validate.py) to work with `list_message`.
 
 ### Removed
 
-- [cogs.heath{'get-errors' & 'get-report'}](cogs/health.py) as they were combined into one command.
+- [cogs.heath{'get-errors' & 'get-report'}](bot/cogs/health.py) as they were combined into one command.
 
 ---
 This format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
