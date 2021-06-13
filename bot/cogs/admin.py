@@ -36,7 +36,7 @@ class AdminCog(commands.Cog, name="Admin"):
 
         cog_check is set for the whole cog. Which makes all the commands in health admin only.
 
-        :param ctx:
+        :param ctx: Command context
         :type ctx: discord.ext.commands.Context
         :return: User is a bot admin
         :rtype: bool
@@ -54,7 +54,7 @@ class AdminCog(commands.Cog, name="Admin"):
         Command that returns a list of the users that are in the bot_admin table.
 
         :param ctx: Context of the command.
-        :type ctx:
+        :type ctx: discord.ext.commands.Context
         """
         fetched = [x for x in await utils.fetch("bot_admins", "name") if x != "CCC-Dev-Bot"]
         embed = await utils.make_embed(ctx, send=False, title="Bot Admins:")
@@ -73,6 +73,7 @@ class AdminCog(commands.Cog, name="Admin"):
         """
         Checks to see if the message author is in the bot_admins table
         :param ctx: Command context
+        :type ctx: discord.ext.commands.Context
         :return: None
         """
         await utils.make_embed(ctx, title=await utils.check_admin(ctx))
@@ -85,7 +86,9 @@ class AdminCog(commands.Cog, name="Admin"):
         Adds **member** to the bot admin table.
 
         :param ctx: Command context
+        :type ctx: discord.ext.commands.Context
         :param user: Name of the member to add to the bot_admin table
+        :type user: discord.Member
         :return: None
         """
         new_admin = discord.utils.get(ctx.guild.members, name=user)
@@ -130,7 +133,9 @@ class AdminCog(commands.Cog, name="Admin"):
         Command that reloads an extension.
 
         :param ctx: Context of the command.
+        :type ctx: discord.ext.commands.Context
         :param extension: Extension to reload
+        :type extension: str
         :return: None
         """
         self.bot.reload_extension(extension)
@@ -142,6 +147,7 @@ class AdminCog(commands.Cog, name="Admin"):
 
         Refresh the school list.csv
         :param ctx: Context of the command
+        :type ctx: discord.ext.commands.Context
         :return: None
         """
         await utils.update_list(self.bot, True)

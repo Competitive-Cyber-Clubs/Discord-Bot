@@ -29,7 +29,7 @@ class SchoolCog(commands.Cog, name="Schools"):
         self.bot = bot
 
     @commands.command(name="list-schools", help="Gets list of current schools")
-    async def list_schools(self, ctx):
+    async def list_schools(self, ctx) -> None:
         """
         List schools
 
@@ -37,7 +37,8 @@ class SchoolCog(commands.Cog, name="Schools"):
         list of all schools.
 
         :param ctx: Command context
-        :return:
+        :type ctx: discord.ext.commands.Context
+        :return: None
         """
         fetched = sorted(await utils.fetch("schools", "school"), key=str.lower)
         if len(fetched) == 0:
@@ -92,6 +93,7 @@ class SchoolCog(commands.Cog, name="Schools"):
         role and "verified" role. They will lose their "new" role.
 
         :param ctx: Command context
+        :type ctx: discord.ext.commands.Context
         :param school_name: Name of the school role
         :type school_name: str
         :return: None
@@ -149,6 +151,7 @@ class SchoolCog(commands.Cog, name="Schools"):
             utils.FailedReactionCheck: Exception is raised if the reaction check does not validate.
 
         :param ctx: Command Context
+        :type ctx: discord.ext.commands.Context
         :param school_name: Name of school to join
         :type school_name: str
         :return: None

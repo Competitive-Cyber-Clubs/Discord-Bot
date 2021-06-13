@@ -134,6 +134,8 @@ async def insert(table: str, data: list) -> typing.Union[None, str]:
 async def fetch(table: str, column: str) -> list:
     """Fetch a single column from a table
 
+    **Asynchronous Function**
+
     Retrieves the full column values for **column** from the **table**.
 
     **Postgresql Equivalent:**
@@ -258,6 +260,8 @@ async def update(
 
 async def delete(table: str, column: str, value: str) -> None:
     """Delete
+
+    **Asynchronous Function**
 
     Delete value from table
 

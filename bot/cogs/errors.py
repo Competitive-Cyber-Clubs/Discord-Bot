@@ -33,8 +33,10 @@ class ErrorsCog(commands.Cog, name="Errors"):
 
         Acknowledge an error to prevent it from appearing in the task
 
-        :param ctx:
+        :param ctx: Command context
+        :type ctx: discord.ext.commands.Context
         :param error_id: Id of the error
+        :type error_id: str
         :return: None
         """
         error = await utils.select("errors", "id", "id", error_id)
@@ -58,6 +60,7 @@ class ErrorsCog(commands.Cog, name="Errors"):
         Acknowledge all currently unacknowledged errors
 
         :param ctx: Command context
+        :type ctx: discord.ext.commands.Context
         :return:  None
         """
         errors = await utils.select(
@@ -95,7 +98,9 @@ class ErrorsCog(commands.Cog, name="Errors"):
         On error add it to the database and inform user of error
 
         :param ctx: Command context
+        :type ctx: discord.ext.commands.Context
         :param error: Error that was raised
+        :type error: Exception
         :return: None
         """
         if isinstance(error, commands.DisabledCommand):

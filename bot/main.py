@@ -51,6 +51,7 @@ initial_extensions = [
 
 class CCC_Bot(commands.Bot):
     """Main class for running bot"""
+
     def __init__(self):
         super().__init__(
             command_prefix=("$", "?"), owner_id=OWNER_ID, intents=discord.Intents.all()

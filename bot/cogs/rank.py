@@ -23,6 +23,7 @@ class RankCog(commands.Cog, name="Rank"):
         Allows users to set student, alumni or professor role.
 
         :param ctx: Command context
+        :type ctx: discord.ext.commands.Context
         :param rank: Name of rank to add
         :type rank: str
         :return: None

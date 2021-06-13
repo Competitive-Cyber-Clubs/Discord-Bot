@@ -14,6 +14,8 @@ class FailedReactionCheck(Exception):
 async def check_admin(ctx) -> bool:
     """Check Admin
 
+    **Asynchronous Function**
+
     Checks to see if message author is in bot_admins table
 
     :param ctx:
@@ -27,6 +29,8 @@ async def check_admin(ctx) -> bool:
 async def TF_emoji(status: bool) -> str:
     """True or False emoji
 
+    **Asynchronous Function**
+
     :param status: Return the true value emoji
     :type status: bool
     :return: Check mark or X
@@ -39,6 +43,8 @@ async def check_react(
     ctx, member: discord.Member, reaction: discord.Reaction, expected_react: str
 ) -> bool:
     """Check reaction
+
+    **Asynchronous Function**
 
     Checks if the reaction on a message is correct and send by the same member that it was needed
         from.

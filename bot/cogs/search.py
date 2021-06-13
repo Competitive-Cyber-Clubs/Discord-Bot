@@ -32,6 +32,7 @@ class SearchCog(commands.Cog, name="Search"):
         Validates school name. Only returns true or false.
 
         :param ctx: Command context
+        :type ctx: discord.ext.commands.Context
         :param school: Name of school the member wants to validate.
         :type school: str
         :return: None
@@ -55,6 +56,7 @@ class SearchCog(commands.Cog, name="Search"):
         as a list using the `in` statement.
 
         :param ctx: Command context
+        :type ctx: discord.ext.commands.Context
         :param school: Part of the name the member wants to search for.
         :type school: str
         :return: None
@@ -94,6 +96,7 @@ class SearchCog(commands.Cog, name="Search"):
         Returns all schools in a state.
 
         :param ctx: Command context
+        :type ctx: discord.ext.commands.Context
         :param state: Name of the state that the member wants to get schools from.
         :type state: str
         :return: None

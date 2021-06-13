@@ -33,6 +33,7 @@ class MiscCog(commands.Cog, name="Misc"):
         Testing command that will message the author pong and delete the author's ping message.
 
         :param ctx: Command context
+        :type ctx: discord.ext.commands.Context
         :return: None
         """
         log.debug("{} has sent ping.".format(ctx.author.name))
@@ -51,6 +52,7 @@ class MiscCog(commands.Cog, name="Misc"):
         Command that shows how long the bot has been online
 
         :param ctx: Command context
+        :type ctx: discord.ext.commands.Context
         :return: None
         """
         uptime = datetime.utcnow() - self.bot.uptime
@@ -84,6 +86,7 @@ class MiscCog(commands.Cog, name="Misc"):
         be sent to all bot admins.
 
         :param ctx: Command context
+        :type ctx: discord.ext.commands.Context
         :param message: Report message sent
         :type message: str
         :return: None

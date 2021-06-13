@@ -145,6 +145,7 @@ class HealthCog(commands.Cog, name="Health"):
     @commands.Cog.listener()
     async def on_guild_role_update(self, before: discord.Role, after: discord.Role) -> None:
         """Role update
+
         Triggered when a role is edited. Logs the old name and new name then updates the name in the
         table.
 

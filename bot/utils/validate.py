@@ -12,6 +12,8 @@ async def update_list(bot, download: bool = False) -> None:
     """
     Update list
 
+    **Asynchronous Function**
+
     Update the school list
     :param bot: The bot class to update the dataframe for
     :param download: Download the list
@@ -35,6 +37,8 @@ async def school_check(school_list: pd.DataFrame, name: str) -> bool:
     """
     School check
 
+    **Asynchronous Function**
+
     Checks to see if the name is in school_list.csv
 
     :param school_list: Dataframe of lists
@@ -49,6 +53,8 @@ async def school_check(school_list: pd.DataFrame, name: str) -> bool:
 async def region_select(school_list: pd.DataFrame, name: str) -> str:
     """
     Region select
+
+    **Asynchronous Function**
 
     Maps a regions for a school, :refs:`name`. Looks school name in the 'Institution_Name' column,
         if it finds a match then pulls from 'Regions' column.
@@ -65,6 +71,8 @@ async def region_select(school_list: pd.DataFrame, name: str) -> str:
 async def school_search(school_list: pd.DataFrame, name: str) -> list:
     """
     School Search
+
+    **Asynchronous Function**
 
     Searches for part of a school name in the 'Institution_Name' column in school_list.
     Turns the 'Institution_Name' into a series then gets all names using pandas.Series.str.contains.
@@ -84,7 +92,11 @@ async def school_search(school_list: pd.DataFrame, name: str) -> list:
 async def state_list(school_list: pd.DataFrame, state: str) -> list:
     """
     State List
+
+    **Asynchronous Function**
+
     Get a list of all schools in state.
+
     :param school_list: Dataframe of schools
     :type school_list: pandas.DataFrame
     :param state: State to get all schools from.

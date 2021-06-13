@@ -25,6 +25,7 @@ class RegionCog(commands.Cog, name="Regions"):
         cog_check is set for the whole cog. Which makes all the commands in health admin only.
 
         :param ctx: Command context
+        :type ctx: discord.ext.commands.Context
         :return: User is bot admin
         :rtype: bool
         """
@@ -35,6 +36,7 @@ class RegionCog(commands.Cog, name="Regions"):
         """Add region
 
         :param ctx: Command context
+        :type ctx: discord.ext.commands.Context
         :param region: Name of region to add
         :type region: str
         :return: None
@@ -61,6 +63,7 @@ class RegionCog(commands.Cog, name="Regions"):
         Admin command to lists the regions. Only returns a list.
 
         :param ctx: Command context
+        :type ctx: discord.ext.commands.Context
         :return: None
         """
         regions = sorted(await utils.fetch("regions", "name"))
