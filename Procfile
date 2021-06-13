@@ -1,1 +1,1 @@
-worker: python CCC_Bot.py
+worker: python bot/main.py
