@@ -156,6 +156,7 @@ async def fetch(table: str, column: str) -> list:
         return _result_parser(column, fetched)
     except psycopg2.Error as pge:
         log.error(pge)
+        return []
     finally:
         db_pool.putconn(con)
 
@@ -204,6 +205,7 @@ async def select(
     except psycopg2.Error as pge:
         log.error(pge)
         con.rollback()
+        return []
     finally:
         db_pool.putconn(con)
 
