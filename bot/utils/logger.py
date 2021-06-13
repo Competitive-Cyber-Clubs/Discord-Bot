@@ -3,20 +3,17 @@ import logging
 
 
 def make_logger(name: str, log_level: str) -> logging.Logger:
-    """Make_logger
-    ---
+    """Make Logger
 
-    Creates the logger that is used by the bot. Also imported to cogs and datahandler.
+    Creates the logger that is used by the bot. The datahanlder makes it own log
 
-    Arguments:
-    ---
-        name {str} -- Name of the logger
-        log_level {str} -- The logging level. Valid strings are 'DEBUG', 'INFO', 'WARNING',
+    :param name: Name of logger
+    :type name: str
+    :param log_level: Logging level. Valid strings are 'DEBUG', 'INFO', 'WARNING',
             'ERROR', 'CRITICAL'
-
-    Returns:
-    ---
-        logging.Logger -- Logger class that handled the logging.
+    :type log_level: st
+    :return: Logger class that handled the logging.
+    :rtype: logging.Logger
     """
     logger = logging.getLogger(name)
     logger.setLevel(log_level)

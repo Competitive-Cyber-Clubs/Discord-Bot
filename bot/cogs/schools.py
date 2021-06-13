@@ -10,25 +10,19 @@ log = logging.getLogger("bot")
 
 
 class SchoolCog(commands.Cog, name="Schools"):
-    """SchoolCog
-    ---
+    """
+    School Cog
 
-    Cog that deal with the school commands as well as the searching commands.
+    **Commands:**
 
-    Commands:
-    ---
-        `list-schools`: List all the available school roles that are joinable.
-        `import-school`: Allows admin to import current roles into schools. *WIP*
-        `join-school`: Allows users to join any available school role.
-        `add-school`: Command that allows users to create their own school.
+        - `list-schools`: List all the available school roles that are joinable.
 
-    Arguments:
-    ---
-        bot {discord.commands.Bot} -- The bot
+        - `import-school`: Allows admin to import current roles into schools.
 
-    Raises:
-    ---
-        utils.FailedReactionCheck: Custom exception if the reaction check fails.
+        - `join-school`: Allows users to join any available school role.
+
+        - `add-school`: Command that allows users to create their own school.
+
     """
 
     def __init__(self, bot):
@@ -36,15 +30,14 @@ class SchoolCog(commands.Cog, name="Schools"):
 
     @commands.command(name="list-schools", help="Gets list of current schools")
     async def list_schools(self, ctx):
-        """list-schools
-        ---
+        """
+        List schools
 
         Lists current schools in the database. Message is a embed that has a random color with the
         list of all schools.
 
-        Arguments:
-        ---
-            ctx {discord.ext.commands.Context} -- Context of the command.
+        :param ctx: Command context
+        :return:
         """
         fetched = sorted(await utils.fetch("schools", "school"), key=str.lower)
         if len(fetched) == 0:
@@ -58,16 +51,18 @@ class SchoolCog(commands.Cog, name="Schools"):
 
     @commands.command(name="import-school", help="Admin Only Feature")
     @commands.check(utils.check_admin)
-    async def import_school(self, ctx, school_name: str, region: str):
-        """import-school
-        ---
+    async def import_school(self, ctx, school_name: str, region: str) -> None:
+        """
+        Import school
 
         Allows admins to import existing roles as schools.
 
-        Arguments:
-        ---
-            ctx {discord.ext.commands.Context} -- Context of the command.
-            school_name {str} -- Name of the school role to import.
+        :param ctx: Command context
+        :param school_name: Name of school role
+        :type school_name: str
+        :param region: Region of the school
+        :type region: str
+        :return: None
         """
         school_role = discord.utils.get(ctx.guild.roles, name=school_name)
         if school_role.name in await utils.fetch("schools", "school"):
@@ -89,19 +84,17 @@ class SchoolCog(commands.Cog, name="Schools"):
 
     @commands.command(name="join-school", help="Joins a schools.")
     @commands.has_role("new")
-    async def join_school(self, ctx, *, school_name: str):
-        """join-school
-        ---
+    async def join_school(self, ctx, *, school_name: str) -> None:
+        """Join School
 
         Enables users to join a school role. school_name arguments is not to be quote separated.
         Users are required to have the role "new". Users will be assigned the school role, region
         role and "verified" role. They will lose their "new" role.
 
-
-        Arguments:
-        ---
-            ctx {discord.ext.commands.Context} -- Context of the command.
-            school_name {str} -- Name of the school the user wants to join.
+        :param ctx: Command context
+        :param school_name: Name of the school role
+        :type school_name: str
+        :return: None
         """
         user = ctx.message.author
         db_entry = await utils.select("schools", "school, region", "school", school_name)
@@ -144,21 +137,21 @@ class SchoolCog(commands.Cog, name="Schools"):
     @commands.has_role("new")
     async def add_school(
         self, ctx: commands.Context, *, school_name: str
-    ):  # pylint: disable=too-many-branches
-        """add_school
-        ---
+    ) -> None:  # pylint: disable=too-many-branches
+        """
+        Add school
 
         Enables users to create a school role. They are required to have the role "new". Schools
         will automatically be assigned a region based on the school_list.csv in utils.
 
-        Arguments:
-        ---
-            ctx {discord.ext.commands.Context} -- Context of the command.
-            school_name {str} -- Name of the school the user wants to join.
+        **Raises:**
 
-        Raises:
-        ---
             utils.FailedReactionCheck: Exception is raised if the reaction check does not validate.
+
+        :param ctx: Command Context
+        :param school_name: Name of school to join
+        :type school_name: str
+        :return: None
         """
         if not await utils.school_check(self.bot.school_list, school_name):
             return await utils.error_message(ctx, message="School name not valid.")
@@ -185,7 +178,7 @@ class SchoolCog(commands.Cog, name="Schools"):
             title=f"You are about to create a new school: {school_name}.",
             description="React 👍 to this message in 60 seconds to confirm.",
         )
-        # Gives the user 60 seconds to add the reaction '👍' to the message.
+        # Gives the member 60 seconds to add the reaction '👍' to the message.
         try:
             reactions, user = await self.bot.wait_for("reaction_add", timeout=60)
             if not await utils.check_react(ctx, user, reactions, "👍"):
@@ -195,7 +188,7 @@ class SchoolCog(commands.Cog, name="Schools"):
                 ctx, "Timed out waiting for a reaction. Please reach to the message in 30 seconds"
             )
         except utils.FailedReactionCheck:
-            await utils.error_message(ctx, "Wrong reaction added or added by the wrong user")
+            await utils.error_message(ctx, "Wrong reaction added or added by the wrong member")
         else:
             color = int("0x%06x" % random.randint(0, 0xFFFFFF), 16)  # nosec
             added_school = await ctx.guild.create_role(

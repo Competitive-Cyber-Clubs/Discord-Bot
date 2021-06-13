@@ -8,18 +8,14 @@ log = logging.getLogger("bot")
 
 
 class TaskCog(commands.Cog, name="Tasks"):
-    """TaskCog
-    ---
+    """
+    Task Cog
 
-    Cog that holds tasks for the bot
+        Cog that holds tasks for the bot
 
-    Tasks
-    ---
-        :ref:`error_report`: Output all errors for a day to admin channels.
+    **Tasks:**
+        - :ref:`error_report`: Output all errors for a day to admin channels.
 
-    Arguments:
-    ---
-        bot {discord.commands.Bot} -- The bot
     """
 
     def __init__(self, bot):
@@ -27,10 +23,13 @@ class TaskCog(commands.Cog, name="Tasks"):
         self.report_errors.start()  # pylint: disable=no-member
 
     @tasks.loop(hours=24.0)
-    async def report_errors(self):
-        """report_errors
-        ---
+    async def report_errors(self) -> None:
+        """
+        Report error
+
         Every 24 hours, all errors for the current day are send to the admin channels.
+
+        :return: None
         """
         date = datetime.utcnow().strftime("%Y-%m-%d")
         error_record = [

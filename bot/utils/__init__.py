@@ -20,8 +20,8 @@ shared:
 ---
 Various checks that are used by cogs:
 
-    `utils.check_admin` checks to see if the user id is in the bot_admin table.
-    `utils.check_react` checks to see if the correct reaction was added by the correct user.
+    `utils.check_admin` checks to see if the member id is in the bot_admin table.
+    `utils.check_react` checks to see if the correct reaction was added by the correct member.
     `utils.FailedReactionCheck` is a exception that is made if the check fails.
 
 validate

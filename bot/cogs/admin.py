@@ -9,40 +9,37 @@ log = logging.getLogger("bot")
 
 
 class AdminCog(commands.Cog, name="Admin"):
-    """AdminCog
-    ---
+    """Admin cog
 
     Cog that contains the commands for admin functions.
 
-    Commands:
-    ---
-        `list-admins`: Sends a message that contain a list of the bot admin users.
-        `am-admin`: Returns true of false depending on if the user is in the bot_admins table.
-        `add-admin`: Add a user to the bot admin table.
-        `add-admin-channel`: Add the channel that it was called in to the admin_channel table.
-        `reload-extension`: Reloads the extensions names.
-        `update-list`: Updates the list of schools
+    **Commands:**
+        - `list-admins`: Sends a message that contain a list of the bot admin users.
 
-    Arguments:
-    ---
-        bot {discord.commands.Bot} -- The bot
+        - `am-admin`: Returns true of false depending on if the member is in the bot_admins table.
+
+        - `add-admin`: Add a member to the bot admin table.
+
+        - `add-admin-channel`: Add the channel that it was called in to the admin_channel table.
+
+        - `reload-extension`: Reloads the extensions names.
+
+        - `update-list`: Updates the list of schools
+
     """
 
     def __init__(self, bot):
         self.bot = bot
 
     async def cog_check(self, ctx: commands.Context):
-        """cog_check
-        ---
+        """Cog Check
 
         cog_check is set for the whole cog. Which makes all the commands in health admin only.
 
-        Arguments:
-        ---
-            ctx {discord.ext.commands.Context} -- Context of the command.
-
-        Returns:
-            bool -- True if the user in the bot admins
+        :param ctx:
+        :type ctx: discord.ext.commands.Context
+        :return: User is a bot admin
+        :rtype: bool
         """
         return await utils.check_admin(ctx)
 
@@ -51,14 +48,13 @@ class AdminCog(commands.Cog, name="Admin"):
         aliases=["ladmins", "ladmin"],
         help="List users that are bot admins",
     )
-    async def list_admins(self, ctx: commands.Context):
-        """List-admins
-        ---
+    async def list_admins(self, ctx: commands.Context) -> None:
+        """List Admins
+
         Command that returns a list of the users that are in the bot_admin table.
 
-        Arguments:
-        ---
-            ctx {discord.ext.commands.Context} -- Context of the command.
+        :param ctx: Context of the command.
+        :type ctx:
         """
         fetched = [x for x in await utils.fetch("bot_admins", "name") if x != "CCC-Dev-Bot"]
         embed = await utils.make_embed(ctx, send=False, title="Bot Admins:")
@@ -73,30 +69,24 @@ class AdminCog(commands.Cog, name="Admin"):
         aliases=["cadmin", "am-admin"],
         help="Tells you if you are a bot admin",
     )
-    async def check_admin(self, ctx: commands.Context):
-        """Check Admin
-        ---
-
-        Tells the user if they are in the bot admin table. Only return true or false.
-
-        Arguments:
-        ---
-            ctx {discord.ext.commands.Context} -- Context of the command.
+    async def check_admin(self, ctx: commands.Context) -> None:
+        """
+        Checks to see if the message author is in the bot_admins table
+        :param ctx: Command context
+        :return: None
         """
         await utils.make_embed(ctx, title=await utils.check_admin(ctx))
 
-    @commands.command(name="add-admin", help="Adds <user> to the bot admins table.")
+    @commands.command(name="add-admin", help="Adds <member> to the bot admins table.")
     @commands.check(utils.check_admin)
-    async def add_admin(self, ctx: commands.Context, *, user: discord.Member):
-        """Add-Admin
-        ---
+    async def add_admin(self, ctx: commands.Context, *, user: discord.Member) -> None:
+        """Add Admin
 
-        Adds `user` to the bot admin table.
+        Adds **member** to the bot admin table.
 
-        Arguments:
-        ---
-            ctx {discord.ext.commands.Context} -- Context of the command.
-            user {str} -- The name of the user that you want to add to the bot_admin table
+        :param ctx: Command context
+        :param user: Name of the member to add to the bot_admin table
+        :return: None
         """
         new_admin = discord.utils.get(ctx.guild.members, name=user)
         if new_admin:
@@ -111,20 +101,17 @@ class AdminCog(commands.Cog, name="Admin"):
     @commands.command(name="add-admin-channel", help="Marks the channel as an admin channel")
     @commands.guild_only()
     @commands.check(utils.check_admin)
-    async def add_admin_channel(self, ctx: commands.Context, log_status=False):
-        """add-admin-channel
-        ---
+    async def add_admin_channel(self, ctx: commands.Context, log_status: bool = False) -> None:
+        """Add Admin Channel
 
         Adds the channel where the command was run to the admin_channel table.
         By default it sets logging as false.
 
-        Arguments:
-        ---
-            ctx {discord.ext.commands.Context} -- Context of the command.
-
-        Keyword Arguments:
-        ---
-            log_status {bool} -- [If the channel is for logging all users] (default: {False})
+        :param ctx: Command context
+        :type ctx: discord.ext.commands.Context
+        :param log_status: Channel is for logging all users
+        :type log_status: bool
+        :return: None
         """
         log_status = bool(log_status)
         await utils.insert("admin_channels", [ctx.channel.name, ctx.channel.id, log_status])
@@ -136,26 +123,26 @@ class AdminCog(commands.Cog, name="Admin"):
         )
 
     @commands.command(name="reload-extension", help="reloads <extension>")
-    async def reload_extension(self, ctx: commands.Context, extension: str):
-        """reload_extension
-        ---
+    async def reload_extension(self, ctx: commands.Context, extension: str) -> None:
+        """
+        Reload Extension
 
         Command that reloads an extension.
 
-        Arguments:
-            ctx {discord.ext.commands.Context} -- Context of the command.
-            extension {str} -- extension to reload
+        :param ctx: Context of the command.
+        :param extension: Extension to reload
+        :return: None
         """
         self.bot.reload_extension(extension)
         await utils.make_embed(ctx, color="28b463", title="Reloaded", description=extension)
 
     @commands.command(name="update-list", help="Updates the school_list.csv")
-    async def refresh_list(self, ctx: commands.Context):
-        """refresh_list
-        ---
+    async def refresh_list(self, ctx: commands.Context) -> None:
+        """Refresh list
 
-        Arguments:
-            ctx {discord.ext.commands.Context} -- Context of the command.
+        Refresh the school list.csv
+        :param ctx: Context of the command
+        :return: None
         """
         await utils.update_list(self.bot, True)
         self.bot.list_updated = datetime.utcnow()

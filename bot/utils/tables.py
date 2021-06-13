@@ -8,7 +8,7 @@
             color {int}: hex code of the color **
             id {bigint}: Discord ID of the role
             added_by {text}: Username who created the school **
-            added_by_id {bigint}: Discord ID of the user who created the school
+            added_by_id {bigint}: Discord ID of the member who created the school
 
         bot_admins: Table for users that are bot admins.
             id {bigint}: Discord ID of admin
@@ -41,8 +41,8 @@
 
         reports: Table for reports
             id {int}: ID of the report
-            name {text}: Discord user name of reporter
-            name_id {bigint}: Discord user ID reporter
+            name {text}: Discord member name of reporter
+            name_id {bigint}: Discord member ID reporter
             message {text}: Text of the report
             time {timestamp}: Time of the report
 """

@@ -28,16 +28,15 @@ class EventsCog(commands.Cog, name="Events"):
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
-        """on_member_join
-        ---
+        """Member join event
 
-        Event is triggered when a new member joins. The member recives a welcome PM.
+        Event is triggered when a new member joins. The member receives a welcome PM.
         The message content is pulled from the messages table and it needs a name of "welcome".
         Doesn't use utils.make_embed due to not having context.
 
-        Arguments:
-        ---
-            member {discord.Member} -- The member that joined
+        :param member: Member who joined
+        :type member: discord.Member
+        :return: None
         """
         new_role = discord.utils.get(member.guild.roles, name="new")
         await member.add_roles(new_role, reason="{} joined the server".format(member.name))
@@ -64,17 +63,17 @@ class EventsCog(commands.Cog, name="Events"):
             )
 
     @commands.Cog.listener()
-    async def on_member_remove(self, member: discord.Member):
-        """on_member_remove
-        ---
+    async def on_member_remove(self, member: discord.Member) -> None:
+        """
+        Member leave
 
         Event is triggered when a members leaves the server.
         There is a message that they left that is sent to all admin_logging channels.
         Doesn't use utils.make_embed due to not having context.
 
-        Arguments:
-        ---
-            member {discord.Member} -- The member that left
+        :param member: Member who left
+        :type member: discord.Member
+        :return: None
         """
         channels = await utils.select("admin_channels", "id", "log", True)
         for channel in channels:
@@ -83,7 +82,7 @@ class EventsCog(commands.Cog, name="Events"):
                 embed=discord.Embed(
                     title="User left",
                     color=discord.Color(int("FF0000", 16)),
-                    description=f"{member.name} user left",
+                    description=f"{member.name} member left",
                 )
             )
 

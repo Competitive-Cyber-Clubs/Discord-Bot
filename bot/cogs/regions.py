@@ -5,50 +5,39 @@ from bot import utils
 
 
 class RegionCog(commands.Cog, name="Regions"):
-    """RegionCog
-    ---
+    """Region Cog
 
     Cog that holds the region commands
 
-    Commands:
-    ---
-        `add-region`: Command that adds a region and its role to to the regions database.
-        `list-regions`: Commands that list all the regions available to join.
+    **Commands:**
+        - `add-region`: Command that adds a region and its role to to the regions database.
 
-    Arguments:
-    ---
-        bot {discord.commands.Bot} -- The bot
+        - `list-regions`: Commands that list all the regions available to join.
+
     """
 
     def __init__(self, bot):
         self.bot = bot
 
-    async def cog_check(self, ctx: commands.Context):
-        """cog_check
-        ---
+    async def cog_check(self, ctx: commands.Context) -> bool:
+        """Cog Check
 
         cog_check is set for the whole cog. Which makes all the commands in health admin only.
 
-        Arguments:
-        ---
-            ctx {discord.ext.commands.Context} -- Context of the command.
-
-        Returns:
-            bool -- True if the user in the bot admins
+        :param ctx: Command context
+        :return: User is bot admin
+        :rtype: bool
         """
         return await utils.check_admin(ctx)
 
     @commands.command(name="add-region", help="Adds regions")
-    async def add_region(self, ctx: commands.Context, *, region: str):
-        """Add_region
-        ---
+    async def add_region(self, ctx: commands.Context, *, region: str) -> None:
+        """Add region
 
-        Allows admins to add regions.
-
-        Arguments:
-        ---
-            ctx {discord.ext.commands.Context} -- Context of the command.
-            region {str} -- Name of region to add.
+        :param ctx: Command context
+        :param region: Name of region to add
+        :type region: str
+        :return: None
         """
         is_role = discord.utils.get(ctx.guild.roles, name=region)
         if not is_role:
@@ -66,15 +55,13 @@ class RegionCog(commands.Cog, name="Regions"):
             await utils.make_embed(ctx, color="28b463", title="Region has been created.")
 
     @commands.command(name="list-regions", help="Lists available regions.")
-    async def list_region(self, ctx: commands.Context):
-        """list-regions
-        ---
+    async def list_region(self, ctx: commands.Context) -> None:
+        """List regions
 
         Admin command to lists the regions. Only returns a list.
 
-        Arguments:
-        ---
-            ctx {discord.ext.commands.Context} -- Context of the command.
+        :param ctx: Command context
+        :return: None
         """
         regions = sorted(await utils.fetch("regions", "name"))
         formatted = ""

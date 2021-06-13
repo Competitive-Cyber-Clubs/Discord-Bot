@@ -5,18 +5,11 @@ from bot.utils import make_embed, error_message
 
 
 class RankCog(commands.Cog, name="Rank"):
-    """RankCog
-    ---
-
+    """Rank Cog
     Cog that deals with rank commands
 
-    Commands:
-    ---
-        `add-rank`: Command that add either student, alumni, or professor role.
-
-    Arguments:
-    ---
-        bot {discord.commands.Bot} -- The bot
+    **Commands:**
+        - `add-rank`: Command that add either student, alumni, or professor role.
     """
 
     def __init__(self, bot):
@@ -24,16 +17,15 @@ class RankCog(commands.Cog, name="Rank"):
 
     @commands.command(name="add-rank", help="Assigns student, alumni or professor role.")
     @commands.has_role("verified")
-    async def add_rank(self, ctx: commands.Context, *, rank: str):
-        """Add_Rank
-        ---
+    async def add_rank(self, ctx: commands.Context, *, rank: str) -> None:
+        """Add Rank
 
         Allows users to set student, alumni or professor role.
 
-        Arguments:
-        ---
-            ctx {discord.ext.commands.Context} -- Context of the command.
-            rank {str} -- name of rank to add.
+        :param ctx: Command context
+        :param rank: Name of rank to add
+        :type rank: str
+        :return: None
         """
         user = ctx.message.author
         ranks = ["student", "professor", "alumni"]

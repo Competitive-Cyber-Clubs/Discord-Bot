@@ -65,9 +65,12 @@ class CCC_Bot(commands.Bot):  # pylint: disable=missing-class-docstring
         )
 
     async def on_ready(self):
-        """Startup which shows servers it has connected to"""
-        # await utils.update_list(self, not os.path.exists("school_list.csv"))
-        await utils.update_list(self, True)
+        """
+        On Ready
+
+        Startup function which shows servers it has connected to
+        """
+        await utils.update_list(self, not os.path.exists("school_list.csv"))
         log.info("{} is connected to the following guilds: " "{}".format(self.user, self.guilds))
         await utils.insert("bot_admins", [OWNER_NAME, int(OWNER_ID)])
         admin_roles = await utils.select("keys", "value", "key", "admin_role")

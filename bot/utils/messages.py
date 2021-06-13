@@ -1,16 +1,19 @@
 """Deals with long message sending"""
 import logging
 import random
+import typing
+
 import discord
+from discord.ext import commands
 from .datahandler import select
 
 log = logging.getLogger("bot")
 
 
-async def list_message(ctx, message: list, title: str, **kwargs):
-    """list_message
-    ---
-    Asynchronous Function
+async def list_message(ctx: commands.Context, message: list, title: str, **kwargs) -> None:
+    """List Message
+
+    **Asynchronous Function**
 
     Breaks up messages that contain a list and sends the parts of them. Shared function between
     multiple commands.
@@ -19,11 +22,16 @@ async def list_message(ctx, message: list, title: str, **kwargs):
     I'm sorry for everyone dealing with this function. It is not clean and I have commented to
     the best that I can.
 
-    Arguments:
-    ---
-        ctx {discord.ext.commands.Context} -- Context of the command.
-        message {list} -- list of items to send.
-        title {str} -- First line of the message to send.
+    :param ctx: Context of command.
+    :type ctx: discord.ext.commands.Context
+    :param message: list of items to send.
+    :type message: list
+    :param title: Title of the message to send.
+    :type title: str
+    :param kwargs: keyword arguments
+    :type kwargs: dict
+    :return: All embeds are sent
+    ":rtype: None
     """
     joined_message = len("".join(message))
     list_of_embeds = []
@@ -60,17 +68,22 @@ async def list_message(ctx, message: list, title: str, **kwargs):
             log.warning("Empty embed")
 
 
-async def admin_log(bot, message: str, log_status: bool = True):
-    """admin_log
-    ---
-    Asynchronous Function
+async def admin_log(bot: commands.Bot, message: str, log_status: bool = True) -> None:
+    """Admin Log
 
-    Log the :refs:`message` to the admin channels.
+    **Asynchronous Function**
 
-    Arguments:
-    ---
-        bot {discord.commands.Bot} -- The bot
-        log_status {bool} -- If the log will be sent to logging channels or non logging channels
+
+    Log **message** to the admin channels.
+
+    :param bot: Discord bot
+    :type bot: discord.ext.commands.Bot
+    :param message: Message to log
+    :type message: str
+    :param log_status: Will be sent to logging channels (true)
+        or non logging channels including debug
+    :type log_status: bool
+
     """
     if len(message) > 2000:
         message = "Log message length too long, it will not be sent. Length: {}".format(
@@ -92,35 +105,37 @@ async def admin_log(bot, message: str, log_status: bool = True):
             await to_send.send(embed=embed)
 
 
-async def error_message(ctx, message: str, title: str = "Error:", **kwargs):
-    """
+async def error_message(ctx, message: str, title: str = "Error:", **kwargs) -> None:
+    """Error Message
+
+    **Asynchronous Function**
+
     Generate an error embed
 
-    Args:
-        title: Title of the embed
-        ctx: Discord context
-        message: The message to send
-
+    :param ctx: Discord Context
+    :type ctx: discord.ext.commands.Context
+    :param message: Message of the error
+    :param title: Title of error embed
+    :param kwargs: Keyword agruements to pass to Embed
     """
     await make_embed(ctx, "FF0000", True, description=message, title=title, **kwargs)
 
 
 async def make_embed(
     ctx, color: [str, int] = None, send: (bool, str) = True, **kwargs
-) -> discord.Embed():
-    """make_embed
-    ---
+) -> typing.Union[discord.Embed]:
+    """Make embed
 
-    Asynchronous Function
+    **Asynchronous Function**
 
-    Makes and sends a discord embed
+    Makes and can send a discord.Embed
 
-    Arguments:
-    ---
-        ctx {discord.ext.commands.Context} -- Context of the command.
-        color {str} -- Hex code for color. If empty random one will be added (default: {None})
-        send {bool} -- If make_embed sends the embed. Only false is the function adds items to the
-                        embed such as fields.
+    :param ctx: Discord context
+    :type ctx: discord.ext.commands.Context
+    :param color: Color of the embed
+    :param send: Send the message instead of returning
+    :param kwargs: Keyword arguments to pass along
+    :return: The filled out embed
     """
     if not color:
         kwargs["color"] = int("0x%06x" % random.randint(0, 0xFFFFFF), 16)  # nosec

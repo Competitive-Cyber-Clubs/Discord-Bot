@@ -9,36 +9,31 @@ log = logging.getLogger("bot")
 
 
 class MiscCog(commands.Cog, name="Misc"):
-    """MiscCog
-    ---
+    """Misc Cog
 
     Cog that deal with misc features contains ping, report and uptime.
 
-    Commands:
-    ---
-        `ping`: Testing command that will DM the user pong and then delete the ping message.
-        `report`: Report command. When triggered it will ask the user for a reason then ping
-                         all admins with the message. *Might need to be disabled for spam*
-        `uptime`: Lists uptime for bot and when it was started.
+    **Commands:**
+        - `ping`: Testing command that will DM the member pong and then delete the ping message.
 
-    Arguments:
-    ---
-        bot {discord.commands.Bot} -- The bot
+        - `report`: Report command. When triggered it will ask the member for a reason then ping
+                    all admins with the message. *Might need to be disabled for spam*
+
+        - `uptime`: Lists uptime for bot and when it was started.
+
     """
 
     def __init__(self, bot):
         self.bot = bot
 
     @commands.command(name="ping", help="Testing command that returns pong", hidden=True)
-    async def ping(self, ctx: commands.Context):
+    async def ping(self, ctx: commands.Context) -> None:
         """Ping
-        ---
 
         Testing command that will message the author pong and delete the author's ping message.
 
-        Arguments:
-        ---
-            ctx {discord.ext.commands.Context} -- Context of the command.
+        :param ctx: Command context
+        :return: None
         """
         log.debug("{} has sent ping.".format(ctx.author.name))
         await ctx.message.delete()
@@ -49,13 +44,14 @@ class MiscCog(commands.Cog, name="Misc"):
         await ctx.author.send(embed=embed)
 
     @commands.command(name="uptime", help="Gets uptime of bot")
-    async def Uptime(self, ctx: commands.Context):
-        """uptime
-        ---
+    async def uptime(self, ctx: commands.Context) -> None:
+        """
+        Uptime
 
-        Arguments:
-        ---
-            ctx {discord.ext.commands.Context} -- Context of the command.
+        Command that shows how long the bot has been online
+
+        :param ctx: Command context
+        :return: None
         """
         uptime = datetime.utcnow() - self.bot.uptime
         uptime = ":clock1: Days: {}, Hours: {}, Minutes: {}, Seconds: {}".format(
@@ -81,16 +77,16 @@ class MiscCog(commands.Cog, name="Misc"):
         help="Reporting feature.\n"
         "Use if you are experiencing issues with the bot or in the server.",
     )
-    async def contact_admin(self, ctx: commands.Context, *, message: str):
-        """Contact-Admin
-        ---
+    async def report(self, ctx: commands.Context, *, message: str) -> None:
+        """Report
 
-        A reporting command. When triggered, user will be prompted for a reason. Message will then
+        reporting command. When triggered, member will be prompted for a reason. Message will then
         be sent to all bot admins.
 
-        Arguments:
-        ---
-            ctx {discord.ext.commands.Context} -- Context of the command.
+        :param ctx: Command context
+        :param message: Report message sent
+        :type message: str
+        :return: None
         """
         reports = await utils.fetch("reports", "id")
         report_id = random.randint(1, 32767)  # nosec
