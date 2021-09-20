@@ -60,7 +60,7 @@ class AdminCog(commands.Cog, name="Admin"):
         embed = await utils.make_embed(ctx, send=False, title="Bot Admins:")
         admins = ""
         for admin in fetched:
-            admins += "- {} \n".format(admin)
+            admins += f"- {admin} \n"
         embed.add_field(name="Admins", value=admins, inline=False)
         await ctx.send(embed=embed)
 
@@ -93,11 +93,9 @@ class AdminCog(commands.Cog, name="Admin"):
         """
         new_admin = discord.utils.get(ctx.guild.members, name=user)
         if new_admin:
-            log.info("{} added new admin {}".format(ctx.author.display_name, user.display_name))
+            log.info(f"{ctx.author.display_name} added new admin {user.display_name}")
             await utils.insert("bot_admins", [new_admin.name, new_admin.id])
-            await utils.make_embed(
-                ctx, color="28b463", title="User: {} is now an admin.".format(new_admin)
-            )
+            await utils.make_embed(ctx, color="28b463", title=f"User: {new_admin} is now an admin.")
         else:
             await utils.error_message(ctx, "User not found.")
 
@@ -122,7 +120,7 @@ class AdminCog(commands.Cog, name="Admin"):
             ctx,
             color="28b463",
             title="Admin Channel Success",
-            description="Channel has been added with log status: {}".format(log_status),
+            description=f"Channel has been added with log status: {log_status}",
         )
 
     @commands.command(name="reload-extension", help="reloads <extension>")

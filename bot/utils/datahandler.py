@@ -67,7 +67,7 @@ def _format_step(table: str) -> str:
     elif table == "regions":
         query_str = "INSERT INTO regions (name, id) VALUES (%s, %s)"
     else:
-        log.error("Table {} not found.".format(table))
+        log.error(f"Table {table} not found.")
         return "error"
     return query_str
 
@@ -114,7 +114,7 @@ async def insert(table: str, data: list) -> typing.Union[None, str]:
     format_str = _format_step(table)
     if format_str == "error":
         return "error"
-    log.debug("String: {} Data {}".format(format_str, " ".join(map(str, data))))
+    log.debug(f'String: {format_str} Data {" ".join(map(str, data))}')
     con = db_pool.getconn()
     pg_cursor = con.cursor()
     try:
@@ -280,7 +280,7 @@ async def delete(table: str, column: str, value: str) -> None:
     con = db_pool.getconn()
     pg_cursor = con.cursor()
     try:
-        log.info("Deleting {} where {} from {}".format(column, value, table))
+        log.info(f"Deleting {column} where {value} from {table}")
         format_str = "DELETE FROM %s WHERE %s = %s"
         pg_cursor.execute(format_str, (AsIs(table), AsIs(column), value))
         con.commit()

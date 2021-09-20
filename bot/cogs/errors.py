@@ -79,9 +79,8 @@ class ErrorsCog(commands.Cog, name="Errors"):
                 new_value=True,
             )
             log.debug(
-                "Acknowledged error {} as part of bulk acknowledgement by {}".format(
-                    error, ctx.author.display_name
-                )
+                f"Acknowledged error {error} as part of bulk acknowledgement"
+                f" by {ctx.author.display_name}"
             )
             error_count += 1
         await ctx.send(
@@ -132,9 +131,9 @@ class ErrorsCog(commands.Cog, name="Errors"):
             error_msg = (
                 "There was an unknown error.\n"
                 "Please report it for investigation.\n"
-                "Error #{}".format(error_id)
+                f"Error #{error_id}"
             )
-            log.error("There was the following error: {}".format(error))
+            log.error(f"There was the following error: {error}")
             error_info = [
                 error_id,
                 ctx.message.content,

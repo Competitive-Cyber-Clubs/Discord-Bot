@@ -36,7 +36,7 @@ class MiscCog(commands.Cog, name="Misc"):
         :type ctx: discord.ext.commands.Context
         :return: None
         """
-        log.debug("{} has sent ping.".format(ctx.author.name))
+        log.debug(f"{ctx.author.name} has sent ping.")
         await ctx.message.delete()
         embed = await utils.make_embed(ctx, send=False, title="PONG")
         url = "https://peterfrezzini.com/content/images/2016/12/pong_logo.jpg"
@@ -56,17 +56,21 @@ class MiscCog(commands.Cog, name="Misc"):
         :return: None
         """
         uptime = datetime.utcnow() - self.bot.uptime
-        uptime = ":clock1: Days: {}, Hours: {}, Minutes: {}, Seconds: {}".format(
-            uptime.days,
-            uptime.seconds // 3600,  # Hours
-            (uptime.seconds // 60) % 60,  # Minutes
-            uptime.seconds % 60,  # Seconds
+
+        uptime = (
+            ":clock1: Days: {}, Hours: {}, Minutes:{}, Seconds: {}".format(  # pylint: disable=C0209
+                uptime.days,
+                uptime.seconds // 3600,  # Hours
+                (uptime.seconds // 60) % 60,  # Minutes
+                uptime.seconds % 60,  # Seconds
+            )
         )
 
         start_time = self.bot.uptime.strftime("%Y-%m-%d %H:%M")
         list_string_time = self.bot.list_updated.strftime("%Y-%m-%d %H:%M")
-        description = "Bot has been online since {} UTC\n School list last updated {}".format(
-            start_time, list_string_time
+        description = (
+            f"Bot has been online since {start_time} UTC\n "
+            f"School list last updated {list_string_time}"
         )
 
         await utils.make_embed(
@@ -110,11 +114,11 @@ class MiscCog(commands.Cog, name="Misc"):
         for channel in channels:
             to_send = self.bot.get_channel(channel)
             if to_send is None:
-                log.warning("No channel found for id {}".format(channel))
+                log.warning(f"No channel found for id channel {channel}")
             await utils.make_embed(
                 ctx,
                 title="New Report",
-                description="{} submitted the report:\n> {}".format(ctx.author.name, message),
+                description=f"{ctx.author.name} submitted the report:\n> {message}",
             )
 
         response_msg = (

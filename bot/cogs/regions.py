@@ -69,7 +69,7 @@ class RegionCog(commands.Cog, name="Regions"):
         regions = sorted(await utils.fetch("regions", "name"))
         formatted = ""
         for region in regions:
-            formatted += " - {} \n".format(region)
+            formatted += f" - {region} \n"
         await utils.make_embed(ctx, title="Available Regions:", description=formatted)
 
 

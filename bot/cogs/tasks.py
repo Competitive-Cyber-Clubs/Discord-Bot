@@ -40,9 +40,9 @@ class TaskCog(commands.Cog, name="Tasks"):
             if error[-1] is False
         ]
         if not error_record:
-            errors = "No errors found for {}".format(date)
+            errors = f"No errors found for {date}"
         else:
-            errors = "Errors for {}.\n".format(date)
+            errors = f"Errors for {date}.\n"
             for error in error_record:
                 errors += f"- {error[0]}: {error[1]}; {error[2]}\n\n"
         await utils.admin_log(self.bot, errors, True)
