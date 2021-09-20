@@ -109,12 +109,10 @@ class SchoolCog(commands.Cog, name="Schools"):
         if None in to_add:
             await utils.error_message(ctx, "The school you select does not have valid role.")
             log.warning(
-                "{} tried to join {}. Only roles found: {}".format(
-                    ctx.author.name, school_name, to_add
-                )
+                f"{ctx.author.name} tried to join {school_name}. Only roles found: {to_add}"
             )
         else:
-            log.debug("Adding roles: {} to {}".format(to_add, user))
+            log.debug(f"Adding roles: {to_add} to {user}")
             await user.add_roles(*to_add, reason=f"{user.name} joined {school_name}")
             await user.remove_roles(
                 discord.utils.get(ctx.guild.roles, name="new"),
@@ -160,11 +158,7 @@ class SchoolCog(commands.Cog, name="Schools"):
             return await utils.error_message(ctx, message="School name not valid.")
 
         if await utils.select("schools", "school", "school", school_name):
-            log.info(
-                "{} attempted to create a duplicate role for {}".format(
-                    ctx.author.name, school_name
-                )
-            )
+            log.info(f"{ctx.author.name} attempted to create a duplicate role for {school_name}")
             return await utils.error_message(ctx, f"School role for {school_name} already exists.")
 
         regions = await utils.fetch("regions", "name")
@@ -172,7 +166,7 @@ class SchoolCog(commands.Cog, name="Schools"):
         if region not in regions:
             # No region map error
             log.error(
-                "There is no region map for {}, region: {}, {}".format(school_name, region, regions)
+                f"There is no region map for {school_name}, region: {region}, regions{regions}"
             )
             return await utils.error_message(ctx, f"No region defined for {school_name}")
 
@@ -193,13 +187,13 @@ class SchoolCog(commands.Cog, name="Schools"):
         except utils.FailedReactionCheck:
             await utils.error_message(ctx, "Wrong reaction added or added by the wrong member")
         else:
-            color = int("0x%06x" % random.randint(0, 0xFFFFFF), 16)  # nosec
+            color = int(f"0x{random.randint(0, 0xFFFFFF)}", 16)  # nosec
             added_school = await ctx.guild.create_role(
                 name=school_name,
                 color=discord.Color(color),
                 mentionable=True,
                 hoist=False,
-                reason="Added by {}".format(ctx.author.name),
+                reason=f"Added by {ctx.author.name}",
             )
             data = [
                 school_name,
@@ -215,8 +209,8 @@ class SchoolCog(commands.Cog, name="Schools"):
                 await added_school.delete(reason="Error in creation")
                 log.warning("Error with School Role creation.")
             else:
-                success_msg = 'School "{}" has been created in {} with color of 0x{}'.format(
-                    school_name, region, color
+                success_msg = (
+                    f'School "{school_name}" has been created in {region} with color of 0x{color}'
                 )
                 await utils.make_embed(ctx, color=color, title="Success", description=success_msg)
                 await self.join_school(ctx=ctx, school_name=school_name)

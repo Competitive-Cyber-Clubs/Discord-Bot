@@ -29,11 +29,7 @@ OWNER_ID = os.environ["OWNER_ID"]
 utils.table_create()
 log = utils.make_logger("bot", os.getenv("LOG_LEVEL", "INFO"))
 log.info("Starting up")
-log.debug(
-    "Using discord.py version: {} and Python version {}".format(
-        discord.__version__, sys.version[0:5]
-    )
-)
+log.debug(f"Using discord.py version: {discord.__version__} and Python version {sys.version[0:5]}")
 
 initial_extensions = [
     "cogs.admin",
@@ -73,7 +69,7 @@ class CCC_Bot(commands.Bot):
         Startup function which shows servers it has connected to
         """
         await utils.update_list(self, not os.path.exists("school_list.csv"))
-        log.info("{} is connected to the following guilds: " "{}".format(self.user, self.guilds))
+        log.info(f"{self.user} is connected to the following guilds: {self.guilds}")
         await utils.insert("bot_admins", [OWNER_NAME, int(OWNER_ID)])
         admin_roles = await utils.select("keys", "value", "key", "admin_role")
         for admin_role in admin_roles:
@@ -88,7 +84,7 @@ class CCC_Bot(commands.Bot):
             try:
                 self.load_extension(extension)
             except commands.ExtensionError as e:
-                log.error("Failed to load extension {}. {}".format(extension, e))
+                log.error(f"Failed to load extension {extension}. {e}")
         log.debug("Bot is ready to go")
 
 

@@ -39,7 +39,7 @@ class EventsCog(commands.Cog, name="Events"):
         :return: None
         """
         new_role = discord.utils.get(member.guild.roles, name="new")
-        await member.add_roles(new_role, reason="{} joined the server".format(member.name))
+        await member.add_roles(new_role, reason="f{member.name} joined the server")
         welcome_message = await utils.select("messages", "message", "name", "welcome")
         if welcome_message:
             welcome_message = welcome_message[0].replace(r"\n", "\n")

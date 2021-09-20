@@ -46,10 +46,10 @@ async def list_message(ctx: commands.Context, message: list, title: str, **kwarg
             while len(temp_msg) < 1024:
                 # Each field can only be 1024 characters
                 try:
-                    if len(temp_msg + "- {}\n".format(message[item])) > 1024:
+                    if len(temp_msg + f"- {message[item]}\n") > 1024:
                         # If the new item is going to make it over the 1024 limit then skip it.
                         break
-                    temp_msg += "- {}\n".format(message[item])
+                    temp_msg += f"- {message[item]}\n"
                     item += 1
                 except IndexError:
                     # Error happens when there the length of temp_msg is still under 1000 but
@@ -57,7 +57,7 @@ async def list_message(ctx: commands.Context, message: list, title: str, **kwarg
                     break
             if len(temp_msg) > 0:
                 # Blank messages can occur and this filters them out
-                embed.add_field(name="Part: {}".format(part), value=temp_msg, inline=True)
+                embed.add_field(name=f"Part: {part}", value=temp_msg, inline=True)
                 part += 1
         list_of_embeds.append(embed)
 
@@ -86,16 +86,14 @@ async def admin_log(bot: commands.Bot, message: str, log_status: bool = True) ->
 
     """
     if len(message) > 2000:
-        message = "Log message length too long, it will not be sent. Length: {}".format(
-            len(message)
-        )
+        message = f"Log message length too long, it will not be sent. Length: {len(message)}"
         log.warning(message)
 
     channels = await select("admin_channels", "id", "log", log_status)
     for channel in channels:
         to_send = bot.get_channel(channel)
         if to_send is None:
-            log.warning("No channel found for id {}".format(channel))
+            log.warning(f"No channel found for id {channel}")
         else:
             embed = discord.Embed(
                 title="Log Update:",
@@ -138,7 +136,7 @@ async def make_embed(
     :return: The filled out embed
     """
     if not color:
-        kwargs["color"] = int("0x%06x" % random.randint(0, 0xFFFFFF), 16)  # nosec
+        kwargs["color"] = int(f"0x{random.randint(0, 0xFFFFFF)}", 16)  # nosec
     elif isinstance(color, str):
         kwargs["color"] = discord.Color(int(color, 16))
 

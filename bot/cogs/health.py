@@ -83,10 +83,10 @@ class HealthCog(commands.Cog, name="Health"):
                         else:
                             fail.append((role_name, role))
                     except AttributeError:
-                        log.error("Attribute error with role {}".format(role))
+                        log.error(f"Attribute error with role {role}")
                         fail.append((role, None))
 
-        message = "There were {} successes and {} failures".format(len(success), len(fail))
+        message = "There were {len(success)} successes and {len(fail)} failures"
         await utils.make_embed(ctx, "28b463", title="Check Complete", description=message)
 
     @commands.command(
@@ -156,13 +156,13 @@ class HealthCog(commands.Cog, name="Health"):
         :return: None
         """
         managed, _ = await managed_role_check(before)
-        log.debug("Role: {} Managed: {}".format(before.name, managed))
+        log.debug(f"Role: {before.name} Managed: {managed}")
         if managed:
             await utils.update("schools", "school", before.name, after.name)
-            log.warning('Role "{}" was updated. It is now {}'.format(before.name, after.name))
-            await utils.admin_log(self.bot, "Old role {} now new role {}".format(before, after))
+            log.warning(f'Role "{before.name}" was updated. It is now {after.name}')
+            await utils.admin_log(self.bot, f"Old role {before} now new role {after}")
         else:
-            log.info("Old role {} now new role {}".format(before, after))
+            log.info(f"Old role {before} now new role {after}")
 
     @commands.Cog.listener()
     async def on_guild_role_delete(self, role: discord.Role) -> None:
@@ -178,11 +178,11 @@ class HealthCog(commands.Cog, name="Health"):
         managed, table = await managed_role_check(role)
         if managed:
             await utils.delete("schools", "id", role.id)
-            log.warning('Role "{}" was deleted. It was in {}'.format(role.name, table))
+            log.warning(f'Role "{role.name}" was deleted. It was in {table}')
         else:
-            log.info('Role "{}" was deleted. It was not a managed role'.format(role.name))
+            log.info(f'Role "{role.name}" was deleted. It was not a managed role')
 
-        await utils.admin_log(self.bot, "Role: {} was deleted".format(role.name), True)
+        await utils.admin_log(self.bot, f"Role: {role.name} was deleted", True)
 
 
 def setup(bot):
