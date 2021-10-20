@@ -7,8 +7,6 @@ include:
   - template: License-Scanning.gitlab-ci.yml
   - template: Secret-Detection.gitlab-ci.yml
 
-variables:
-  CI_DEBUG_TRACE: "true"
 
 license_scanning:
   stage: test
