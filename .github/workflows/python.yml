@@ -18,11 +18,11 @@ jobs:
     - uses: actions/cache@v2
       with:
         path: ~/.cache/pip
-        key: ${{ hashFiles('**/requirements.txt', '**/requirements-dev.txts') }}
+        key: ${{ hashFiles('**/requirements.txt', '**/requirements-dev.txt') }}
 
     - name: Install dependencies
       run: |
-        pip install -U pip wheel --quiet
+        pip install -U pip wheel setuptools --quiet
         pip install -r requirements-dev.txt
 
     - name: Lint with Black, Pylint, Flake8, and Bandit
