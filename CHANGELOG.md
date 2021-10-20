@@ -14,6 +14,13 @@
 ### Removed
 -->
 
+[v0.1.4]
+---
+
+### Changed
+
+- Make it so when a user tries to add a school that already exists they get told how to join the school (#67)
+
 [v0.1.3]
 ---
 
@@ -23,8 +30,6 @@
 ### Changed
 
 - Fixed issue when searching by state
-
-### Removed
 
 
 [v0.1.2] - 04/11/2021
