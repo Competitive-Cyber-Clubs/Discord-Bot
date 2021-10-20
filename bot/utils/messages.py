@@ -136,10 +136,9 @@ async def make_embed(
     :return: The filled out embed
     """
     if not color:
-        kwargs["color"] = int(f"0x{random.randint(0, 0xFFFFFF)}", 16)  # nosec
+        kwargs["color"] = random.randint(0, 16777215)  # nosec
     elif isinstance(color, str):
         kwargs["color"] = discord.Color(int(color, 16))
-
     embed = discord.Embed(timestamp=ctx.message.created_at, **kwargs)
 
     if "footer" in kwargs:
