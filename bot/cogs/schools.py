@@ -159,7 +159,11 @@ class SchoolCog(commands.Cog, name="Schools"):
 
         if await utils.select("schools", "school", "school", school_name):
             log.info(f"{ctx.author.name} attempted to create a duplicate role for {school_name}")
-            return await utils.error_message(ctx, f"School role for {school_name} already exists.")
+            return await utils.error_message(
+                ctx,
+                f"School role for {school_name} already exists.\n"
+                f"Use `?join-school {school_name} to join it",
+            )
 
         regions = await utils.fetch("regions", "name")
         region = await utils.region_select(self.bot.school_list, school_name)
