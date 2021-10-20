@@ -162,7 +162,7 @@ class SchoolCog(commands.Cog, name="Schools"):
             return await utils.error_message(
                 ctx,
                 f"School role for {school_name} already exists.\n"
-                f"Use `?join-school {school_name} to join it",
+                f"Use `?join-school {school_name}` to join it",
             )
 
         regions = await utils.fetch("regions", "name")
