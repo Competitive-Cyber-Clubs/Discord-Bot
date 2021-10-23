@@ -85,7 +85,7 @@ class CCC_Bot(commands.Bot):
                 self.load_extension(extension)
             except commands.ExtensionError as e:
                 log.error(f"Failed to load extension {extension}. {e}")
-        log.debug("Bot is ready to go")
+        log.info("Bot is ready to go")
 
 
 bot = CCC_Bot()

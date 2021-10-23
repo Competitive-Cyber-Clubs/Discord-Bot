@@ -126,6 +126,7 @@ class SchoolCog(commands.Cog, name="Schools"):
                     title=f"School assigned: {school_name}",
                 )
             )
+            await ctx.message.add_reaction("✅")
 
     @commands.command(
         name="add-school",
