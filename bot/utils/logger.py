@@ -15,7 +15,7 @@ def make_logger(name: str, log_level: str) -> logging.Logger:
     :return: Logger class that handled the logging.
     :rtype: logging.Logger
     """
-    discord_logger = logging.getLogger('discord')
+    discord_logger = logging.getLogger("discord")
     this_logger = logging.getLogger(name)
     for logger in [discord_logger, this_logger]:
         logger.setLevel(log_level)
