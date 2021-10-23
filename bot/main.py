@@ -31,18 +31,8 @@ log = utils.make_logger("bot", os.getenv("LOG_LEVEL", "INFO"))
 log.info("Starting up")
 log.debug(f"Using discord.py version: {discord.__version__} and Python version {sys.version[0:5]}")
 
-initial_extensions = [
-    "cogs.admin",
-    "cogs.errors",
-    "cogs.events",
-    "cogs.health",
-    "cogs.misc",
-    "cogs.rank",
-    "cogs.regions",
-    "cogs.schools",
-    "cogs.search",
-    "cogs.tasks",
-]
+
+COGS_DIR = "./bot/cogs"
 
 
 class CCC_Bot(commands.Bot):
@@ -52,7 +42,7 @@ class CCC_Bot(commands.Bot):
         super().__init__(
             command_prefix=("$", "?"), owner_id=OWNER_ID, intents=discord.Intents.all()
         )
-
+        self.log = log
         self.uptime = datetime.utcnow()
         self.list_updated, self.school_list = "", None
         self.__version__ = "v0.1.4"
@@ -80,11 +70,18 @@ class CCC_Bot(commands.Bot):
         await self.change_presence(
             activity=discord.Activity(name="?help", type=discord.ActivityType.playing)
         )
-        for extension in initial_extensions:
+        # Load all python files in the cogs directory
+        for extension in [
+            f.replace(".py", "")
+            for f in os.listdir(COGS_DIR)
+            if os.path.isfile(os.path.join(COGS_DIR, f))
+        ]:
             try:
-                self.load_extension(extension)
+                log.debug(f"Loading cog: cogs.{extension}")
+                self.load_extension(f"cogs.{extension}")
             except commands.ExtensionError as e:
                 log.error(f"Failed to load extension {extension}. {e}")
+
         log.info("Bot is ready to go")
 
 
