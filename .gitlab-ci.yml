@@ -2,16 +2,6 @@ stages:
 - test
 
 include:
-  - template: SAST.gitlab-ci.yml
-  - template: Dependency-Scanning.gitlab-ci.yml
-  - template: License-Scanning.gitlab-ci.yml
-  - template: Secret-Detection.gitlab-ci.yml
-
-
-license_scanning:
-  stage: test
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "master"'
-      changes:
-        - requirements.txt
-        - requirments-dev.txt
+  - template: Security/SAST.gitlab-ci.yml
+  - template: Security/Dependency-Scanning.gitlab-ci.yml
+  - template: Security/Secret-Detection.gitlab-ci.yml
