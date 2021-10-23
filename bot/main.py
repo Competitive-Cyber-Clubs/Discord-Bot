@@ -45,7 +45,7 @@ class CCC_Bot(commands.Bot):
         self.log = log
         self.uptime = datetime.utcnow()
         self.list_updated, self.school_list = "", None
-        self.__version__ = "v0.1.4"
+        self.__version__ = "v0.1.5"
         self.description = (
             "This Discord bot that assists with the Competitive Cyber Club Discord\n"
             "If you experience any issues then please use the ?report feature.\n"
