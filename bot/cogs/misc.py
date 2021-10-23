@@ -1,11 +1,8 @@
 """Misc features cog for CCC Bot"""
 import random
 from datetime import datetime
-import logging
 from discord.ext import commands
 from bot import utils
-
-log = logging.getLogger("bot")
 
 
 class MiscCog(commands.Cog, name="Misc"):
@@ -36,7 +33,7 @@ class MiscCog(commands.Cog, name="Misc"):
         :type ctx: discord.ext.commands.Context
         :return: None
         """
-        log.debug(f"{ctx.author.name} has sent ping.")
+        self.bot.log.debug(f"{ctx.author.name} has sent ping.")
         await ctx.message.delete()
         embed = await utils.make_embed(ctx, send=False, title="PONG")
         url = "https://peterfrezzini.com/content/images/2016/12/pong_logo.jpg"
@@ -98,7 +95,7 @@ class MiscCog(commands.Cog, name="Misc"):
         reports = await utils.fetch("reports", "id")
         report_id = random.randint(1, 32767)  # nosec
         while report_id in reports:
-            log.warning("report_id had to be regenerated")
+            self.bot.log.warning("report_id had to be regenerated")
             report_id = random.randint(1, 32767)  # nosec
         await utils.insert(
             "reports",
@@ -114,7 +111,7 @@ class MiscCog(commands.Cog, name="Misc"):
         for channel in channels:
             to_send = self.bot.get_channel(channel)
             if to_send is None:
-                log.warning(f"No channel found for id channel {channel}")
+                self.bot.log.warning(f"No channel found for id channel {channel}")
             await utils.make_embed(
                 ctx,
                 title="New Report",

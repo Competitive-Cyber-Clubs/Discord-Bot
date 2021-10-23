@@ -1,12 +1,9 @@
 """Schools commands for bot"""
 import asyncio
 import random
-import logging
 import discord
 from discord.ext import commands
 from bot import utils
-
-log = logging.getLogger("bot")
 
 
 class SchoolCog(commands.Cog, name="Schools"):
@@ -108,11 +105,11 @@ class SchoolCog(commands.Cog, name="Schools"):
         to_add = [discord.utils.get(ctx.guild.roles, name=x) for x in (school_name, "verified")]
         if None in to_add:
             await utils.error_message(ctx, "The school you select does not have valid role.")
-            log.warning(
+            self.bot.log.warning(
                 f"{ctx.author.name} tried to join {school_name}. Only roles found: {to_add}"
             )
         else:
-            log.debug(f"Adding roles: {to_add} to {user}")
+            self.bot.log.debug(f"Adding roles: {to_add} to {user}")
             await user.add_roles(*to_add, reason=f"{user.name} joined {school_name}")
             await user.remove_roles(
                 discord.utils.get(ctx.guild.roles, name="new"),
@@ -126,6 +123,7 @@ class SchoolCog(commands.Cog, name="Schools"):
                     title=f"School assigned: {school_name}",
                 )
             )
+            await ctx.message.add_reaction("✅")
 
     @commands.command(
         name="add-school",
@@ -158,7 +156,9 @@ class SchoolCog(commands.Cog, name="Schools"):
             return await utils.error_message(ctx, message="School name not valid.")
 
         if await utils.select("schools", "school", "school", school_name):
-            log.info(f"{ctx.author.name} attempted to create a duplicate role for {school_name}")
+            self.bot.log.info(
+                f"{ctx.author.name} attempted to create a duplicate role for {school_name}"
+            )
             return await utils.error_message(
                 ctx,
                 f"School role for {school_name} already exists.\n"
@@ -169,7 +169,7 @@ class SchoolCog(commands.Cog, name="Schools"):
         region = await utils.region_select(self.bot.school_list, school_name)
         if region not in regions:
             # No region map error
-            log.error(
+            self.bot.log.error(
                 f"There is no region map for {school_name}, region: {region}, regions{regions}"
             )
             return await utils.error_message(ctx, f"No region defined for {school_name}")
@@ -211,7 +211,7 @@ class SchoolCog(commands.Cog, name="Schools"):
             if status == "error":
                 await utils.error_message(ctx, "There was an error with creating the role.")
                 await added_school.delete(reason="Error in creation")
-                log.warning("Error with School Role creation.")
+                self.bot.log.warning("Error with School Role creation.")
             else:
                 success_msg = (
                     f'School "{school_name}" has been created in {region} with color of 0x{color}'

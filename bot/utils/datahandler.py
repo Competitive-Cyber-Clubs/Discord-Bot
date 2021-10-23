@@ -8,7 +8,7 @@ from psycopg2.extensions import AsIs
 from .tables import tables
 from .logger import make_logger
 
-# Imports the main logger
+# Imports the database logger
 log = make_logger("database", os.getenv("LOG_LEVEL", "INFO"))
 
 # Creates the connection to the database

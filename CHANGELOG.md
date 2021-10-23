@@ -14,6 +14,18 @@
 ### Removed
 -->
 
+[v0.1.5]
+---
+
+### Added
+
+- Reacts to successful school join messages
+
+### Changed
+
+ - Loads all cogs from the bot/cogs/ directory 
+ - Make the logger a part of the bot
+
 [v0.1.4]
 ---
 

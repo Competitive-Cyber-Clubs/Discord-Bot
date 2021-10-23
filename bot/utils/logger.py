@@ -15,15 +15,15 @@ def make_logger(name: str, log_level: str) -> logging.Logger:
     :return: Logger class that handled the logging.
     :rtype: logging.Logger
     """
-    logger = logging.getLogger(name)
-    logger.setLevel(log_level)
-    formatter = logging.Formatter(
-        "%(levelname)s - %(name)s - %(asctime)s - %(message)s", "%Y-%m-%d %H:%M:%S"
-    )
-    fh = logging.FileHandler(f"{name}.log", mode="w")
-    fh.setFormatter(formatter)
-    logger.addHandler(fh)
-    ch = logging.StreamHandler()
-    ch.setFormatter(formatter)
-    logger.addHandler(ch)
+    discord_logger = logging.getLogger("discord")
+    this_logger = logging.getLogger(name)
+    for logger in [discord_logger, this_logger]:
+        logger.setLevel(log_level)
+        formatter = logging.Formatter(
+            "%(levelname)s - %(name)s - %(asctime)s - %(message)s", "%Y-%m-%d %H:%M:%S"
+        )
+        ch = logging.StreamHandler()
+        ch.setFormatter(formatter)
+        logger.addHandler(ch)
+    discord_logger.setLevel("INFO")
     return logger

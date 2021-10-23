@@ -1,13 +1,10 @@
 """Cogs that handles errors"""
-import logging
 import random
 from datetime import datetime
 
 import discord
 from discord.ext import commands
 from bot import utils
-
-log = logging.getLogger("bot")
 
 
 class ErrorsCog(commands.Cog, name="Errors"):
@@ -78,7 +75,7 @@ class ErrorsCog(commands.Cog, name="Errors"):
                 column="ack",
                 new_value=True,
             )
-            log.debug(
+            self.bot.log.debug(
                 f"Acknowledged error {error} as part of bulk acknowledgement"
                 f" by {ctx.author.display_name}"
             )
@@ -123,17 +120,17 @@ class ErrorsCog(commands.Cog, name="Errors"):
             errors = await utils.fetch("errors", "id")
             error_id = random.randint(1, 32767)  # nosec
             while error_id in errors:
-                log.warning("Error ID had to be regenerated")
+                self.bot.log.warning("Error ID had to be regenerated")
                 error_id = random.randint(1, 32767)  # nosec
 
-            log.error((error_id, error))
-            log.exception(error, exc_info=True)
+            self.bot.log.error((error_id, error))
+            self.bot.log.exception(error, exc_info=True)
             error_msg = (
                 "There was an unknown error.\n"
                 "Please report it for investigation.\n"
                 f"Error #{error_id}"
             )
-            log.error(f"There was the following error: {error}")
+            self.bot.log.error(f"There was the following error: {error}")
             error_info = [
                 error_id,
                 ctx.message.content,
