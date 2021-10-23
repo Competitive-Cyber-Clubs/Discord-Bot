@@ -1,10 +1,7 @@
 """Cog for tasks that are scheduled to run"""
-import logging
 from datetime import datetime
 from discord.ext import commands, tasks
 from bot import utils
-
-log = logging.getLogger("bot")
 
 
 class TaskCog(commands.Cog, name="Tasks"):
