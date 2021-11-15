@@ -1,5 +1,5 @@
 asyncio== 3.4.3
-aiohttp==3.7.4.post0
+aiohttp==3.8.1
 discord.py==1.7.3
 pandas==1.3.4
 psycopg2-binary==2.9.1
