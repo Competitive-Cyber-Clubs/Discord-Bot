@@ -19,7 +19,7 @@ DuplicateError = psycopg2.errors.lookup("23505")
 def table_create() -> None:
     """Table_create
 
-    Creates tables if they do not exist at startup. All tables are pulled from tables.py
+    Create tables if they do not exist at startup. All tables are pulled from tables.py
     :return:
     """
     con = db_pool.getconn()
@@ -39,36 +39,39 @@ def _format_step(table: str) -> str:
     :return: String that will be used for cursor execution
     :rtype: str
     """
-    if table == "schools":
-        query_str = (
-            "INSERT INTO schools"
-            "(school, region, color, id, added_by, added_by_id) "
-            "VALUES (%s, %s, %s, %s, %s, %s);"
-        )
-    elif table == "errors":
-        query_str = (
-            "INSERT INTO errors"
-            "(id, command, message, error, time, ack) "
-            "VALUES (%s, %s, %s, %s, %s, %s);"
-        )
-    elif table == "reports":
-        query_str = (
-            "INSERT INTO reports"
-            "(id, name, name_id, message, time) "
-            "VALUES (%s, %s, %s, %s, %s);"
-        )
-    elif table == "admin_channels":
-        query_str = (
-            "INSERT INTO admin_channels (name, id, log) "
-            "VALUES (%s, %s, %s) ON CONFLICT DO NOTHING;"
-        )
-    elif table == "bot_admins":
-        query_str = "INSERT INTO bot_admins (name, id) VALUES (%s, %s) ON CONFLICT DO NOTHING;"
-    elif table == "regions":
-        query_str = "INSERT INTO regions (name, id) VALUES (%s, %s)"
-    else:
-        log.error(f"Table {table} not found.")
-        return "error"
+    match table:
+        case "schools":
+            query_str = (
+                "INSERT INTO schools"
+                "(school, region, color, id, added_by, added_by_id) "
+                "VALUES (%s, %s, %s, %s, %s, %s);"
+            )
+        case "errors":
+            query_str = (
+                "INSERT INTO errors"
+                "(id, command, message, error, time, ack) "
+                "VALUES (%s, %s, %s, %s, %s, %s);"
+            )
+        case "reports":
+            query_str = (
+                "INSERT INTO reports"
+                "(id, name, name_id, message, time) "
+                "VALUES (%s, %s, %s, %s, %s);"
+            )
+        case "admin_channels":
+            query_str = (
+                "INSERT INTO admin_channels (name, id, log) "
+                "VALUES (%s, %s, %s) ON CONFLICT DO NOTHING;"
+            )
+        case "bot_admins":
+            query_str = "INSERT INTO bot_admins (name, id) VALUES (%s, %s) ON CONFLICT DO NOTHING;"
+        case "regions":
+            query_str = "INSERT INTO regions (name, id) VALUES (%s, %s);"
+        case "keys":
+            query_str = "INSERT INTO keys (key, value) VALUES (%s, %s);"
+        case _:
+            log.error(f"Table {table} not found.")
+            return "error"
     return query_str
 
 
@@ -116,19 +119,20 @@ async def insert(table: str, data: list) -> typing.Union[None, str]:
         return "error"
     log.debug(f'String: {format_str} Data {" ".join(map(str, data))}')
     con = db_pool.getconn()
-    pg_cursor = con.cursor()
-    try:
-        pg_cursor.execute(format_str, data)
-        con.commit()
-        return None
-    except psycopg2.Error as pge:
-        log.error(pge)
-        pg_cursor.rollback()
-        if isinstance(pge, DuplicateError):
-            return "duplicate"
-        return "error"
-    finally:
-        db_pool.putconn(con)
+
+    with con.cursor() as pg_cursor:
+        try:
+            pg_cursor.execute(format_str, data)
+            con.commit()
+            return None
+        except psycopg2.Error as pge:
+            log.error(pge)
+            con.rollback()
+            if isinstance(pge, DuplicateError):
+                return "duplicate"
+            return "error"
+        finally:
+            db_pool.putconn(con)
 
 
 async def fetch(table: str, column: str) -> list:

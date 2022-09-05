@@ -82,7 +82,7 @@ class ErrorsCog(commands.Cog, name="Errors"):
             error_count += 1
         await ctx.send(
             (
-                "All errors have been acknowledged."
+                "All errors have been acknowledged.\n"
                 f"Total: {str(error_count)}\nError Numbers: {', '.join(map(str, errors))}"
             )
         )
@@ -123,8 +123,7 @@ class ErrorsCog(commands.Cog, name="Errors"):
                 self.bot.log.warning("Error ID had to be regenerated")
                 error_id = random.randint(1, 32767)  # nosec
 
-            self.bot.log.error((error_id, error))
-            self.bot.log.exception(error, exc_info=True)
+            # self.bot.log.exception(error, exc_info=True)
             error_msg = (
                 "There was an unknown error.\n"
                 "Please report it for investigation.\n"

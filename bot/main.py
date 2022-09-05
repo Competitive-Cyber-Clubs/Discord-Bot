@@ -45,7 +45,8 @@ class CCC_Bot(commands.Bot):
         self.log = log
         self.uptime = datetime.utcnow()
         self.list_updated, self.school_list = "", None
-        self.__version__ = "v0.1.5"
+        self.daily_reporting = True
+        self.__version__ = "v0.2.0"
         self.description = (
             "This Discord bot that assists with the Competitive Cyber Club Discord\n"
             "If you experience any issues then please use the ?report feature.\n"
@@ -67,9 +68,8 @@ class CCC_Bot(commands.Bot):
             if role is not None:
                 for admin in role.members:
                     await utils.insert("bot_admins", [admin.name, admin.id])
-        await self.change_presence(
-            activity=discord.Activity(name="?help", type=discord.ActivityType.playing)
-        )
+
+        self.daily_reporting = (await utils.select("keys", "value", "key", "daily-report"))[0] == "true"
         # Load all python files in the cogs directory
         for extension in [
             f.replace(".py", "")
@@ -81,7 +81,9 @@ class CCC_Bot(commands.Bot):
                 self.load_extension(f"cogs.{extension}")
             except commands.ExtensionError as e:
                 log.error(f"Failed to load extension {extension}. {e}")
-
+        await self.change_presence(
+            activity=discord.Activity(name="?help", type=discord.ActivityType.playing)
+        )
         log.info("Bot is ready to go")
 
 
