@@ -83,7 +83,7 @@ class SearchCog(commands.Cog, name="Search"):
         else:
             for place, results_name in enumerate(results):
                 results[place] = (
-                    f"{results_name[0]} :: "
+                    f"{results_name} :: "
                     f"Role created: {await utils.TF_emoji(results_name in created_roles)}"
                 )
             await utils.list_message(ctx, results, "Search Results:\n")
@@ -109,6 +109,6 @@ class SearchCog(commands.Cog, name="Search"):
         await utils.list_message(ctx, schools, f"Schools in State '{state.title()}'")
 
 
-def setup(bot):
+async def setup(bot):
     """Needed for extension loading"""
-    bot.add_cog(SearchCog(bot))
+    await bot.add_cog(SearchCog(bot))
