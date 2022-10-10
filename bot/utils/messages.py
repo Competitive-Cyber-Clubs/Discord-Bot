@@ -139,10 +139,11 @@ async def make_embed(
         kwargs["color"] = random.randint(0, 16777215)  # nosec
     elif isinstance(color, str):
         kwargs["color"] = discord.Color(int(color, 16))
+    footer = kwargs.pop("footer", None)
     embed = discord.Embed(timestamp=ctx.message.created_at, **kwargs)
 
-    if "footer" in kwargs:
-        embed.set_footer(text=kwargs["footer"])
+    if footer:
+        embed.set_footer(text=footer)
     if send:
         await ctx.send(embed=embed)
     else:
