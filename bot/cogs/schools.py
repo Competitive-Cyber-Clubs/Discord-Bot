@@ -170,14 +170,15 @@ class SchoolCog(commands.Cog, name="Schools"):
         if region not in regions:
             # No region map error
             self.bot.log.error(
-                f"There is no region map for {school_name}, region: {region}, regions{regions}"
+                f"There is no region map for {school_name}, region: {region}, regions: {regions}"
             )
             return await utils.error_message(ctx, f"No region defined for {school_name}")
-
+        color = random.randint(0, 16777215)  # nosec
         await utils.make_embed(
             ctx,
             title=f"You are about to create a new school: {school_name}.",
             description="React 👍 to this message in 60 seconds to confirm.",
+            color=color,
         )
         # Gives the member 60 seconds to add the reaction '👍' to the message.
         try:
@@ -191,7 +192,6 @@ class SchoolCog(commands.Cog, name="Schools"):
         except utils.FailedReactionCheck:
             await utils.error_message(ctx, "Wrong reaction added or added by the wrong member")
         else:
-            color = int(f"0x{random.randint(0, 0xFFFFFF)}", 16)  # nosec
             added_school = await ctx.guild.create_role(
                 name=school_name,
                 color=discord.Color(color),
@@ -220,6 +220,6 @@ class SchoolCog(commands.Cog, name="Schools"):
                 await self.join_school(ctx=ctx, school_name=school_name)
 
 
-def setup(bot):
+async def setup(bot):
     """Needed for extension loading"""
-    bot.add_cog(SchoolCog(bot))
+    await bot.add_cog(SchoolCog(bot))
