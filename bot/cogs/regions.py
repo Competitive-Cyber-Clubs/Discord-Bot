@@ -73,6 +73,6 @@ class RegionCog(commands.Cog, name="Regions"):
         await utils.make_embed(ctx, title="Available Regions:", description=formatted)
 
 
-def setup(bot):
+async def setup(bot):
     """Needed for extension loading"""
-    bot.add_cog(RegionCog(bot))
+    await bot.add_cog(RegionCog(bot))

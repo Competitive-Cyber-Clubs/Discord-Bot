@@ -124,6 +124,6 @@ class MiscCog(commands.Cog, name="Misc"):
         await utils.make_embed(ctx, title="Report Received", description=response_msg)
 
 
-def setup(bot):
+async def setup(bot):
     """Needed for extension loading"""
-    bot.add_cog(MiscCog(bot))
+    await bot.add_cog(MiscCog(bot))

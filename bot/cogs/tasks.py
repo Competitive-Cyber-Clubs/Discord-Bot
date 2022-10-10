@@ -45,6 +45,6 @@ class TaskCog(commands.Cog, name="Tasks"):
         await utils.admin_log(self.bot, errors, True)
 
 
-def setup(bot):
+async def setup(bot: commands.Bot) -> None:
     """Needed for extension loading"""
-    bot.add_cog(TaskCog(bot))
+    await bot.add_cog(TaskCog(bot))

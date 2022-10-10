@@ -103,7 +103,7 @@ class AdminCog(commands.Cog, name="Admin"):
         """Add Admin Channel
 
         Adds the channel where the command was run to the admin_channel table.
-        By default it sets logging as false.
+        By default, it sets logging as false.
 
         :param ctx: Command context
         :type ctx: discord.ext.commands.Context
@@ -150,6 +150,6 @@ class AdminCog(commands.Cog, name="Admin"):
         await ctx.send("List updated")
 
 
-def setup(bot):
+async def setup(bot: commands.Bot) -> None:
     """Needed for extension loading"""
-    bot.add_cog(AdminCog(bot))
+    await bot.add_cog(AdminCog(bot))

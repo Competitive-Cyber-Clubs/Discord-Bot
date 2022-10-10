@@ -32,7 +32,7 @@ class ErrorsCog(commands.Cog, name="Errors"):
 
         :param ctx: Command context
         :type ctx: discord.ext.commands.Context
-        :param error_id: Id of the error
+        :param error_id: ID of the error
         :type error_id: str
         :return: None
         """
@@ -144,6 +144,6 @@ class ErrorsCog(commands.Cog, name="Errors"):
         await utils.make_embed(ctx, "FF0000", title="Error:", description=error_msg)
 
 
-def setup(bot):
+async def setup(bot: commands.Bot) -> None:
     """Needed for extension loading"""
-    bot.add_cog(ErrorsCog(bot))
+    await bot.add_cog(ErrorsCog(bot))
