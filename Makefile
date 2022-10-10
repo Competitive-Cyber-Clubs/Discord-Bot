@@ -1,4 +1,4 @@
-PHONY: lint reformat
+PHONY: lint format
 
 lint:
 	black --check --line-length 100 ./bot
@@ -6,5 +6,5 @@ lint:
 	flake8 ./bot --statistics --show-source --max-line-length 100
 	bandit -r ./bot
 
-reformat:
+format:
 	black --line-length 100 ./bot
