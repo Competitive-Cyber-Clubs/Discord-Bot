@@ -32,7 +32,7 @@ class ErrorsCog(commands.Cog, name="Errors"):
 
         :param ctx: Command context
         :type ctx: discord.ext.commands.Context
-        :param error_id: Id of the error
+        :param error_id: ID of the error
         :type error_id: str
         :return: None
         """
@@ -82,7 +82,7 @@ class ErrorsCog(commands.Cog, name="Errors"):
             error_count += 1
         await ctx.send(
             (
-                "All errors have been acknowledged."
+                "All errors have been acknowledged.\n"
                 f"Total: {str(error_count)}\nError Numbers: {', '.join(map(str, errors))}"
             )
         )
@@ -123,8 +123,7 @@ class ErrorsCog(commands.Cog, name="Errors"):
                 self.bot.log.warning("Error ID had to be regenerated")
                 error_id = random.randint(1, 32767)  # nosec
 
-            self.bot.log.error((error_id, error))
-            self.bot.log.exception(error, exc_info=True)
+            # self.bot.log.exception(error, exc_info=True)
             error_msg = (
                 "There was an unknown error.\n"
                 "Please report it for investigation.\n"
@@ -144,6 +143,6 @@ class ErrorsCog(commands.Cog, name="Errors"):
         await utils.make_embed(ctx, "FF0000", title="Error:", description=error_msg)
 
 
-def setup(bot):
+async def setup(bot: commands.Bot) -> None:
     """Needed for extension loading"""
-    bot.add_cog(ErrorsCog(bot))
+    await bot.add_cog(ErrorsCog(bot))

@@ -52,7 +52,7 @@ class SearchCog(commands.Cog, name="Search"):
         """
         Search school
 
-        Searches for a school based on the school arguments. It search the school.csv in utils
+        Searches for a school based on the school arguments. It searches the school.csv in utils
         as a list using the `in` statement.
 
         :param ctx: Command context
@@ -77,16 +77,16 @@ class SearchCog(commands.Cog, name="Search"):
             )
             return
         results = await utils.school_search(self.bot.school_list, school)
-        created_roles = await utils.fetch("schools", "school")
         if not results:
             await utils.error_message(ctx, "No results found")
-        else:
-            for place, results_name in enumerate(results):
-                results[place] = (
-                    f"{results_name[0]} :: "
-                    f"Role created: {await utils.TF_emoji(results_name in created_roles)}"
-                )
-            await utils.list_message(ctx, results, "Search Results:\n")
+            return
+        created_roles = await utils.fetch("schools", "school")
+        for place, results_name in enumerate(results):
+            results[place] = (
+                f"{results_name} :: "
+                f"Role created: {await utils.TF_emoji(results_name in created_roles)}"
+            )
+        await utils.list_message(ctx, results, "Search Results:\n")
 
     @commands.command(name="search-state")
     async def search_state(self, ctx: commands.Context, *, state: str):
@@ -109,6 +109,6 @@ class SearchCog(commands.Cog, name="Search"):
         await utils.list_message(ctx, schools, f"Schools in State '{state.title()}'")
 
 
-def setup(bot):
+async def setup(bot):
     """Needed for extension loading"""
-    bot.add_cog(SearchCog(bot))
+    await bot.add_cog(SearchCog(bot))

@@ -1,9 +1,9 @@
 """Deals with long message sending"""
 import logging
 import random
-import typing
 
 import discord
+from discord import Embed
 from discord.ext import commands
 from .datahandler import select
 
@@ -101,6 +101,7 @@ async def admin_log(bot: commands.Bot, message: str, log_status: bool = True) ->
                 color=discord.Color(int("FF0000", 16)),
             )
             await to_send.send(embed=embed)
+    return None
 
 
 async def error_message(ctx, message: str, title: str = "Error:", **kwargs) -> None:
@@ -121,7 +122,7 @@ async def error_message(ctx, message: str, title: str = "Error:", **kwargs) -> N
 
 async def make_embed(
     ctx, color: [str, int] = None, send: (bool, str) = True, **kwargs
-) -> typing.Union[discord.Embed]:
+) -> Embed | None:
     """Make embed
 
     **Asynchronous Function**
@@ -139,11 +140,13 @@ async def make_embed(
         kwargs["color"] = random.randint(0, 16777215)  # nosec
     elif isinstance(color, str):
         kwargs["color"] = discord.Color(int(color, 16))
+    footer = kwargs.pop("footer", None)
     embed = discord.Embed(timestamp=ctx.message.created_at, **kwargs)
 
-    if "footer" in kwargs:
-        embed.set_footer(text=kwargs["footer"])
+    if footer:
+        embed.set_footer(text=footer)
+
     if send:
         await ctx.send(embed=embed)
-    else:
-        return embed
+        return None
+    return embed

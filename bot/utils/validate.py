@@ -65,7 +65,7 @@ async def region_select(school_list: pd.DataFrame, name: str) -> str:
     :type name: str
     :return:
     """
-    return school_list.Regions.values[school_list.Institution_Name == name][0]
+    return school_list.Regions.values[school_list["Institution_Name"] == name][0]
 
 
 async def school_search(school_list: pd.DataFrame, name: str) -> list:
@@ -103,4 +103,4 @@ async def state_list(school_list: pd.DataFrame, state: str) -> list:
     :return: Schools in the state
     :rtype: list
     """
-    return school_list.Institution_Name.values[school_list.States == state]
+    return school_list.Institution_Name.values[school_list["States"] == state]

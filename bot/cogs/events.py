@@ -16,7 +16,7 @@ class EventsCog(commands.Cog, name="Events"):
             The bot will send them a welcome PM.
 
         `on_member_remove`: Triggered when a member leaves.
-            A message will be send to the loggign admin channels.
+            A message will be sent to the logging admin channels.
 
     Arguments:
     ---
@@ -87,6 +87,6 @@ class EventsCog(commands.Cog, name="Events"):
             )
 
 
-def setup(bot):
+async def setup(bot: commands.Bot) -> None:
     """Needed for extension loading"""
-    bot.add_cog(EventsCog(bot))
+    await bot.add_cog(EventsCog(bot))
