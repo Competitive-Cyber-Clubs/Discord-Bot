@@ -101,6 +101,7 @@ async def admin_log(bot: commands.Bot, message: str, log_status: bool = True) ->
                 color=discord.Color(int("FF0000", 16)),
             )
             await to_send.send(embed=embed)
+    return None
 
 
 async def error_message(ctx, message: str, title: str = "Error:", **kwargs) -> None:

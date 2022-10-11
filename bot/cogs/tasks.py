@@ -26,7 +26,7 @@ class TaskCog(commands.Cog, name="Tasks"):
         await utils.insert("keys", ["daily-report", False])
         self.report_errors.stop()
         self.bot.daily_reporting = False
-        await ctx.send(f"Daily reporting has been disabled")
+        await ctx.send("Daily reporting has been disabled")
 
     @commands.command(name="enable-daily-reporting")
     @commands.check(utils.check_admin)
@@ -34,7 +34,7 @@ class TaskCog(commands.Cog, name="Tasks"):
         await utils.insert("keys", ["daily-report", True])
         self.report_errors.start()
         self.bot.daily_reporting = True
-        await ctx.send(f"Daily reporting has been enabled")
+        await ctx.send("Daily reporting has been enabled")
 
     @tasks.loop(hours=24.0)
     async def report_errors(self) -> None:

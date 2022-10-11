@@ -125,15 +125,14 @@ class SchoolCog(commands.Cog, name="Schools"):
             )
             await ctx.message.add_reaction("✅")
 
-    @commands.command(
-        name="admin-add-school"
-    )
+    @commands.command(name="admin-add-school")
     @commands.check(utils.check_admin)
     async def admin_add_school(self, ctx: commands.Context, *, school_name: str) -> None:
         """
         Admin Add school
 
-        Enables admins to create a school roles. There is no error checking and it will not assign the newly created role
+        Enables admins to create a school roles.
+        There is no error checking and it will not assign the newly created role
 
         :param ctx: Command Context
         :type ctx: discord.ext.commands.Context
@@ -193,13 +192,13 @@ class SchoolCog(commands.Cog, name="Schools"):
     @commands.command(
         name="add-school",
         help="Adds a new school and makes a role for it.\n"
-             "Only schools on the list are allowed to join.\n"
-             "List: https://github.com/Competitive-Cyber-Clubs/School-List/blob/master/school_list.csv",
+        "Only schools on the list are allowed to join.\n"
+        "List: https://github.com/Competitive-Cyber-Clubs/School-List/blob/master/school_list.csv",
         description="Creates a new school",
     )
     @commands.has_role("new")
     async def add_school(
-            self, ctx: commands.Context, *, school_name: str
+        self, ctx: commands.Context, *, school_name: str
     ) -> None:  # pylint: disable=too-many-branches
         """
         Add school
