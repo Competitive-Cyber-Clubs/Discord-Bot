@@ -1,7 +1,6 @@
 """Deals with long message sending"""
 import logging
 import random
-import typing
 
 import discord
 from discord import Embed
@@ -149,5 +148,5 @@ async def make_embed(
 
     if send:
         await ctx.send(embed=embed)
-        return
+        return None
     return embed

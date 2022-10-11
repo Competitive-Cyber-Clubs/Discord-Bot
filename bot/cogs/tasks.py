@@ -23,6 +23,7 @@ class TaskCog(commands.Cog, name="Tasks"):
     @commands.command(name="disable-daily-reporting")
     @commands.check(utils.check_admin)
     async def disable_error_reporting(self, ctx: commands.Context):
+        """Disable Error Reporting for server"""
         await utils.insert("keys", ["daily-report", False])
         self.report_errors.stop()
         self.bot.daily_reporting = False
@@ -31,6 +32,7 @@ class TaskCog(commands.Cog, name="Tasks"):
     @commands.command(name="enable-daily-reporting")
     @commands.check(utils.check_admin)
     async def enable_error_reporting(self, ctx: commands.Context):
+        """Enable Error Reporting for server"""
         await utils.insert("keys", ["daily-report", True])
         self.report_errors.start()
         self.bot.daily_reporting = True
