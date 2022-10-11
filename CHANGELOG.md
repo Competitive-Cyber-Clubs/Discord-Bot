@@ -14,6 +14,16 @@
 ### Removed
 -->
 
+[v0.1.6]
+---
+
+
+### Changed
+
+- Fixes color int too high #114
+- Fixes school search not working #82
+- 
+
 [v0.1.5]
 ---
 

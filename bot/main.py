@@ -23,7 +23,7 @@ from bot import utils
 
 TOKEN = os.environ["DISCORD_TOKEN"]
 
-VERSION = "v0.1.7"
+VERSION = "v0.1.6"
 
 utils.table_create()
 log = utils.make_logger("bot", os.getenv("LOG_LEVEL", "INFO"))
