@@ -44,36 +44,39 @@ def _format_step(table: str) -> str:
     :return: String that will be used for cursor execution
     :rtype: str
     """
-    if table == "schools":
-        query_str = (
-            "INSERT INTO schools"
-            "(school, region, color, id, added_by, added_by_id) "
-            "VALUES (%s, %s, %s, %s, %s, %s);"
-        )
-    elif table == "errors":
-        query_str = (
-            "INSERT INTO errors"
-            "(id, command, message, error, time, ack) "
-            "VALUES (%s, %s, %s, %s, %s, %s);"
-        )
-    elif table == "reports":
-        query_str = (
-            "INSERT INTO reports"
-            "(id, name, name_id, message, time) "
-            "VALUES (%s, %s, %s, %s, %s);"
-        )
-    elif table == "admin_channels":
-        query_str = (
-            "INSERT INTO admin_channels (name, id, log) "
-            "VALUES (%s, %s, %s) ON CONFLICT DO NOTHING;"
-        )
-    elif table == "bot_admins":
-        query_str = "INSERT INTO bot_admins (name, id) VALUES (%s, %s) ON CONFLICT DO NOTHING;"
-    elif table == "regions":
-        query_str = "INSERT INTO regions (name, id) VALUES (%s, %s)"
-    else:
-        log.error(f"Table {table} not found.")
-        return "error"
+    match table:
+        case "schools":
+            query_str = (
+                "INSERT INTO schools"
+                "(school, region, color, id, added_by, added_by_id) "
+                "VALUES (%s, %s, %s, %s, %s, %s);"
+            )
+        case "errors":
+            query_str = (
+                "INSERT INTO errors"
+                "(id, command, message, error, time, ack) "
+                "VALUES (%s, %s, %s, %s, %s, %s);"
+            )
+        case "reports":
+            query_str = (
+                "INSERT INTO reports"
+                "(id, name, name_id, message, time) "
+                "VALUES (%s, %s, %s, %s, %s);"
+            )
+        case "admin_channels":
+            query_str = (
+                "INSERT INTO admin_channels (name, id, log) "
+                "VALUES (%s, %s, %s) ON CONFLICT DO NOTHING;"
+            )
+        case "bot_admins":
+            query_str = "INSERT INTO bot_admins (name, id) VALUES (%s, %s) ON CONFLICT DO NOTHING;"
+        case "regions":
+            query_str = "INSERT INTO regions (name, id) VALUES (%s, %s);"
+        case "keys":
+            query_str = "INSERT INTO keys (key, value) VALUES (%s, %s);"
+        case _:
+            log.error(f"Table {table} not found.")
+            return "error"
     return query_str
 
 

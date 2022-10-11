@@ -49,6 +49,12 @@ class CCC_Bot(commands.Bot):
         self.uptime = datetime.utcnow()
         self.list_updated, self.school_list = "", None
         self.__version__ = VERSION
+        self.daily_reporting = True
+        self.description = (
+            "This Discord bot that assists with the Competitive Cyber Club Discord\n"
+            "If you experience any issues then please use the ?report feature.\n"
+            f"Version: {self.__version__}"
+        )
 
     async def on_ready(self):
         """
@@ -81,7 +87,9 @@ class CCC_Bot(commands.Bot):
                 await self.load_extension(f"cogs.{extension}")
             except commands.ExtensionError as e:
                 log.error(f"Failed to load extension {extension}. {e}")
-
+        await self.change_presence(
+            activity=discord.Activity(name="?help", type=discord.ActivityType.playing)
+        )
         log.info("Bot is ready to go")
 
 
