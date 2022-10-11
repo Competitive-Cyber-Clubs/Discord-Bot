@@ -23,15 +23,14 @@ def table_create() -> None:
     Create tables if they do not exist at startup. All tables are pulled from tables.py
     :return:
     """
-    with db_pool.getconn() as con:
-        with con.cursor() as pg_cursor:
-            try:
-                for table in tables:
-                    pg_cursor.execute(table)
-                con.commit()
-            except psycopg2.Error as pge:
-                log.error(pge)
-                con.rollback()
+    with db_pool.getconn() as con, con.cursor() as pg_cursor:
+        try:
+            for table in tables:
+                pg_cursor.execute(table)
+            con.commit()
+        except psycopg2.Error as pge:
+            log.error(pge)
+            con.rollback()
 
 
 def _format_step(table: str) -> str:

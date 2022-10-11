@@ -4,6 +4,7 @@ import random
 import typing
 
 import discord
+from discord import Embed
 from discord.ext import commands
 from .datahandler import select
 
@@ -122,7 +123,7 @@ async def error_message(ctx, message: str, title: str = "Error:", **kwargs) -> N
 
 async def make_embed(
     ctx, color: [str, int] = None, send: (bool, str) = True, **kwargs
-) -> typing.Union[discord.Embed]:
+) -> Embed | None:
     """Make embed
 
     **Asynchronous Function**
@@ -145,7 +146,8 @@ async def make_embed(
 
     if footer:
         embed.set_footer(text=footer)
+
     if send:
         await ctx.send(embed=embed)
-    else:
-        return embed
+        return
+    return embed

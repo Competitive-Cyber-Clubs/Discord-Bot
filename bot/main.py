@@ -63,7 +63,6 @@ class CCC_Bot(commands.Bot):
         Startup function which shows servers it has connected to
         """
         await utils.update_list(self, not os.path.exists("school_list.csv"))
-        # log.info(f"{self.user} is connected to the following guilds: {self.guilds}")
         app_info = await self.application_info()
         await utils.insert("bot_admins", [app_info.owner.name, app_info.owner.id])
         admin_roles = await utils.select("keys", "value", "key", "admin_role")
