@@ -192,13 +192,13 @@ class SchoolCog(commands.Cog, name="Schools"):
     @commands.command(
         name="add-school",
         help="Adds a new school and makes a role for it.\n"
-        "Only schools on the list are allowed to join.\n"
-        "List: https://github.com/Competitive-Cyber-Clubs/School-List/blob/master/school_list.csv",
+             "Only schools on the list are allowed to join.\n"
+             "List: https://github.com/Competitive-Cyber-Clubs/School-List/blob/master/school_list.csv",
         description="Creates a new school",
     )
     @commands.has_role("new")
     async def add_school(
-        self, ctx: commands.Context, *, school_name: str
+            self, ctx: commands.Context, *, school_name: str
     ) -> None:  # pylint: disable=too-many-branches
         """
         Add school
