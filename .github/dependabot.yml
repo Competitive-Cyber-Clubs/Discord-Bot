@@ -7,6 +7,17 @@ updates:
   assignees:
     - "Competitive-Cyber-Clubs/admins"
   commit-message:
-    prefix: "Pip Update"
+    prefix: "core: pip update"
+  reviewers:
+    - "Competitive-Cyber-Clubs/admins"
+
+- package-ecosystem: github-actions
+  directory: "/"
+  schedule:
+    interval: "weekly"
+  assignees:
+    - "Competitive-Cyber-Clubs/admins"
+  commit-message:
+    prefix: "core: actions update"
   reviewers:
     - "Competitive-Cyber-Clubs/admins"
