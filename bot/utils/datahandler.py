@@ -12,7 +12,8 @@ from .logger import make_logger
 log = make_logger("database", os.getenv("LOG_LEVEL", "INFO"))
 
 # Creates the connection to the database
-db_pool = pool.ThreadedConnectionPool(minconn=1, maxconn=15, dsn=os.getenv("DATABASE_URL"))
+
+db_pool = pool.ThreadedConnectionPool(minconn=1, maxconn=15, dsn=os.getenv("DATABASE_URL").strip())
 DuplicateError = psycopg2.errors.lookup("23505")
 
 
@@ -22,11 +23,14 @@ def table_create() -> None:
     Create tables if they do not exist at startup. All tables are pulled from tables.py
     :return:
     """
-    con = db_pool.getconn()
-    pg_cursor = con.cursor()
-    for table in tables:
-        pg_cursor.execute(table)
-    db_pool.putconn(con)
+    with db_pool.getconn() as con, con.cursor() as pg_cursor:
+        try:
+            for table in tables:
+                pg_cursor.execute(table)
+            con.commit()
+        except psycopg2.Error as pge:
+            log.error(pge)
+            con.rollback()
 
 
 def _format_step(table: str) -> str:
@@ -118,9 +122,7 @@ async def insert(table: str, data: list) -> typing.Union[None, str]:
     if format_str == "error":
         return "error"
     log.debug(f'String: {format_str} Data {" ".join(map(str, data))}')
-    con = db_pool.getconn()
-
-    with con.cursor() as pg_cursor:
+    with db_pool.getconn() as con, con.cursor() as pg_cursor:
         try:
             pg_cursor.execute(format_str, data)
             con.commit()
@@ -131,8 +133,6 @@ async def insert(table: str, data: list) -> typing.Union[None, str]:
             if isinstance(pge, DuplicateError):
                 return "duplicate"
             return "error"
-        finally:
-            db_pool.putconn(con)
 
 
 async def fetch(table: str, column: str) -> list:
@@ -153,18 +153,17 @@ async def fetch(table: str, column: str) -> list:
     :return: List of values
     :rtype: list
     """
-    con = db_pool.getconn()
-    pg_cursor = con.cursor()
-    try:
-        format_str = "SELECT %s FROM %s;"
-        pg_cursor.execute(format_str, (AsIs(column), AsIs(table)))
-        fetched = pg_cursor.fetchall()
-        return _result_parser(column, fetched)
-    except psycopg2.Error as pge:
-        log.error(pge)
-        return []
-    finally:
-        db_pool.putconn(con)
+    with db_pool.getconn() as con, con.cursor() as pg_cursor:
+        try:
+            format_str = "SELECT %s FROM %s;"
+            pg_cursor.execute(format_str, (AsIs(column), AsIs(table)))
+            fetched = pg_cursor.fetchall()
+            result = _result_parser(column, fetched)
+            return result
+        except psycopg2.Error as pge:
+            log.error(pge)
+            con.rollback()
+            return []
 
 
 async def select(
@@ -198,22 +197,19 @@ async def select(
     :return: List of values that are the results
     :rtype: list
     """
-    con = db_pool.getconn()
-    pg_cursor = con.cursor()
-    try:
-        format_str = "SELECT %s FROM %s WHERE %s %s %s;"
-        pg_cursor.execute(
-            format_str,
-            (AsIs(column), AsIs(table), AsIs(where_column), AsIs(symbol), where_value),
-        )
-        fetched = pg_cursor.fetchall()
-        return _result_parser(column, fetched)
-    except psycopg2.Error as pge:
-        log.error(pge)
-        con.rollback()
-        return []
-    finally:
-        db_pool.putconn(con)
+    with db_pool.getconn() as con, con.cursor() as pg_cursor:
+        try:
+            format_str = "SELECT %s FROM %s WHERE %s %s %s;"
+            pg_cursor.execute(
+                format_str, (AsIs(column), AsIs(table), AsIs(where_column), symbol, where_value)
+            )
+            fetched = pg_cursor.fetchall()
+            result = _result_parser(column, fetched)
+            return result
+        except psycopg2.Error as pge:
+            log.error(pge)
+            con.rollback()
+            return []
 
 
 async def update(
@@ -246,20 +242,18 @@ async def update(
     """
     if not where_column:
         where_column = column
-    con = db_pool.getconn()
-    pg_cursor = con.cursor()
-    try:
-        format_str = "UPDATE %s SET %s = %s where %s = %s"
-        pg_cursor.execute(
-            format_str,
-            (AsIs(table), AsIs(column), new_value, AsIs(where_column), where_value),
-        )
-        con.commit()
-    except psycopg2.Error as pge:
-        log.error(pge)
-        con.rollback()
-    finally:
-        db_pool.putconn(con)
+
+    with db_pool.getconn() as con, con.cursor() as pg_cursor:
+        try:
+            format_str = "UPDATE %s SET %s = %s WHERE %s = %s;"
+            pg_cursor.execute(
+                format_str,
+                (AsIs(table), AsIs(column), new_value, AsIs(where_column), where_value),
+            )
+            con.commit()
+        except psycopg2.Error as pge:
+            log.error(pge)
+            con.rollback()
 
 
 async def delete(table: str, column: str, value: str) -> None:
@@ -281,15 +275,11 @@ async def delete(table: str, column: str, value: str) -> None:
     :type value: str
     :return: None
     """
-    con = db_pool.getconn()
-    pg_cursor = con.cursor()
-    try:
-        log.info(f"Deleting {column} where {value} from {table}")
-        format_str = "DELETE FROM %s WHERE %s = %s"
-        pg_cursor.execute(format_str, (AsIs(table), AsIs(column), value))
-        con.commit()
-    except psycopg2.Error as pge:
-        log.error(pge)
-        con.rollback()
-    finally:
-        db_pool.putconn(con)
+    with db_pool.getconn() as con, con.cursor() as pg_cursor:
+        try:
+            format_str = "DELETE FROM %s WHERE %s = %s;"
+            pg_cursor.execute(format_str, (AsIs(table), AsIs(column), value))
+            con.commit()
+        except psycopg2.Error as pge:
+            log.error(pge)
+            con.rollback()

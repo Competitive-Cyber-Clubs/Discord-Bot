@@ -43,6 +43,6 @@ class RankCog(commands.Cog, name="Rank"):
             )
 
 
-def setup(bot):
+async def setup(bot):
     """Needed for extension loading"""
-    bot.add_cog(RankCog(bot))
+    await bot.add_cog(RankCog(bot))

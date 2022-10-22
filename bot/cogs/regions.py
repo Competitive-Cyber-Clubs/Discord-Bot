@@ -54,7 +54,9 @@ class RegionCog(commands.Cog, name="Regions"):
         if status == "error":
             await utils.error_message(ctx, "Error creating the region.")
         else:
-            await utils.make_embed(ctx, color="28b463", title=f"Region '{region}' has been created.")
+            await utils.make_embed(
+                ctx, color="28b463", title=f"Region '{region}' has been created."
+            )
 
     @commands.command(name="list-regions", help="Lists available regions.")
     async def list_region(self, ctx: commands.Context) -> None:
@@ -73,6 +75,6 @@ class RegionCog(commands.Cog, name="Regions"):
         await utils.make_embed(ctx, title="Available Regions:", description=formatted)
 
 
-def setup(bot):
+async def setup(bot):
     """Needed for extension loading"""
-    bot.add_cog(RegionCog(bot))
+    await bot.add_cog(RegionCog(bot))

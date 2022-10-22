@@ -182,6 +182,6 @@ class HealthCog(commands.Cog, name="Health"):
         await utils.admin_log(self.bot, f"Role: {role.name} was deleted", True)
 
 
-def setup(bot):
+async def setup(bot: commands.Bot) -> None:
     """Needed for extension loading"""
-    bot.add_cog(HealthCog(bot))
+    await bot.add_cog(HealthCog(bot))

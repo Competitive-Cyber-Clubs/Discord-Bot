@@ -6,7 +6,5 @@ disable=invalid-name,
         logging-too-many-args,
         logging-format-interpolation,
         invalid-overridden-method,
-        bad-continuation,
-        no-self-use,
         logging-fstring-interpolation
 

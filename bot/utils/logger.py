@@ -5,7 +5,7 @@ import logging
 def make_logger(name: str, log_level: str) -> logging.Logger:
     """Make Logger
 
-    Creates the logger that is used by the bot. The datahanlder makes it own log
+    Creates the logger that is used by the bot. The data handler makes it own log
 
     :param name: Name of logger
     :type name: str
