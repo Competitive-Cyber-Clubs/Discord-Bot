@@ -2,18 +2,19 @@
 import os
 import typing
 
-import psycopg2.errors
-from psycopg2 import pool
-from psycopg2.extensions import AsIs
 from .tables import tables
 from .logger import make_logger
+
+import psycopg2.errors
+from psycopg2.pool import ThreadedConnectionPool
+from psycopg2.extensions import AsIs
 
 # Imports the database logger
 log = make_logger("database", os.getenv("LOG_LEVEL", "INFO"))
 
 # Creates the connection to the database
 
-db_pool = pool.ThreadedConnectionPool(minconn=1, maxconn=15, dsn=os.getenv("DATABASE_URL").strip())
+db_pool = ThreadedConnectionPool(dsn=os.getenv("DATABASE_URL").strip(), minconn=1, maxconn=20)
 DuplicateError = psycopg2.errors.lookup("23505")
 
 
@@ -133,6 +134,8 @@ async def insert(table: str, data: list) -> typing.Union[None, str]:
             if isinstance(pge, DuplicateError):
                 return "duplicate"
             return "error"
+        finally:
+            db_pool.putconn(con)
 
 
 async def fetch(table: str, column: str) -> list:
@@ -164,6 +167,8 @@ async def fetch(table: str, column: str) -> list:
             log.error(pge)
             con.rollback()
             return []
+        finally:
+            db_pool.putconn(con)
 
 
 async def select(
@@ -201,7 +206,8 @@ async def select(
         try:
             format_str = "SELECT %s FROM %s WHERE %s %s %s;"
             pg_cursor.execute(
-                format_str, (AsIs(column), AsIs(table), AsIs(where_column), symbol, where_value)
+                format_str,
+                (AsIs(column), AsIs(table), AsIs(where_column), AsIs(symbol), where_value),
             )
             fetched = pg_cursor.fetchall()
             result = _result_parser(column, fetched)
@@ -210,6 +216,8 @@ async def select(
             log.error(pge)
             con.rollback()
             return []
+        finally:
+            db_pool.putconn(con)
 
 
 async def update(
@@ -254,6 +262,8 @@ async def update(
         except psycopg2.Error as pge:
             log.error(pge)
             con.rollback()
+        finally:
+            db_pool.putconn(con)
 
 
 async def delete(table: str, column: str, value: str) -> None:
@@ -283,3 +293,5 @@ async def delete(table: str, column: str, value: str) -> None:
         except psycopg2.Error as pge:
             log.error(pge)
             con.rollback()
+        finally:
+            db_pool.putconn(con)
