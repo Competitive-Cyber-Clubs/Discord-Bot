@@ -1,17 +1,3 @@
-### VirtualEnv template
-# Virtualenv
-# http://iamzed.com/2009/05/07/a-primer-on-virtualenv/
-.Python
-[Bb]in
-[Ii]nclude
-[Ll]ib
-[Ll]ib64
-[Ll]ocal
-[Ss]cripts
-pyvenv.cfg
-.venv
-pip-selfcheck.json
-
 ### Python template
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -66,9 +52,6 @@ coverage.xml
 .pytest_cache/
 cover/
 
-# Translations
-*.mo
-*.pot
 
 # Django stuff:
 *.log
@@ -152,3 +135,9 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
+.idea/
+.git/
+*.csv
+*.bak
+.vscode/
+*.md

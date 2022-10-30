@@ -1,9 +1,10 @@
-FROM python:3.10-bullseye-slim
+FROM python:3.10-slim-bullseye
 
 RUN apt-get update \
     && apt-get install --no-install-recommends -y \
     build-essential \
-    libpq-dev
+    libpq-dev \
+    libpq5
 
 COPY requirements.txt /tmp/pip-tmp/
 
