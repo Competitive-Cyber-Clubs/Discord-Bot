@@ -27,3 +27,13 @@ jobs:
 
     - name: Lint with Black, Pylint, Flake8, and Bandit
       run: make lint
+
+  Deploy:
+    runs-on: ubuntu-latest
+    needs: Python
+    steps:
+    - uses: actions/checkout@v3
+
+    - run: make ${{ 'deploy-prod' if startsWith(github.ref, 'refs/tags/v') else 'deploy' }}
+      env:
+        FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
