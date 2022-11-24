@@ -37,13 +37,16 @@ jobs:
     - name: Set Deployment
       run: |
         if [ "$REF" == "true" ]; then
-          echo "DEPLOYMENT=deploy-prod" >> $GITHUB_ENV
-        else
-          echo "DEPLOYMENT=deploy" >> $GITHUB_ENV
+          echo "DEPLOYMENT=--app ccc-bot" >> $GITHUB_ENV
         fi
       env:
         REF: ${{ startsWith(github.ref, 'refs/tags/v') }}
 
-    - run: make ${{ env.DEPLOYMENT }}
+    - uses: superfly/flyctl-actions/setup-flyctl@master
+    - run: flyctl deploy --local-only
       env:
         FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+#
+#    - run: make ${{ env.DEPLOYMENT }}
+#      env:
+#        FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
