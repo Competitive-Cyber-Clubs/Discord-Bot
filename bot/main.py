@@ -24,7 +24,6 @@ TOKEN = os.environ["DISCORD_TOKEN"]
 
 VERSION = "v0.2.0"
 
-utils.table_create()
 log = utils.make_logger("bot", os.getenv("LOG_LEVEL", "INFO"))
 log.info("Starting up")
 log.debug(f"Using discord.py version: {discord.__version__} and Python version {sys.version[0:5]}")

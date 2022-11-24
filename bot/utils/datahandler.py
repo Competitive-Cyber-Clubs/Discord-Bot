@@ -6,7 +6,6 @@ import psycopg2.errors
 from psycopg2.pool import ThreadedConnectionPool
 from psycopg2.extensions import AsIs
 
-from .tables import tables
 from .logger import make_logger
 
 # Imports the database logger
@@ -15,24 +14,6 @@ log = make_logger("database", os.getenv("LOG_LEVEL", "INFO"))
 # Creates the connection to the database
 db_pool = ThreadedConnectionPool(dsn=os.getenv("DATABASE_URL").strip(), minconn=1, maxconn=20)
 DuplicateError = psycopg2.errors.lookup("23505")
-
-
-def table_create() -> None:
-    """Table_create
-
-    Create tables if they do not exist at startup. All tables are pulled from tables.py
-    :return:
-    """
-    with db_pool.getconn() as con, con.cursor() as pg_cursor:
-        try:
-            for table in tables:
-                pg_cursor.execute(table)
-            con.commit()
-        except psycopg2.Error as pge:
-            log.error(pge)
-            con.rollback()
-        finally:
-            db_pool.putconn(con)
 
 
 def _format_step(table: str) -> str:

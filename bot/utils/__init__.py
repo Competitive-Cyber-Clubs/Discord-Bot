@@ -41,7 +41,7 @@ Deals with various messaging cases:
     `utils.admin_log` logs anything to the admin_channels
 
 """
-from .datahandler import table_create, fetch, select, insert, update, delete
+from .datahandler import fetch, select, insert, update, delete
 from .logger import make_logger
 from .shared import check_admin, check_react, FailedReactionCheck, TF_emoji
 from .validate import (
@@ -56,7 +56,6 @@ from .validate import (
 from .messages import admin_log
 
 __all__ = [
-    "table_create",
     "fetch",
     "select",
     "insert",
