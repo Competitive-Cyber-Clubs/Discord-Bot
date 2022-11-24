@@ -3,6 +3,7 @@ from datetime import datetime
 from discord.ext import commands
 import discord
 from bot import utils
+import cyberjake
 
 
 async def managed_role_check(role: discord.Role) -> [bool, str]:
@@ -83,8 +84,8 @@ class HealthCog(commands.Cog, name="Health"):
                         self.bot.log.error(f"Attribute error with role {role}")
                         fail.append((role, None))
 
-        message = "There were {len(success)} successes and {len(fail)} failures"
-        await utils.make_embed(ctx, "28b463", title="Check Complete", description=message)
+        message = f"There were {len(success)} successes and {len(fail)} failures"
+        await cyberjake.make_embed(ctx, "28b463", title="Check Complete", description=message)
 
     @commands.command(
         name="get-status",
@@ -108,11 +109,11 @@ class HealthCog(commands.Cog, name="Health"):
         elif which == "reports":
             columns = "name, message"
         else:
-            return await utils.error_message(ctx, "Please pick a valid option.")
+            return await cyberjake.error_message(ctx, "Please pick a valid option.")
         date = datetime.utcnow().strftime("%Y-%m-%d")
         results = await utils.select(which, columns, "date_trunc('day', time)", date)
         if not results:
-            await utils.make_embed(
+            await cyberjake.make_embed(
                 ctx, "28b463", title="Success", description=f"No {which} for {date}"
             )
         else:
@@ -120,7 +121,7 @@ class HealthCog(commands.Cog, name="Health"):
             for result in results:
                 if result[-1] == ack and which == "errors":
                     results_string.append(" ".join(map(str, result)))
-            await utils.list_message(ctx, results_string, which)
+            await cyberjake.list_message(ctx, results_string, which)
 
     @commands.command(
         name="test-log",
@@ -137,7 +138,7 @@ class HealthCog(commands.Cog, name="Health"):
         """
         await utils.admin_log(self.bot, "TESTING LOG: True", True)
         await utils.admin_log(self.bot, "TESTING LOG: False", False)
-        await utils.make_embed(ctx, color="28b463", title="Test Complete")
+        await cyberjake.make_embed(ctx, color="28b463", title="Test Complete")
 
     @commands.Cog.listener()
     async def on_guild_role_update(self, before: discord.Role, after: discord.Role) -> None:

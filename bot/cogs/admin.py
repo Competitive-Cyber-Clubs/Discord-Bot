@@ -3,6 +3,7 @@ from datetime import datetime
 import discord.utils
 from discord.ext import commands
 from bot import utils
+import cyberjake
 
 
 class AdminCog(commands.Cog, name="Admin"):
@@ -54,7 +55,7 @@ class AdminCog(commands.Cog, name="Admin"):
         :type ctx: discord.ext.commands.Context
         """
         fetched = [x for x in await utils.fetch("bot_admins", "name") if x != "CCC-Dev-Bot"]
-        embed = await utils.make_embed(ctx, send=False, title="Bot Admins:")
+        embed = await cyberjake.make_embed(ctx, send=False, title="Bot Admins:")
         admins = ""
         for admin in fetched:
             admins += f"- {admin} \n"
@@ -73,7 +74,7 @@ class AdminCog(commands.Cog, name="Admin"):
         :type ctx: discord.ext.commands.Context
         :return: None
         """
-        await utils.make_embed(ctx, title=await utils.check_admin(ctx))
+        await cyberjake.make_embed(ctx, title=await utils.check_admin(ctx))
 
     @commands.command(name="add-admin", help="Adds <member> to the bot admins table.")
     @commands.check(utils.check_admin)
@@ -92,9 +93,11 @@ class AdminCog(commands.Cog, name="Admin"):
         if new_admin:
             self.bot.log.info(f"{ctx.author.display_name} added new admin {user.display_name}")
             await utils.insert("bot_admins", [new_admin.name, new_admin.id])
-            await utils.make_embed(ctx, color="28b463", title=f"User: {new_admin} is now an admin.")
+            await cyberjake.make_embed(
+                ctx, color="28b463", title=f"User: {new_admin} is now an admin."
+            )
         else:
-            await utils.error_message(ctx, "User not found.")
+            await cyberjake.error_embed(ctx, "User not found.")
 
     @commands.command(name="add-admin-channel", help="Marks the channel as an admin channel")
     @commands.guild_only()
@@ -111,9 +114,8 @@ class AdminCog(commands.Cog, name="Admin"):
         :type log_status: bool
         :return: None
         """
-        log_status = bool(log_status)
         await utils.insert("admin_channels", [ctx.channel.name, ctx.channel.id, log_status])
-        await utils.make_embed(
+        await cyberjake.make_embed(
             ctx,
             color="28b463",
             title="Admin Channel Success",
@@ -134,7 +136,7 @@ class AdminCog(commands.Cog, name="Admin"):
         :return: None
         """
         self.bot.reload_extension(extension)
-        await utils.make_embed(ctx, color="28b463", title="Reloaded", description=extension)
+        await cyberjake.make_embed(ctx, color="28b463", title="Reloaded", description=extension)
 
     @commands.command(name="update-list", help="Updates the school_list.csv")
     async def refresh_list(self, ctx: commands.Context) -> None:

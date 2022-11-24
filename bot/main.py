@@ -6,8 +6,7 @@ All values are loaded from environment variables. Also can be loaded from a .env
 Required Variables:
 ---
 DISCORD_TOKEN: The token for the bot.
-OWNER_NAME: The username of the bot owner
-OWNER_ID: The Discord ID of the bot owner
+
 
 Optional:
 ---

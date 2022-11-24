@@ -2,18 +2,17 @@
 import os
 import typing
 
-from .tables import tables
-from .logger import make_logger
-
 import psycopg2.errors
 from psycopg2.pool import ThreadedConnectionPool
 from psycopg2.extensions import AsIs
+
+from .tables import tables
+from .logger import make_logger
 
 # Imports the database logger
 log = make_logger("database", os.getenv("LOG_LEVEL", "INFO"))
 
 # Creates the connection to the database
-
 db_pool = ThreadedConnectionPool(dsn=os.getenv("DATABASE_URL").strip(), minconn=1, maxconn=20)
 DuplicateError = psycopg2.errors.lookup("23505")
 
@@ -32,6 +31,8 @@ def table_create() -> None:
         except psycopg2.Error as pge:
             log.error(pge)
             con.rollback()
+        finally:
+            db_pool.putconn(con)
 
 
 def _format_step(table: str) -> str:
@@ -127,7 +128,7 @@ async def insert(table: str, data: list) -> typing.Union[None, str]:
         try:
             pg_cursor.execute(format_str, data)
             con.commit()
-            return None
+            return
         except psycopg2.Error as pge:
             log.error(pge)
             con.rollback()

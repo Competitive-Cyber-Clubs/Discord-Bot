@@ -5,6 +5,7 @@ from datetime import datetime
 import discord
 from discord.ext import commands
 from bot import utils
+import cyberjake
 
 
 class ErrorsCog(commands.Cog, name="Errors"):
@@ -100,7 +101,7 @@ class ErrorsCog(commands.Cog, name="Errors"):
         :return: None
         """
         if isinstance(error, commands.DisabledCommand):
-            await utils.error_message(ctx, message=f"{ctx.command} has been disabled.")
+            await cyberjake.error_embed(ctx, message=f"{ctx.command} has been disabled.")
             return
 
         if isinstance(error, commands.NoPrivateMessage):
@@ -140,7 +141,7 @@ class ErrorsCog(commands.Cog, name="Errors"):
             ]
             await utils.insert("errors", error_info)
 
-        await utils.make_embed(ctx, "FF0000", title="Error:", description=error_msg)
+        await cyberjake.make_embed(ctx, "FF0000", title="Error:", description=error_msg)
 
 
 async def setup(bot: commands.Bot) -> None:

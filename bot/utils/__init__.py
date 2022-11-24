@@ -22,7 +22,8 @@ Various checks that are used by cogs:
 
     `utils.check_admin` checks to see if the member id is in the bot_admin table.
     `utils.check_react` checks to see if the correct reaction was added by the correct member.
-    `utils.FailedReactionCheck` is a exception that is made if the check fails.
+    `utils.FailedReactionCheck` is an exception that is made if the check fails.
+    `utils.TF_emoji` returns str for TRUE/FALSE emoji
 
 validate
 ---
@@ -37,10 +38,8 @@ messages
 ---
 Deals with various messaging cases:
 
-    `utils.list_messages take a list and sends it as a message
     `utils.admin_log` logs anything to the admin_channels
-    `utils.make_embed` returns an initial discord.Embed
-    `utils.TF_emoji` returns str for TRUE/FALSE emoji
+
 """
 from .datahandler import table_create, fetch, select, insert, update, delete
 from .logger import make_logger
@@ -52,7 +51,9 @@ from .validate import (
     region_select,
     update_list,
 )
-from .messages import list_message, admin_log, make_embed, error_message
+
+# from .messages import list_message, admin_log, make_embed, error_message
+from .messages import admin_log
 
 __all__ = [
     "table_create",
@@ -71,8 +72,5 @@ __all__ = [
     "school_search",
     "region_select",
     "update_list",
-    "list_message",
     "admin_log",
-    "make_embed",
-    "error_message",
 ]

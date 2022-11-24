@@ -2,7 +2,9 @@
 import random
 from datetime import datetime
 from discord.ext import commands
+import discord
 from bot import utils
+import cyberjake
 
 
 class MiscCog(commands.Cog, name="Misc"):
@@ -35,11 +37,13 @@ class MiscCog(commands.Cog, name="Misc"):
         """
         self.bot.log.debug(f"{ctx.author.name} has sent ping.")
         await ctx.message.delete()
-        embed = await utils.make_embed(ctx, send=False, title="PONG")
-        url = "https://peterfrezzini.com/content/images/2016/12/pong_logo.jpg"
-        embed.set_image(url=url)
+        embed = await cyberjake.make_embed(ctx, send=False, title="PONG")
+        embed.set_image(url="https://peterfrezzini.com/content/images/2016/12/pong_logo.jpg")
         embed.set_footer(text="Image from https://peterfrezzini.com/pong-game-cover/")
-        await ctx.author.send(embed=embed)
+        try:
+            await ctx.author.send(embed=embed)
+        except discord.Forbidden:
+            await ctx.send(embed=embed)
 
     @commands.command(name="uptime", help="Gets uptime of bot")
     async def uptime(self, ctx: commands.Context) -> None:
@@ -70,7 +74,7 @@ class MiscCog(commands.Cog, name="Misc"):
             f"School list last updated {list_string_time}"
         )
 
-        await utils.make_embed(
+        await cyberjake.make_embed(
             ctx, title=uptime, description=description, footer=self.bot.__version__
         )
 
@@ -112,7 +116,7 @@ class MiscCog(commands.Cog, name="Misc"):
             to_send = self.bot.get_channel(channel)
             if to_send is None:
                 self.bot.log.warning(f"No channel found for id channel {channel}")
-            await utils.make_embed(
+            await cyberjake.make_embed(
                 ctx,
                 title="New Report",
                 description=f"{ctx.author.name} submitted the report:\n> {message}",
@@ -121,7 +125,7 @@ class MiscCog(commands.Cog, name="Misc"):
         response_msg = (
             "The admins have received your report.\nThey will investigation and may reach out"
         )
-        await utils.make_embed(ctx, title="Report Received", description=response_msg)
+        await cyberjake.make_embed(ctx, title="Report Received", description=response_msg)
 
 
 async def setup(bot):
