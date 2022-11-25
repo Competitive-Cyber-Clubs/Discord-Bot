@@ -115,9 +115,9 @@ async def insert(table: str, data: list) -> typing.Optional[str]:
             if isinstance(pge, DuplicateError):
                 return "duplicate"
             return "error"
-        finally:
-            db_pool.putconn(con)
-            return None
+
+        db_pool.putconn(con)
+        return None
 
 
 async def fetch(table: str, column: str) -> list:
