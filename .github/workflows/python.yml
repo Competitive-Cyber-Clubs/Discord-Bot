@@ -1,7 +1,23 @@
 name: Build & Check
 
-on: [push]
-
+on:
+    push:
+        branches:
+          - '**'
+        paths:
+          - 'bot/**'
+          - '.github/workflows/python.yml'
+          - 'alembic/**'
+          - 'requirements.txt'
+          - 'requirements-dev.txt'
+    pull_request:
+        branches: [ 'master' ]
+        paths:
+          - 'bot/**'
+          - '.github/workflows/python.yml'
+          - 'alembic/**'
+          - 'requirements.txt'
+          - 'requirements-dev.txt'
 
 jobs:
 
