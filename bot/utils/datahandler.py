@@ -117,6 +117,7 @@ async def insert(table: str, data: list) -> typing.Optional[str]:
             return "error"
         finally:
             db_pool.putconn(con)
+            return None
 
 
 async def fetch(table: str, column: str) -> list:
