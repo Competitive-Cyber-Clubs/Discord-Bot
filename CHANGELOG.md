@@ -14,6 +14,25 @@
 ### Removed
 -->
 
+[v0.2.0]
+---
+
+### Added
+
+### Changed
+
+- Moved message handling to cyberjake module
+- Using alembic to handle database migrations
+- Migrated to using fly.io for hosting
+- Upgraded to Python 3.11
+- discord.py -> 2.1.0
+- pandas -> 1.5.2
+- psycopg2 -> 2.9.5
+
+### Removed
+
+- Files needed for Heroku deployment
+
 [v0.1.6]
 ---
 
@@ -22,7 +41,6 @@
 
 - Fixes color int too high #114
 - Fixes school search not working #82
-- 
 
 [v0.1.5]
 ---

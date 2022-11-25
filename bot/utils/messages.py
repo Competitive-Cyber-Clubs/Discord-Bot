@@ -26,8 +26,7 @@ async def admin_log(bot: commands.Bot, message: str, log_status: bool = True) ->
 
     """
     if len(message) > 2000:
-        message = f"Log message length too long, it will not be sent. Length: {len(message)}"
-        log.warning(message)
+        log.warning("Log message length too long, it will not be sent. Length: %s", len(message))
 
     channels = await select("admin_channels", "id", "log", log_status)
     for channel in channels:
