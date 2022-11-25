@@ -129,9 +129,7 @@ class SchoolCog(commands.Cog, name="Schools"):
     @commands.command(name="admin-add-school")
     @commands.check(utils.check_admin)
     async def admin_add_school(self, ctx: commands.Context, *, school_name: str) -> None:
-        """
-        Allows admins to force add a school.
-        """
+        """Allows admins to force add a school."""
         await self.add_school(ctx, school_name, True)
 
     @commands.command(
@@ -143,9 +141,7 @@ class SchoolCog(commands.Cog, name="Schools"):
     )
     @commands.has_role("new")
     async def add_school_user(self, ctx: commands.Context, *, school_name: str) -> None:
-        """
-        Creates a new school role for normal user
-        """
+        """Creates a new school role for normal user"""
         await self.add_school(ctx, school_name)
 
     async def add_school(

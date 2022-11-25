@@ -82,7 +82,7 @@ def _result_parser(column: str, fetched: list) -> typing.Union[list, typing.List
     return result
 
 
-async def insert(table: str, data: list) -> typing.Union[None, str]:
+async def insert(table: str, data: list) -> typing.Optional[str]:
     """Insert into a table
 
     **Asynchronous Function**
@@ -109,7 +109,6 @@ async def insert(table: str, data: list) -> typing.Union[None, str]:
         try:
             pg_cursor.execute(format_str, data)
             con.commit()
-            return
         except psycopg2.Error as pge:
             log.error(pge)
             con.rollback()
