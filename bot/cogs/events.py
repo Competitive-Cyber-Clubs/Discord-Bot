@@ -31,7 +31,7 @@ class EventsCog(commands.Cog, name="Events"):
         """Member join event
 
         Event is triggered when a new member joins. The member receives a welcome PM.
-        The message content is pulled from the messages table and it needs a name of "welcome".
+        The message content is pulled from the messages table, and it needs a name of "welcome".
         Doesn't use utils.make_embed due to not having context.
 
         :param member: Member who joined
@@ -43,18 +43,20 @@ class EventsCog(commands.Cog, name="Events"):
         welcome_message = await utils.select("messages", "message", "name", "welcome")
         if welcome_message:
             welcome_message = welcome_message[0].replace(r"\n", "\n")
-            await member.send(
-                embed=discord.Embed(
-                    title="Welcome to the server!",
-                    description=welcome_message,
-                    timestamp=member.joined_at,
+            try:
+                await member.send(
+                    embed=discord.Embed(
+                        title="Welcome to the server!",
+                        description=welcome_message,
+                        timestamp=member.joined_at,
+                    )
                 )
-            )
+            except discord.Forbidden:
+                pass
 
         channels = await utils.select("admin_channels", "id", "log", True)
         for channel in channels:
-            to_send = self.bot.get_channel(channel)
-            await to_send.send(
+            await self.bot.get_channel(channel).send(
                 embed=discord.Embed(
                     title="User Joined",
                     color=discord.Color(int("FF0000", 16)),
@@ -67,7 +69,7 @@ class EventsCog(commands.Cog, name="Events"):
         """
         Member leave
 
-        Event is triggered when a members leaves the server.
+        Event is triggered when a member leaves the server.
         There is a message that they left that is sent to all admin_logging channels.
         Doesn't use utils.make_embed due to not having context.
 
@@ -77,8 +79,7 @@ class EventsCog(commands.Cog, name="Events"):
         """
         channels = await utils.select("admin_channels", "id", "log", True)
         for channel in channels:
-            to_send = self.bot.get_channel(channel)
-            await to_send.send(
+            await self.bot.get_channel(channel).send(
                 embed=discord.Embed(
                     title="User left",
                     color=discord.Color(int("FF0000", 16)),
