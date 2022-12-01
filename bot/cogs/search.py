@@ -1,4 +1,5 @@
 """Cog responsible for searching for schools and schools in state"""
+import cyberjake
 from discord.ext import commands
 from bot import utils
 
@@ -37,7 +38,7 @@ class SearchCog(commands.Cog, name="Search"):
         :type school: str
         :return: None
         """
-        await utils.make_embed(
+        await cyberjake.make_embed(
             ctx, title=str(await utils.school_check(self.bot.school_list, school))
         )
 
@@ -70,7 +71,7 @@ class SearchCog(commands.Cog, name="Search"):
             "institute",
         ]
         if school.lower() in blocked_words:
-            await utils.error_message(
+            await cyberjake.error_embed(
                 ctx,
                 f"Please refine your search as '{school}' returns a lot of results.",
                 title="Search Error",
@@ -78,7 +79,7 @@ class SearchCog(commands.Cog, name="Search"):
             return
         results = await utils.school_search(self.bot.school_list, school)
         if not results:
-            await utils.error_message(ctx, "No results found")
+            await cyberjake.error_embed(ctx, "No results found")
             return
         created_roles = await utils.fetch("schools", "school")
         for place, results_name in enumerate(results):
@@ -86,7 +87,7 @@ class SearchCog(commands.Cog, name="Search"):
                 f"{results_name} :: "
                 f"Role created: {await utils.TF_emoji(results_name in created_roles)}"
             )
-        await utils.list_message(ctx, results, "Search Results:\n")
+        await cyberjake.list_message(ctx, results, "Search Results:\n")
 
     @commands.command(name="search-state")
     async def search_state(self, ctx: commands.Context, *, state: str):
@@ -104,9 +105,9 @@ class SearchCog(commands.Cog, name="Search"):
         state = state.strip("\"'")
         schools = await utils.state_list(self.bot.school_list, state)
         if not any(schools):
-            await utils.error_message(ctx, message="No results found.")
+            await cyberjake.error_embed(ctx, message="No results found.")
             return
-        await utils.list_message(ctx, schools, f"Schools in State '{state.title()}'")
+        await cyberjake.list_message(ctx, schools, f"Schools in State '{state.title()}'")
 
 
 async def setup(bot):

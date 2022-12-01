@@ -3,34 +3,17 @@ import os
 import typing
 
 import psycopg2.errors
-from psycopg2 import pool
+from psycopg2.pool import ThreadedConnectionPool
 from psycopg2.extensions import AsIs
-from .tables import tables
+
 from .logger import make_logger
 
 # Imports the database logger
 log = make_logger("database", os.getenv("LOG_LEVEL", "INFO"))
 
 # Creates the connection to the database
-
-db_pool = pool.ThreadedConnectionPool(minconn=1, maxconn=15, dsn=os.getenv("DATABASE_URL").strip())
+db_pool = ThreadedConnectionPool(dsn=os.getenv("DATABASE_URL").strip(), minconn=1, maxconn=20)
 DuplicateError = psycopg2.errors.lookup("23505")
-
-
-def table_create() -> None:
-    """Table_create
-
-    Create tables if they do not exist at startup. All tables are pulled from tables.py
-    :return:
-    """
-    with db_pool.getconn() as con, con.cursor() as pg_cursor:
-        try:
-            for table in tables:
-                pg_cursor.execute(table)
-            con.commit()
-        except psycopg2.Error as pge:
-            log.error(pge)
-            con.rollback()
 
 
 def _format_step(table: str) -> str:
@@ -99,7 +82,7 @@ def _result_parser(column: str, fetched: list) -> typing.Union[list, typing.List
     return result
 
 
-async def insert(table: str, data: list) -> typing.Union[None, str]:
+async def insert(table: str, data: list) -> typing.Optional[str]:
     """Insert into a table
 
     **Asynchronous Function**
@@ -126,13 +109,15 @@ async def insert(table: str, data: list) -> typing.Union[None, str]:
         try:
             pg_cursor.execute(format_str, data)
             con.commit()
-            return None
         except psycopg2.Error as pge:
             log.error(pge)
             con.rollback()
             if isinstance(pge, DuplicateError):
                 return "duplicate"
             return "error"
+
+        db_pool.putconn(con)
+        return None
 
 
 async def fetch(table: str, column: str) -> list:
@@ -164,6 +149,8 @@ async def fetch(table: str, column: str) -> list:
             log.error(pge)
             con.rollback()
             return []
+        finally:
+            db_pool.putconn(con)
 
 
 async def select(
@@ -201,7 +188,8 @@ async def select(
         try:
             format_str = "SELECT %s FROM %s WHERE %s %s %s;"
             pg_cursor.execute(
-                format_str, (AsIs(column), AsIs(table), AsIs(where_column), symbol, where_value)
+                format_str,
+                (AsIs(column), AsIs(table), AsIs(where_column), AsIs(symbol), where_value),
             )
             fetched = pg_cursor.fetchall()
             result = _result_parser(column, fetched)
@@ -210,6 +198,8 @@ async def select(
             log.error(pge)
             con.rollback()
             return []
+        finally:
+            db_pool.putconn(con)
 
 
 async def update(
@@ -254,6 +244,8 @@ async def update(
         except psycopg2.Error as pge:
             log.error(pge)
             con.rollback()
+        finally:
+            db_pool.putconn(con)
 
 
 async def delete(table: str, column: str, value: str) -> None:
@@ -283,3 +275,5 @@ async def delete(table: str, column: str, value: str) -> None:
         except psycopg2.Error as pge:
             log.error(pge)
             con.rollback()
+        finally:
+            db_pool.putconn(con)

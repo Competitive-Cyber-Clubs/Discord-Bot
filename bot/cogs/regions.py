@@ -1,4 +1,5 @@
 """Cog responsible for region management"""
+import cyberjake
 import discord
 from discord.ext import commands
 from bot import utils
@@ -10,7 +11,7 @@ class RegionCog(commands.Cog, name="Regions"):
     Cog that holds the region commands
 
     **Commands:**
-        - `add-region`: Command that adds a region and its role to to the regions database.
+        - `add-region`: Command that adds a region and its role to the regions' database.
 
         - `list-regions`: Commands that list all the regions available to join.
 
@@ -52,9 +53,9 @@ class RegionCog(commands.Cog, name="Regions"):
         else:
             status = "error"
         if status == "error":
-            await utils.error_message(ctx, "Error creating the region.")
+            await cyberjake.error_embed(ctx, "Error creating the region.")
         else:
-            await utils.make_embed(
+            await cyberjake.make_embed(
                 ctx, color="28b463", title=f"Region '{region}' has been created."
             )
 
@@ -72,7 +73,7 @@ class RegionCog(commands.Cog, name="Regions"):
         formatted = ""
         for region in regions:
             formatted += f" - {region} \n"
-        await utils.make_embed(ctx, title="Available Regions:", description=formatted)
+        await cyberjake.make_embed(ctx, title="Available Regions:", description=formatted)
 
 
 async def setup(bot):

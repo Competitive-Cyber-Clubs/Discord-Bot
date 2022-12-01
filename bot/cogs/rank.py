@@ -1,7 +1,7 @@
 """Rank features cog for CCC Bot"""
 import discord.utils
 from discord.ext import commands
-from bot.utils import make_embed, error_message
+import cyberjake
 
 
 class RankCog(commands.Cog, name="Rank"):
@@ -32,10 +32,10 @@ class RankCog(commands.Cog, name="Rank"):
         ranks = ["student", "professor", "alumni"]
         checked = [i for i in user.roles if i.name.lower() in ranks]
         if len(checked) > 0:
-            await error_message(ctx, "You already have a rank.")
+            await cyberjake.error_embed(ctx, "You already have a rank.")
         else:
             await user.add_roles(discord.utils.get(ctx.guild.roles, name=rank))
-            await make_embed(
+            await cyberjake.make_embed(
                 ctx,
                 color="28b463",
                 title="Success",

@@ -25,5 +25,6 @@ def make_logger(name: str, log_level: str) -> logging.Logger:
         ch = logging.StreamHandler()
         ch.setFormatter(formatter)
         logger.addHandler(ch)
-    discord_logger.setLevel("INFO")
+    if log_level == "DEBUG":
+        discord_logger.setLevel("INFO")
     return logger

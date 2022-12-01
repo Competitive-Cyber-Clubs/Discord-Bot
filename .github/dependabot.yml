@@ -3,10 +3,21 @@ updates:
 - package-ecosystem: pip
   directory: "/"
   schedule:
-    interval: "weekly"
+    interval: "monthly"
   assignees:
     - "Competitive-Cyber-Clubs/admins"
   commit-message:
-    prefix: "Pip Update"
+    prefix: "dep: pip"
+  reviewers:
+    - "Competitive-Cyber-Clubs/admins"
+
+- package-ecosystem: github-actions
+  directory: "/"
+  schedule:
+    interval: "monthly"
+  assignees:
+    - "Competitive-Cyber-Clubs/admins"
+  commit-message:
+    prefix: "dep: actions"
   reviewers:
     - "Competitive-Cyber-Clubs/admins"

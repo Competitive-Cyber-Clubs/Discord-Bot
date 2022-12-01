@@ -2,7 +2,7 @@
 
 # CCC-Bot
 
-[![GitLab pipeline](https://img.shields.io/gitlab/pipeline/Cyb3r-Jak3/Discord-Bot)](https://gitlab.com/Cyb3r-Jak3/Discord-Bot/builds)
+[![Build & Check](https://github.com/Competitive-Cyber-Clubs/Discord-Bot/actions/workflows/python.yml/badge.svg)](https://github.com/Competitive-Cyber-Clubs/Discord-Bot/actions/workflows/python.yml)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Competitive-Cyber-Clubs/Discord-Bot/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Competitive-Cyber-Clubs/Discord-Bot/?branch=master) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![DeepSource](https://deepsource.io/gh/Competitive-Cyber-Clubs/Discord-Bot.svg/?label=active+issues&show_trend=true)](https://deepsource.io/gh/Competitive-Cyber-Clubs/Discord-Bot/?ref=repository-badge)
 
@@ -15,7 +15,7 @@ As such it is not recommended for other discord servers, however it is
 
 View this project on [SourceGraph](https://sourcegraph.com/github.com/Competitive-Cyber-Clubs/Discord-Bot)
 
-Written for Python 3.8+
+Written for Python 3.11
 <!---
 ## Adding
 
