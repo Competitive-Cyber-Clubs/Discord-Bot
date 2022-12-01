@@ -61,6 +61,6 @@ jobs:
         REF: ${{ startsWith(github.ref, 'refs/tags/v') }}
 
     - uses: superfly/flyctl-actions/setup-flyctl@master
-    - run: flyctl deploy --remote-only ${{ env.DEPLOYMENT }}
+    - run: flyctl deploy --detach --remote-only ${{ env.DEPLOYMENT }}
       env:
         FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
