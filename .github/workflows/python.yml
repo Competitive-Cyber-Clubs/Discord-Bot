@@ -10,6 +10,8 @@ on:
           - 'alembic/**'
           - 'requirements.txt'
           - 'requirements-dev.txt'
+    tags:
+        - 'v*'
     pull_request:
         branches: [ 'master' ]
         paths:
