@@ -42,7 +42,9 @@ class CCC_Bot(commands.Bot):
     """Main class for running bot"""
 
     def __init__(self):
-        super().__init__(command_prefix=("?", "$"), intents=discord.Intents.all(), description=description)
+        super().__init__(
+            command_prefix=("?", "$"), intents=discord.Intents.all(), description=description
+        )
         self.log = log
         self.uptime = datetime.utcnow()
         self.list_updated, self.school_list = "", None
